@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test": "NODE_OPTIONS=--no-experimental-webstorage vitest",
+    "test:coverage": "NODE_OPTIONS=--no-experimental-webstorage vitest run --coverage"
   },
   "dependencies": {
     "dayjs": "^1.11.21",
