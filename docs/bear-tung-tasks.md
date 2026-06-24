@@ -30,15 +30,15 @@
 - [x] ✅ commit: `feat: add cash flow data model, local storage, and entry form (Phase 1)`
 
 ## Phase 2 — Finance core (domain, OOP + SOLID) ⭐
-- [ ] `domain/ratios/`: Ratio (interface) + SavingsRateRatio, DsrRatio, EmergencyFundRatio
-- [ ] `domain/scoring/HealthScoreService` (weights 35/35/30 + traffic light)
-- [ ] `domain/mortgage/`: LtvPolicy (interface), TemporaryLtvPolicy, NormalLtvPolicy, LtvPolicyFactory
-- [ ] `domain/mortgage/AmortizationCalculator`
-- [ ] `domain/mortgage/MortgageService` (LTV + DSR + term cap by age 70)
-- [ ] `domain/mortgage/CoBorrowerService`
-- [ ] `domain/projection/ProjectionService` (60-month series)
-- [ ] `domain/config/defaults.ts` (6.5%, 30y, DSR 40%, weights, date-based LTV rules)
-- [ ] ⭐ full unit tests + edge cases (zero income, zero interest, debt ending mid-way, age-capped term) → coverage ≥ 80%
+- [x] `domain/ratios/`: Ratio (interface) + SavingsRateRatio, DsrRatio, EmergencyFundRatio
+- [x] `domain/scoring/HealthScoreService` (weights 35/35/30 + traffic light)
+- [x] `domain/mortgage/`: LtvPolicy (interface), TemporaryLtvPolicy, NormalLtvPolicy, LtvPolicyFactory
+- [x] `domain/mortgage/AmortizationCalculator`
+- [x] `domain/mortgage/MortgageService` (LTV + DSR + term cap by age 70)
+- [x] `domain/mortgage/CoBorrowerService`
+- [x] `domain/projection/ProjectionService` (60-month series)
+- [x] `domain/config/defaults.ts` (6.5%, 30y, DSR 40%, weights, date-based LTV rules)
+- [x] ⭐ full unit tests + edge cases (zero income, zero interest, debt ending mid-way, age-capped term) → coverage ≥ 80%
 
 ## Phase 3 — Health Dashboard
 - [ ] `ScoreGauge` (0–100 + traffic light + icon/text)
