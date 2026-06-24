@@ -7,26 +7,27 @@
 ---
 
 ## Phase 0 — Setup & Deploy skeleton
-- [ ] `npx create-next-app@latest` (TypeScript, Tailwind, ESLint, App Router, src/)
-- [ ] Install libs: recharts, xlsx, dayjs
-- [ ] Install dev libs: vitest, @testing-library/react, @testing-library/jest-dom, coverage provider
-- [ ] Add package.json scripts: `dev`, `build`, `lint`, `test`, `test:coverage`
-- [ ] Add colors/fonts from design.md into `tailwind.config.ts` + import Thai font
-- [ ] Write `README.md`
-- [ ] Place `CLAUDE.md` at repo root
-- [ ] Set up `.gitignore`, `.prettierrc`, `.nvmrc`
-- [ ] Push to GitHub
+- [x] `npx create-next-app@latest` (TypeScript, Tailwind, ESLint, App Router, src/)
+- [x] Install libs: recharts, xlsx, dayjs
+- [x] Install dev libs: vitest, @testing-library/react, @testing-library/jest-dom, coverage provider
+- [x] Add package.json scripts: `dev`, `build`, `lint`, `test`, `test:coverage`
+- [x] Add colors/fonts from design.md into `@theme` tokens (Tailwind v4 is CSS-first — no `tailwind.config.ts`) + import Thai font
+- [x] Write `README.md`
+- [x] Place `CLAUDE.md` at repo root
+- [x] Set up `.gitignore` (`.prettierrc`/`.nvmrc` skipped — optional per plan.md)
+- [x] Push to GitHub
 - [ ] Connect Vercel → get a working URL
-- [ ] ✅ commit: `chore: scaffold next.js project + tooling`
+- [x] ✅ commit: `chore: set up tooling, docs, and design theme (Phase 0)`
 
 ## Phase 1 — Data model + Storage + Cash Flow form
-- [ ] `domain/model/`: Money, MonthKey, LineItem, CashFlowProfile
-- [ ] `domain/storage/`: ProfileRepository (interface) + LocalStorageProfileRepository
-- [ ] `useProfile()` hook + React Context (repository injected)
-- [ ] `/cashflow` page: categorized form (income/expense/debt/savings)
-- [ ] line item editor: value-change date (carry-forward) + debt end date (endMonth)
-- [ ] save/load from local storage works
-- [ ] tests: model + storage + carry-forward
+- [x] `domain/model/`: Money, MonthKey, LineItem, CashFlowProfile
+- [x] `domain/storage/`: ProfileRepository (interface) + LocalStorageProfileRepository
+- [x] `useProfile()` hook + React Context (repository injected)
+- [x] `/cashflow` page: categorized form (income/expense/debt/savings)
+- [x] line item editor: value-change date (carry-forward) + debt end date (endMonth)
+- [x] save/load from local storage works
+- [x] tests: model + storage + carry-forward
+- [x] ✅ commit: `feat: add cash flow data model, local storage, and entry form (Phase 1)`
 
 ## Phase 2 — Finance core (domain, OOP + SOLID) ⭐
 - [ ] `domain/ratios/`: Ratio (interface) + SavingsRateRatio, DsrRatio, EmergencyFundRatio

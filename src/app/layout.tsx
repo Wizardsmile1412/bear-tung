@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
 
+import { ProfileProvider } from "@/components/profile/ProfileProvider";
+
 const thai = IBM_Plex_Sans_Thai({
   variable: "--font-thai",
   subsets: ["thai", "latin"],
@@ -21,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="th" className={`${thai.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-background text-ink">
-        {children}
+        <ProfileProvider>{children}</ProfileProvider>
       </body>
     </html>
   );
