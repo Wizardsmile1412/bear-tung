@@ -11,7 +11,7 @@ export default defineConfig({
         coverage: {
             provider: "v8",
             reportsDirectory: "./coverage",
-            include: ["src/domain/**", "src/components/**"],
+            include: ["src/domain/**", "src/components/**", "src/app/dashboard/**"],
             thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 },
         },
     },

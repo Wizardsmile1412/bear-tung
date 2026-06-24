@@ -41,12 +41,12 @@
 - [x] ⭐ full unit tests + edge cases (zero income, zero interest, debt ending mid-way, age-capped term) → coverage ≥ 80%
 
 ## Phase 3 — Health Dashboard
-- [ ] `ScoreGauge` (0–100 + traffic light + icon/text)
-- [ ] `RatioCard` (actual value + threshold + status + jargon tooltip)
-- [ ] expense donut by category
-- [ ] comparison bar: income/expense/debt/remaining
-- [ ] `/dashboard` page assembled
-- [ ] tests for key components
+- [x] `ScoreGauge` (0–100 + traffic light + icon/text)
+- [x] `RatioCard` (actual value + threshold + status + jargon tooltip)
+- [x] expense donut by category
+- [x] comparison bar: income/expense/debt/remaining
+- [x] `/dashboard` page assembled
+- [x] tests for key components
 
 ## Phase 4 — 5-year Projection
 - [ ] `MonthSlider` / month selector
