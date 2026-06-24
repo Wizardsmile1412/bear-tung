@@ -49,10 +49,10 @@
 - [x] tests for key components
 
 ## Phase 4 — 5-year Projection
-- [ ] `MonthSlider` / month selector
-- [ ] 5-year score trend line
-- [ ] dashboard updates by selected month
-- [ ] tests: projection series + month selection
+- [x] `MonthSlider` / month selector
+- [x] 5-year score trend line
+- [x] dashboard updates by selected month
+- [x] tests: projection series + month selection
 
 ## Phase 5 — Mortgage + Co-borrower
 - [ ] `/mortgage` page: inputs (price/age/month) + AssumptionPanel (interest/term/DSR/LTV)

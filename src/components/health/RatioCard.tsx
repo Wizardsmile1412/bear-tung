@@ -6,6 +6,7 @@ import { RatioResult } from "@/domain/ratios/Ratio";
 
 import { formatRatioValue } from "./formatRatioValue";
 import { StatusBadge } from "./StatusBadge";
+import { toneLabel } from "./trafficLight";
 
 interface RatioCardProps {
   result: RatioResult;
@@ -29,7 +30,7 @@ export function RatioCard({ result }: RatioCardProps) {
     <div className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-lg font-semibold text-ink">{result.label}</h3>
-        <StatusBadge tone={result.status} label={result.status === "good" ? "ดี" : result.status === "warning" ? "พอใช้" : "ต้องระวัง"} />
+        <StatusBadge tone={result.status} label={toneLabel(result.status)} />
       </div>
 
       <p className="mt-3 text-3xl font-bold tabular-nums text-ink">{formatRatioValue(result)}</p>

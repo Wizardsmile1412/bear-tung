@@ -1,22 +1,29 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
 import { useProfile } from "@/components/profile/useProfile";
-import { useHealth } from "@/components/health/useHealth";
+import { useProjectionSeries } from "@/components/health/useProjectionSeries";
+import { formatMonthLabel } from "@/components/health/formatMonthLabel";
+import { MonthSlider } from "@/components/health/MonthSlider";
 import { RatioCard } from "@/components/health/RatioCard";
 import { ScoreGauge } from "@/components/health/ScoreGauge";
 import { ComparisonBarChart } from "@/components/charts/ComparisonBarChart";
 import { ExpenseDonutChart } from "@/components/charts/ExpenseDonutChart";
+import { ScoreTrendChart } from "@/components/charts/ScoreTrendChart";
 import { subCategoryLabel } from "@/components/cashflow/subCategoryPresets";
 
 export default function DashboardPage() {
-  const { profile, isLoaded } = useProfile();
-  const { month, totals, score, light, results } = useHealth();
+  const { profile, isLoaded: profileLoaded } = useProfile();
+  const { series, isLoaded: seriesLoaded } = useProjectionSeries();
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  if (!isLoaded) {
+  if (!profileLoaded || !seriesLoaded) {
     return null;
   }
+
+  const selectedEntry = series[selectedIndex];
 
   // Mirrors the precedent in CategoryGroupCard: per-category subtotal
   // grouping is computed inline in the UI layer, not pushed into the domain.
@@ -26,11 +33,17 @@ export default function DashboardPage() {
       continue;
     }
     const current = expenseBySubCategory.get(item.subCategory) ?? 0;
-    expenseBySubCategory.set(item.subCategory, current + item.amountAt(month));
+    expenseBySubCategory.set(item.subCategory, current + item.amountAt(selectedEntry.month));
   }
   const expenseData = Array.from(expenseBySubCategory.entries()).map(([subCategory, value]) => ({
     label: subCategoryLabel("expense", subCategory),
     value,
+  }));
+
+  const trendData = series.map((entry) => ({
+    month: entry.month,
+    monthLabel: formatMonthLabel(entry.month),
+    score: entry.score,
   }));
 
   return (
@@ -57,12 +70,25 @@ export default function DashboardPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-8">
+          <MonthSlider
+            months={series.map((entry) => entry.month)}
+            selectedIndex={selectedIndex}
+            onChange={setSelectedIndex}
+          />
+
           <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
-            <ScoreGauge score={score} light={light} />
+            <ScoreGauge score={selectedEntry.score} light={selectedEntry.light} />
+          </section>
+
+          <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+            <h2 className="text-xl font-semibold text-ink">แนวโน้มคะแนนสุขภาพการเงิน 5 ปี</h2>
+            <div className="mt-4">
+              <ScoreTrendChart data={trendData} selectedMonth={selectedEntry.month} />
+            </div>
           </section>
 
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {results.map((result) => (
+            {selectedEntry.ratioResults.map((result) => (
               <RatioCard key={result.key} result={result} />
             ))}
           </section>
@@ -78,10 +104,10 @@ export default function DashboardPage() {
             <h2 className="text-xl font-semibold text-ink">เปรียบเทียบรายรับ-รายจ่าย-หนี้สิน</h2>
             <div className="mt-4">
               <ComparisonBarChart
-                income={totals.totalIncome}
-                expense={totals.totalExpense}
-                debt={totals.totalDebt}
-                remaining={totals.remainingCashFlow}
+                income={selectedEntry.totalIncome}
+                expense={selectedEntry.totalExpense}
+                debt={selectedEntry.totalDebt}
+                remaining={selectedEntry.remainingCashFlow}
               />
             </div>
           </section>
