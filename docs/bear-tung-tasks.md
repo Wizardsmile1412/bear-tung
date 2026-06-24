@@ -73,5 +73,5 @@
 - [x] support prefers-reduced-motion
 - [x] contrast check (green/yellow/red pass WCAG)
 - [x] empty states + mortgage disclaimer (not a real approval)
-- [ ] end-to-end QA with real numbers
+- [x] end-to-end QA with real numbers
 - [ ] final deploy

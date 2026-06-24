@@ -94,7 +94,9 @@ Verify end-to-end against the sample numbers (section 6).
 | Interest | 6.5%/yr |
 | Term | 30 years |
 | Expected: affordable payment/month | 15,000 |
-| Expected: max loan (DSR) | ~2,501,874 |
+| Expected: max loan (DSR) | ~2,373,162 (corrected — see note below) |
+
+> Note: an earlier draft of this table listed ~2,501,874 for max loan (DSR). Recomputing the formula in spec.md section 8.3 precisely (`payment * (1 - (1+r)^-n) / r` with payment=15,000, r=6.5%/12/100, n=360) gives **2,373,162.29**, confirmed independently against the live app during Phase 7's end-to-end QA — the old figure was a hand-calculation error from before any code existed, not a discrepancy in the implementation.
 
 ---
 
