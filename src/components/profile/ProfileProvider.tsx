@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import { Assets, CashFlowProfile } from "@/domain/model/CashFlowProfile";
 import { LineItem } from "@/domain/model/LineItem";
@@ -17,6 +17,11 @@ export interface ProfileContextValue {
 
 export const ProfileContext = createContext<ProfileContextValue | null>(null);
 
+// This value never changes after mount, so no real subscription is needed.
+const noopSubscribe = () => () => {};
+const getClientIsLoaded = () => true;
+const getServerIsLoaded = () => false;
+
 /**
  * Provides the CashFlowProfile + mutation functions to the component tree.
  *
@@ -27,14 +32,23 @@ export const ProfileContext = createContext<ProfileContextValue | null>(null);
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [repository] = useState(() => new LocalStorageProfileRepository());
   // Lazy initializers run once on mount. During SSR `window` is undefined,
-  // so `repository.load()` safely returns null and `isLoaded` starts false;
-  // during the real client mount (including hydration) `window` is defined,
-  // so the actual stored profile (if any) is read synchronously — no effect
-  // needed to "detect mount", which keeps state derivation out of effects.
+  // so `repository.load()` safely returns null and `profile` starts empty;
+  // on the client it reads the real stored profile synchronously on the
+  // very first render, before paint.
   const [profile, setProfile] = useState<CashFlowProfile>(
     () => repository.load() ?? CashFlowProfile.empty(),
   );
-  const [isLoaded] = useState(() => typeof window !== "undefined");
+  // `isLoaded` must be `false` during SSR and on the client's matching
+  // first hydration pass, then `true` on every render after that —
+  // deriving it synchronously from `typeof window !== "undefined"` (the
+  // prior approach) made the server's HTML (isLoaded=false) and the
+  // client's very first paint (isLoaded=true, since `window` already
+  // exists by then) disagree immediately, causing a real, observed Next.js
+  // hydration mismatch on every page that branches render output on this
+  // flag. `useSyncExternalStore`'s `getServerSnapshot` is the React-native
+  // way to express exactly this: React uses it for both SSR and the first
+  // client render (matching), then switches to the regular snapshot.
+  const isLoaded = useSyncExternalStore(noopSubscribe, getClientIsLoaded, getServerIsLoaded);
 
   useEffect(() => {
     if (!isLoaded) {

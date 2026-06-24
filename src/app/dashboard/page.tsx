@@ -61,12 +61,14 @@ export default function DashboardPage() {
           </div>
           {profile.items.length > 0 && <ExportButton onClick={exportToExcel} />}
         </div>
-        <Link href="/cashflow" className="mt-2 inline-block text-sm font-medium text-primary hover:text-primary-hover">
-          ← กลับไปกรอก Cash Flow
-        </Link>
-        <Link href="/mortgage" className="mt-2 inline-block text-sm font-medium text-primary hover:text-primary-hover">
-          ประเมินสินเชื่อบ้าน →
-        </Link>
+        <div className="mt-2 flex flex-wrap gap-4">
+          <Link href="/cashflow" className="text-sm font-medium text-primary hover:text-primary-hover">
+            ← กลับไปกรอก Cash Flow
+          </Link>
+          <Link href="/mortgage" className="text-sm font-medium text-primary hover:text-primary-hover">
+            ประเมินสินเชื่อบ้าน →
+          </Link>
+        </div>
       </header>
 
       {profile.items.length === 0 ? (
