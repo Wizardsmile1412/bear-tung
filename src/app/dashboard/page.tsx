@@ -13,11 +13,14 @@ import { ComparisonBarChart } from "@/components/charts/ComparisonBarChart";
 import { ExpenseDonutChart } from "@/components/charts/ExpenseDonutChart";
 import { ScoreTrendChart } from "@/components/charts/ScoreTrendChart";
 import { subCategoryLabel } from "@/components/cashflow/subCategoryPresets";
+import { ExportButton } from "@/components/export/ExportButton";
+import { useExport } from "@/components/export/useExport";
 
 export default function DashboardPage() {
   const { profile, isLoaded: profileLoaded } = useProfile();
   const { series, isLoaded: seriesLoaded } = useProjectionSeries();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const { exportToExcel } = useExport();
 
   if (!profileLoaded || !seriesLoaded) {
     return null;
@@ -49,10 +52,15 @@ export default function DashboardPage() {
   return (
     <main className="mx-auto flex w-full max-w-[772px] flex-col gap-8 px-6 py-8">
       <header>
-        <h1 className="text-3xl font-bold text-ink">สุขภาพการเงินของคุณ</h1>
-        <p className="mt-1 text-base text-ink-muted">
-          ดูคะแนนสุขภาพการเงิน อัตราส่วนสำคัญ และภาพรวมรายรับ-รายจ่าย
-        </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-ink">สุขภาพการเงินของคุณ</h1>
+            <p className="mt-1 text-base text-ink-muted">
+              ดูคะแนนสุขภาพการเงิน อัตราส่วนสำคัญ และภาพรวมรายรับ-รายจ่าย
+            </p>
+          </div>
+          {profile.items.length > 0 && <ExportButton onClick={exportToExcel} />}
+        </div>
         <Link href="/cashflow" className="mt-2 inline-block text-sm font-medium text-primary hover:text-primary-hover">
           ← กลับไปกรอก Cash Flow
         </Link>

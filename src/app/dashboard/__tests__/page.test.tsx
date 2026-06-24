@@ -70,6 +70,30 @@ describe("DashboardPage", () => {
     );
   });
 
+  it("hides the Export Excel button in the empty state", () => {
+    render(
+      <ProfileProvider>
+        <DashboardPage />
+      </ProfileProvider>,
+    );
+
+    expect(screen.queryByRole("button", { name: /Export Excel/i })).not.toBeInTheDocument();
+  });
+
+  it("shows the Export Excel button once there is cash flow data, and clicking it doesn't throw", async () => {
+    seedProfile();
+    render(
+      <ProfileProvider>
+        <DashboardPage />
+      </ProfileProvider>,
+    );
+
+    const exportButton = screen.getByRole("button", { name: /Export Excel/i });
+    expect(exportButton).toBeInTheDocument();
+
+    await expect(userEvent.click(exportButton)).resolves.not.toThrow();
+  });
+
   it("renders the score, ratio cards, and charts for a profile with real cash flow data", () => {
     seedProfile();
 

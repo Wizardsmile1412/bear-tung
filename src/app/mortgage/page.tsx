@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { DEFAULT_DSR_LIMIT, DEFAULT_INTEREST_RATE_PERCENT, DEFAULT_LOAN_TERM_YEARS } from "@/domain/config/defaults";
+import { MortgageExportData } from "@/domain/export/ExportData";
 import { MonthKey } from "@/domain/model/MonthKey";
 import { Money } from "@/domain/model/Money";
 import { MortgageInput } from "@/domain/mortgage/MortgageService";
@@ -11,6 +12,8 @@ import { MortgageInput } from "@/domain/mortgage/MortgageService";
 import { useProfile } from "@/components/profile/useProfile";
 import { useProjectionSeries } from "@/components/health/useProjectionSeries";
 import { MonthSlider } from "@/components/health/MonthSlider";
+import { ExportButton } from "@/components/export/ExportButton";
+import { useExport } from "@/components/export/useExport";
 import { AssumptionPanel } from "@/components/mortgage/AssumptionPanel";
 import { CoBorrowerSection } from "@/components/mortgage/CoBorrowerSection";
 import { MortgageInputForm } from "@/components/mortgage/MortgageInputForm";
@@ -47,8 +50,33 @@ export default function MortgagePage() {
   return (
     <main className="mx-auto flex w-full max-w-[772px] flex-col gap-8 px-6 py-8">
       <header>
-        <h1 className="text-3xl font-bold text-ink">ประเมินสินเชื่อบ้าน</h1>
-        <p className="mt-1 text-base text-ink-muted">ดูว่าคุณสามารถซื้อบ้านราคานี้ได้หรือไม่ ตามเกณฑ์ของธนาคารไทย</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-ink">ประเมินสินเชื่อบ้าน</h1>
+            <p className="mt-1 text-base text-ink-muted">ดูว่าคุณสามารถซื้อบ้านราคานี้ได้หรือไม่ ตามเกณฑ์ของธนาคารไทย</p>
+          </div>
+          {profile.items.length > 0 &&
+            (hasInput ? (
+              <MortgageExportButton
+                homePrice={homePrice}
+                homeOrder={homeOrder}
+                firstHomePaidAtLeastTwoYears={firstHomePaidAtLeastTwoYears}
+                borrowerAge={borrowerAge}
+                downPaymentAvailable={downPaymentAvailable}
+                interestRatePercent={interestRatePercent}
+                loanTermYears={loanTermYears}
+                dsrLimitPercent={dsrLimitPercent}
+                coBorrowerEnabled={coBorrowerEnabled}
+                coDebt={coDebt}
+                coIncomeProvided={coIncomeProvided}
+                selectedMonth={series[selectedIndex].month}
+                monthlyIncome={series[selectedIndex].totalIncome}
+                existingDebt={series[selectedIndex].totalDebt}
+              />
+            ) : (
+              <NoMortgageExportButton />
+            ))}
+        </div>
         <Link href="/dashboard" className="mt-2 inline-block text-sm font-medium text-primary hover:text-primary-hover">
           ← กลับไปดูสุขภาพการเงิน
         </Link>
@@ -256,4 +284,90 @@ function MortgageEvaluation(props: MortgageEvaluationProps) {
       />
     </>
   );
+}
+
+interface MortgageExportButtonProps {
+  homePrice: number;
+  homeOrder: 1 | 2 | 3;
+  firstHomePaidAtLeastTwoYears: boolean;
+  borrowerAge: number;
+  downPaymentAvailable: number;
+  interestRatePercent: number;
+  loanTermYears: number;
+  dsrLimitPercent: number;
+  coBorrowerEnabled: boolean;
+  coDebt: number;
+  coIncomeProvided: number | undefined;
+  selectedMonth: string;
+  monthlyIncome: number;
+  existingDebt: number;
+}
+
+/**
+ * Only mounted when `hasInput` is true (mirrors `MortgageEvaluation`'s
+ * guard) — builds the same `MortgageInput`/`MortgageResult`/co-borrower
+ * shapes as `MortgageEvaluation` so Sheet 3 of the export reflects exactly
+ * what the page is currently showing, then calls `useExport(mortgageData)`.
+ */
+function MortgageExportButton(props: MortgageExportButtonProps) {
+  const assessmentDate = MonthKey.parse(props.selectedMonth).toDate();
+
+  const mortgageInput: MortgageInput = {
+    homePrice: props.homePrice,
+    homeOrder: props.homeOrder,
+    firstHomePaidAtLeastTwoYears: props.homeOrder === 2 ? props.firstHomePaidAtLeastTwoYears : undefined,
+    borrowerAge: props.borrowerAge,
+    interestRatePercent: props.interestRatePercent,
+    loanTermYears: props.loanTermYears,
+    downPaymentAvailable: props.downPaymentAvailable,
+    monthlyIncome: props.monthlyIncome,
+    existingDebt: props.existingDebt,
+    dsrLimit: props.dsrLimitPercent / 100,
+    assessmentDate,
+  };
+
+  const mortgageResult = useMortgage(mortgageInput);
+
+  const coBorrowerInput = {
+    homePrice: props.homePrice,
+    downPaymentAvailable: props.downPaymentAvailable,
+    userIncome: props.monthlyIncome,
+    userDebt: props.existingDebt,
+    coDebt: props.coDebt,
+    dsrLimit: props.dsrLimitPercent / 100,
+    coIncomeProvided: props.coIncomeProvided,
+  };
+  const coBorrowerResult = useCoBorrower(mortgageResult, coBorrowerInput);
+
+  const mortgageData: MortgageExportData = {
+    input: mortgageInput,
+    result: mortgageResult,
+    coBorrower: props.coBorrowerEnabled
+      ? {
+          input: {
+            homePrice: coBorrowerInput.homePrice,
+            downPaymentAvailable: coBorrowerInput.downPaymentAvailable,
+            monthlyRate: mortgageResult.monthlyRate,
+            numPayments: mortgageResult.numPayments,
+            userIncome: coBorrowerInput.userIncome,
+            userDebt: coBorrowerInput.userDebt,
+            coDebt: coBorrowerInput.coDebt,
+            dsrLimit: coBorrowerInput.dsrLimit,
+            maxLoanByLtv: mortgageResult.maxLoanByLtv,
+            coIncomeProvided: coBorrowerInput.coIncomeProvided,
+          },
+          result: coBorrowerResult,
+        }
+      : undefined,
+  };
+
+  const { exportToExcel } = useExport(mortgageData);
+
+  return <ExportButton onClick={exportToExcel} />;
+}
+
+/** Mounted when `hasInput` is false — exports with Sheet 3's placeholder row. */
+function NoMortgageExportButton() {
+  const { exportToExcel } = useExport();
+  return <ExportButton onClick={exportToExcel} />;
 }

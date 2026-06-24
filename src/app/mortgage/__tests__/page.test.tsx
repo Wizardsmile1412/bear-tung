@@ -94,6 +94,46 @@ describe("MortgagePage", () => {
     expect(screen.getByRole("link", { name: "เริ่มกรอก Cash Flow" })).toHaveAttribute("href", "/cashflow");
   });
 
+  it("hides the Export Excel button in the empty state", () => {
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    expect(screen.queryByRole("button", { name: /Export Excel/i })).not.toBeInTheDocument();
+  });
+
+  it("shows the Export Excel button before homePrice/borrowerAge are filled in (no mortgage data yet), and clicking it doesn't throw", async () => {
+    seedProfile();
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    const exportButton = screen.getByRole("button", { name: /Export Excel/i });
+    expect(exportButton).toBeInTheDocument();
+
+    await expect(userEvent.click(exportButton)).resolves.not.toThrow();
+  });
+
+  it("keeps showing the Export Excel button once homePrice/borrowerAge are filled in (mortgage data attached), and clicking it doesn't throw", async () => {
+    seedProfile();
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fillRequiredFields();
+
+    const exportButton = screen.getByRole("button", { name: /Export Excel/i });
+    expect(exportButton).toBeInTheDocument();
+
+    await expect(userEvent.click(exportButton)).resolves.not.toThrow();
+  });
+
   it("shows the inline prompt and no result card before homePrice/borrowerAge are filled in", () => {
     seedProfile();
     render(
@@ -223,5 +263,42 @@ describe("MortgagePage", () => {
     expect(
       screen.getByText("ผู้กู้ร่วมควรมีรายได้อย่างน้อย 32,405 บาท/เดือน เพื่อให้กู้ผ่าน", { exact: false }),
     ).toBeInTheDocument();
+  });
+
+  it("entering co-borrower income (coIncomeProvided) shows the combined-income-sufficient badge and the export button still doesn't throw", async () => {
+    // Same worked example as above (home 4M, down 1M, income 35k/debt 5k,
+    // coDebt 3k -> required co-income ~32,405), but this time also fills in
+    // "รายได้ของผู้กู้ร่วม (ถ้ามี)" (coIncomeProvided) so
+    // CoBorrowerService.combinedIncomeSufficient becomes defined — exercising
+    // both the on-screen badge and the export pipeline's "รายได้รวมเพียงพอ
+    // หรือไม่" Mortgage-sheet row end-to-end (not just at the unit level).
+    seedProfileWith(35000, 5000, 1000000);
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "4000000" } });
+    fireEvent.change(screen.getByLabelText("อายุผู้กู้"), { target: { value: "30" } });
+    fireEvent.change(screen.getByLabelText("เงินดาวน์ที่มี"), { target: { value: "1000000" } });
+
+    await userEvent.click(screen.getByLabelText("ต้องการเพิ่มผู้กู้ร่วม"));
+    fireEvent.change(screen.getByLabelText("หนี้ปัจจุบันของผู้กู้ร่วม"), { target: { value: "3000" } });
+
+    // Insufficient co-income (well under the required ~32,405) -> the "ยังไม่
+    // เพียงพอ" badge.
+    fireEvent.change(screen.getByLabelText("รายได้ของผู้กู้ร่วม (ถ้ามี)"), { target: { value: "1000" } });
+    expect(screen.getByText("รายได้รวมยังไม่เพียงพอ")).toBeInTheDocument();
+
+    const exportButton = screen.getByRole("button", { name: /Export Excel/i });
+    await expect(userEvent.click(exportButton)).resolves.not.toThrow();
+
+    // Now raise it well above the required amount -> the "เพียงพอ" badge,
+    // proving both branches of combinedIncomeSufficient render correctly.
+    fireEvent.change(screen.getByLabelText("รายได้ของผู้กู้ร่วม (ถ้ามี)"), { target: { value: "50000" } });
+    expect(screen.getByText("รายได้รวมของคุณและผู้กู้ร่วมเพียงพอแล้ว")).toBeInTheDocument();
+
+    await expect(userEvent.click(exportButton)).resolves.not.toThrow();
   });
 });

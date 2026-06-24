@@ -62,10 +62,10 @@
 - [x] tests: service wired to UI
 
 ## Phase 6 — Excel Export
-- [ ] `domain/export/`: Exporter (interface) + ExcelExporter (SheetJS)
-- [ ] 4 sheets: Cash Flow, Health Check, Mortgage, 5-year Projection
-- [ ] Export button on dashboard + mortgage page
-- [ ] tests: data structure before export
+- [x] `domain/export/`: Exporter (interface) + ExcelExporter (SheetJS)
+- [x] 4 sheets: Cash Flow, Health Check, Mortgage, 5-year Projection
+- [x] Export button on dashboard + mortgage page
+- [x] tests: data structure before export
 
 ## Phase 7 — Polish & Accessibility
 - [ ] responsive: iPad-first → mobile / desktop
