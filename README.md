@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bear-tung — Money Health Check
 
-## Getting Started
+A web app that helps anyone (no financial background needed) check their **money health**: enter your cash flow, see your financial health as charts, key ratios, a 0–100 score, and a traffic-light status — then check whether you can afford a home mortgage under current Thai bank policy, with a 5-year projection and Excel export.
 
-First, run the development server:
+> UI is in Thai. Docs and code are in English. Data is stored locally in the browser — nothing leaves your device.
+
+## Tech stack
+
+Next.js (App Router) · TypeScript · Tailwind CSS · Recharts · SheetJS (xlsx) · dayjs · Vitest
+
+## Documentation
+
+See [`docs/`](./docs):
+
+- [`bear-tung-spec.md`](./docs/bear-tung-spec.md) — product spec / requirements / formulas
+- [`bear-tung-design.md`](./docs/bear-tung-design.md) — design system
+- [`bear-tung-architecture.md`](./docs/bear-tung-architecture.md) — OOP + SOLID architecture
+- [`bear-tung-plan.md`](./docs/bear-tung-plan.md) — build plan + deploy
+- [`bear-tung-tasks.md`](./docs/bear-tung-tasks.md) — phased task checklist
+- [`bear-tung-workflow.md`](./docs/bear-tung-workflow.md) — 3-role dev process
+- [`bear-tung-test-plan.md`](./docs/bear-tung-test-plan.md) — test plan
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 1. install dependencies
+npm install
+
+# 2. run the dev server
+npm run dev          # http://localhost:3000
+
+# 3. other commands
+npm run build        # production build
+npm run lint         # ESLint
+npm run test -- run  # run tests once
+npm run test:coverage
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy (Vercel)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Push this repo to GitHub.
+2. On [vercel.com](https://vercel.com), **Add New → Project**, import the repo.
+3. Vercel auto-detects Next.js — no environment variables needed (client-only).
+4. **Deploy**. Every push to `main` redeploys automatically; PRs get preview URLs.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project structure
 
-## Learn More
+```
+src/
+├─ app/          # pages (functional React)
+├─ components/   # UI components
+└─ domain/       # OOP + SOLID business logic (+ __tests__)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Status
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Docs complete. Implementation follows the phases in [`docs/bear-tung-tasks.md`](./docs/bear-tung-tasks.md).
