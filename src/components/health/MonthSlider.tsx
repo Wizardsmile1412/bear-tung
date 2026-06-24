@@ -7,6 +7,8 @@ interface MonthSliderProps {
   months: string[];
   selectedIndex: number;
   onChange: (index: number) => void;
+  /** Accessible label for the range input. Defaults to the dashboard's wording. */
+  ariaLabel?: string;
 }
 
 function clampIndex(index: number, maxIndex: number): number {
@@ -21,7 +23,12 @@ function clampIndex(index: number, maxIndex: number): number {
  * an exact value is imprecise on a touch device (this app's primary target
  * is iPad) — stepping one month at a time is often what users actually want.
  */
-export function MonthSlider({ months, selectedIndex, onChange }: MonthSliderProps) {
+export function MonthSlider({
+  months,
+  selectedIndex,
+  onChange,
+  ariaLabel = "เลือกเดือนที่ต้องการดู",
+}: MonthSliderProps) {
   const maxIndex = months.length - 1;
   const isAtCurrentMonth = selectedIndex === 0;
 
@@ -71,7 +78,7 @@ export function MonthSlider({ months, selectedIndex, onChange }: MonthSliderProp
 
         <input
           type="range"
-          aria-label="เลือกเดือนที่ต้องการดู"
+          aria-label={ariaLabel}
           min={0}
           max={maxIndex}
           value={selectedIndex}

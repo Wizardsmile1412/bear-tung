@@ -135,6 +135,31 @@ describe("MonthSlider", () => {
     // visually-adjacent badge/buttons.
     expect(screen.getByRole("slider", { name: "เลือกเดือนที่ต้องการดู" })).toBeInTheDocument();
   });
+
+  it("uses the default aria-label when ariaLabel is not provided", () => {
+    render(<MonthSlider months={MONTHS} selectedIndex={0} onChange={vi.fn()} />);
+    expect(screen.getByLabelText("เลือกเดือนที่ต้องการดู")).toBeInTheDocument();
+  });
+
+  it("uses a custom aria-label when ariaLabel is provided, without breaking other behavior", () => {
+    const onChange = vi.fn();
+    render(
+      <MonthSlider
+        months={MONTHS}
+        selectedIndex={0}
+        onChange={onChange}
+        ariaLabel="เลือกเดือนที่ใช้ประเมินสินเชื่อ"
+      />,
+    );
+
+    expect(screen.queryByLabelText("เลือกเดือนที่ต้องการดู")).not.toBeInTheDocument();
+    const slider = screen.getByLabelText("เลือกเดือนที่ใช้ประเมินสินเชื่อ") as HTMLInputElement;
+    expect(slider.min).toBe("0");
+    expect(slider.max).toBe(String(MONTHS.length - 1));
+
+    fireRangeChange(slider, 2);
+    expect(onChange).toHaveBeenCalledWith(2);
+  });
 });
 
 /** Fires a native 'change' event on a range input with the given numeric value. */

@@ -1,5 +1,6 @@
 import { MAX_AGE_PLUS_TERM } from "../config/defaults";
 import { AmortizationCalculator } from "./AmortizationCalculator";
+import { LtvPolicy } from "./LtvPolicy";
 import { LtvPolicyFactory } from "./LtvPolicyFactory";
 
 export interface MortgageInput {
@@ -30,6 +31,7 @@ export interface MortgageResult {
   effectiveTermYears: number; // min(loanTermYears, 70 - borrowerAge), floored at 1
   monthlyRate: number; // r, exposed so CoBorrowerService can reuse it without recomputing
   numPayments: number; // n, exposed so CoBorrowerService can reuse it without recomputing
+  ltvPolicyName: string; // the active LtvPolicy's name (e.g. 'temporary' | 'normal'), for the UI badge
 }
 
 /**
@@ -41,7 +43,7 @@ export interface MortgageResult {
  */
 export class MortgageService {
   constructor(
-    private readonly resolveLtvPolicy: (date: Date) => { maxLtv: (ctx: { homePrice: number; homeOrder: 1 | 2 | 3; firstHomePaidAtLeastTwoYears?: boolean }) => number } = LtvPolicyFactory.forDate,
+    private readonly resolveLtvPolicy: (date: Date) => LtvPolicy = LtvPolicyFactory.forDate,
   ) {}
 
   evaluate(input: MortgageInput): MortgageResult {
@@ -88,6 +90,7 @@ export class MortgageService {
       effectiveTermYears,
       monthlyRate,
       numPayments,
+      ltvPolicyName: ltvPolicy.name,
     };
   }
 }

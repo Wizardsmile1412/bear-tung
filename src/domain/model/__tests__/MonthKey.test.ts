@@ -51,4 +51,12 @@ describe("MonthKey", () => {
     expect(MonthKey.from(month)).toBe(month);
     expect(MonthKey.from("2026-06").toString()).toBe("2026-06");
   });
+
+  it("toDate() returns a Date representing the first day of the month", () => {
+    const date = MonthKey.parse("2026-06").toDate();
+    expect(date).toBeInstanceOf(Date);
+    expect(date.getFullYear()).toBe(2026);
+    expect(date.getMonth()).toBe(5); // JS Date.getMonth() is 0-indexed (June = 5)
+    expect(date.getDate()).toBe(1);
+  });
 });

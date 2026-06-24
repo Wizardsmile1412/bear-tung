@@ -56,6 +56,11 @@ export class MonthKey {
     return this.date.format(MONTH_FORMAT);
   }
 
+  /** Returns a JS `Date` representing the first day of this month. */
+  toDate(): Date {
+    return this.date.toDate();
+  }
+
   isBefore(other: MonthKey): boolean {
     return this.date.isBefore(other.date);
   }

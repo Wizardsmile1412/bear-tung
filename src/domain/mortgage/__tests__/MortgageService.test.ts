@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { LtvPolicy } from "../LtvPolicy";
+import { LtvPolicyFactory } from "../LtvPolicyFactory";
 import { MortgageInput, MortgageService } from "../MortgageService";
 
 /** A fake LtvPolicy with a fixed LTV, for testing MortgageService without a real date. */
@@ -107,5 +108,23 @@ describe("MortgageService", () => {
     const result = service.evaluate(baseInput({ assessmentDate: new Date("2026-01-01") }));
     // Within the temporary relaxation window -> 100% LTV for a 1st home.
     expect(result.ltvPercent).toBe(1.0);
+  });
+
+  it("ltvPolicyName reflects the injected fake policy's name", () => {
+    const service = new MortgageService(() => new FixedLtvPolicy(1.0));
+    const result = service.evaluate(baseInput());
+    expect(result.ltvPolicyName).toBe("fixed");
+  });
+
+  it("ltvPolicyName is 'temporary' for an assessment date on/before the relaxation end date (2026-06-30), using the real LtvPolicyFactory", () => {
+    const service = new MortgageService(LtvPolicyFactory.forDate);
+    const result = service.evaluate(baseInput({ assessmentDate: new Date("2026-06-30") }));
+    expect(result.ltvPolicyName).toBe("temporary");
+  });
+
+  it("ltvPolicyName is 'normal' for an assessment date after the relaxation end date, using the real default LtvPolicyFactory (no override injected)", () => {
+    const service = new MortgageService();
+    const result = service.evaluate(baseInput({ assessmentDate: new Date("2026-07-01") }));
+    expect(result.ltvPolicyName).toBe("normal");
   });
 });

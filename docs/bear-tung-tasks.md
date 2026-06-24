@@ -55,11 +55,11 @@
 - [x] tests: projection series + month selection
 
 ## Phase 5 — Mortgage + Co-borrower
-- [ ] `/mortgage` page: inputs (price/age/month) + AssumptionPanel (interest/term/DSR/LTV)
-- [ ] MortgageResultCard (affordable/not, max price, payment, DSR after loan, down payment)
-- [ ] co-borrower checkbox + co-borrower income/debt inputs → required minimum income
-- [ ] badge showing the active LTV rule set (temporary/normal) by date
-- [ ] tests: service wired to UI
+- [x] `/mortgage` page: inputs (price/age/month) + AssumptionPanel (interest/term/DSR/LTV)
+- [x] MortgageResultCard (affordable/not, max price, payment, DSR after loan, down payment)
+- [x] co-borrower checkbox + co-borrower income/debt inputs → required minimum income
+- [x] badge showing the active LTV rule set (temporary/normal) by date
+- [x] tests: service wired to UI
 
 ## Phase 6 — Excel Export
 - [ ] `domain/export/`: Exporter (interface) + ExcelExporter (SheetJS)
