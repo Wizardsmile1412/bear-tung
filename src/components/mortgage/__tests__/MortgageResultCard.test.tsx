@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { MortgageResult } from "@/domain/mortgage/MortgageService";
 
@@ -75,5 +76,14 @@ describe("MortgageResultCard", () => {
   it("always shows the educational disclaimer", () => {
     render(<MortgageResultCard result={baseResult()} downPaymentAvailable={0} />);
     expect(screen.getByText("เป็นการประมาณการเพื่อการศึกษา ไม่ใช่การอนุมัติจากธนาคาร")).toBeInTheDocument();
+  });
+
+  it("reveals an LTV-vs-DSR explanation when the binding-constraint tooltip is toggled", async () => {
+    render(<MortgageResultCard result={baseResult()} downPaymentAvailable={0} />);
+
+    const tooltipButton = screen.getByRole("button", { name: "ดูคำอธิบาย" });
+    await userEvent.click(tooltipButton);
+
+    expect(screen.getByText(/ธนาคารตรวจสอบ 2 เงื่อนไขหลัก/)).toBeInTheDocument();
   });
 });

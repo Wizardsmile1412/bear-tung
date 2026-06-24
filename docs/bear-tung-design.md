@@ -28,9 +28,16 @@ Bear-tung should make a financially-illiterate user feel **confident and informe
 - **Primary Soft** (#E8EEFF): soft background for active items, highlights
 
 ### Money-health status (Traffic Light) — meaning only
-- **Good / Green** (#16A34A) + soft (#DCFCE7): score 80–100
-- **Warning / Yellow** (#D97706) + soft (#FEF3C7): score 50–79 (use a deep amber so contrast passes; not bright yellow)
-- **Danger / Red** (#DC2626) + soft (#FEE2E2): score 0–49
+- **Good / Green** (#15803D) + soft (#DCFCE7): score 80–100
+- **Warning / Yellow** (#A45A0A) + soft (#FEF3C7): score 50–79 (use a deep amber so contrast passes; not bright yellow)
+- **Danger / Red** (#C81E1E) + soft (#FEE2E2): score 0–49
+
+> Phase 7 contrast audit (`scripts/check-contrast.mjs`, WCAG relative-luminance formula): the
+> originally-specified shades (#16A34A / #D97706 / #DC2626) all **failed** the 4.5:1 AA text
+> threshold against white, the page background, and — the actual `StatusBadge` pairing — their
+> own soft background (ratios 2.86–4.83:1). Darkened to the values above (same hue family,
+> lightness reduced) so every pairing now passes at 4.52–5.74:1. See `globals.css`'s `@theme`
+> block for the full audit comment.
 
 ### Neutrals (Ink & Surface)
 - **Ink** (#0F172A): primary text (near-black navy, easy on the eyes)
@@ -141,7 +148,7 @@ Default size 20–24px in ink-muted; active = primary; status = traffic-light co
 
 ## 9. Accessibility
 
-- Contrast: body ≥ 4.5:1, large text ≥ 3:1 (green/yellow/red shades chosen to pass on white — hence deep amber #D97706 instead of bright yellow).
+- Contrast: body ≥ 4.5:1, large text ≥ 3:1 (green/yellow/red shades chosen to pass on white — hence deep amber #A45A0A instead of bright yellow).
 - **Color is never the sole signal**: traffic light always pairs with icon + text.
 - Tap target ≥ 44px.
 - Clear focus ring on every interactive element.

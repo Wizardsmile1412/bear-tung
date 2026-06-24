@@ -2,6 +2,7 @@ import { Money } from "@/domain/model/Money";
 import { MortgageResult } from "@/domain/mortgage/MortgageService";
 
 import { StatusBadge } from "@/components/health/StatusBadge";
+import { InfoTooltip } from "@/components/ui/InfoTooltip";
 
 interface MortgageResultCardProps {
   result: MortgageResult;
@@ -52,7 +53,10 @@ export function MortgageResultCard({ result, downPaymentAvailable }: MortgageRes
           </div>
 
           <div>
-            <p className="text-sm text-ink-muted">ติดเงื่อนไข</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm text-ink-muted">ติดเงื่อนไข</p>
+              <InfoTooltip label="ธนาคารตรวจสอบ 2 เงื่อนไขหลัก: LTV (สัดส่วนเงินกู้ต่อราคาบ้าน — มีผลต่อเงินดาวน์ที่ต้องใช้) และ DSR (สัดส่วนภาระหนี้ต่อรายได้ — มีผลต่อค่างวดที่ผ่อนได้ไหว) ตัวที่ทำให้กู้ได้น้อยกว่าจะเป็นตัว 'ติดเงื่อนไข' ที่จำกัดวงเงินกู้สูงสุดของคุณ" />
+            </div>
             <p className="text-lg font-semibold text-ink">
               {result.bindingConstraint === "ltv" ? "ติดเงื่อนไข: เงินดาวน์ (LTV)" : "ติดเงื่อนไข: ภาระหนี้ต่อรายได้ (DSR)"}
             </p>

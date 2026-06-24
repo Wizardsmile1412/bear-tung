@@ -3,6 +3,7 @@
 import { LTV_RELAXATION_END_DATE } from "@/domain/config/defaults";
 
 import { formatMonthLabel } from "@/components/health/formatMonthLabel";
+import { InfoTooltip } from "@/components/ui/InfoTooltip";
 
 // Derived from the same `LTV_RELAXATION_END_DATE` ('2026-06-30') the domain's
 // `LtvPolicyFactory` uses to pick the policy, so the badge text can never
@@ -49,9 +50,12 @@ export function AssumptionPanel({
 
       <div className="mt-4 flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <label htmlFor="interestRatePercent" className="text-sm font-medium text-ink-muted">
-            อัตราดอกเบี้ย
-          </label>
+          <div className="flex items-center gap-1.5">
+            <label htmlFor="interestRatePercent" className="text-sm font-medium text-ink-muted">
+              อัตราดอกเบี้ย
+            </label>
+            <InfoTooltip label="อัตราดอกเบี้ยที่ธนาคารคิดต่อปี ใช้คำนวณค่างวดผ่อนบ้านต่อเดือน ค่าเริ่มต้นอ้างอิงจาก MRR ของธนาคารพาณิชย์ไทย ปรับได้ตามจริง" />
+          </div>
           <div className="flex items-center gap-2">
             <input
               id="interestRatePercent"
@@ -71,9 +75,12 @@ export function AssumptionPanel({
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="loanTermYears" className="text-sm font-medium text-ink-muted">
-            ระยะเวลากู้
-          </label>
+          <div className="flex items-center gap-1.5">
+            <label htmlFor="loanTermYears" className="text-sm font-medium text-ink-muted">
+              ระยะเวลากู้
+            </label>
+            <InfoTooltip label="จำนวนปีที่ผ่อนชำระสินเชื่อ ยิ่งระยะเวลานานค่างวดต่อเดือนจะยิ่งต่ำ แต่ดอกเบี้ยรวมจะสูงขึ้น ส่วนใหญ่ธนาคารกำหนดว่าอายุผู้กู้ + ระยะเวลากู้ ต้องไม่เกิน 70 ปี" />
+          </div>
           <div className="flex items-center gap-2">
             <input
               id="loanTermYears"
@@ -93,9 +100,12 @@ export function AssumptionPanel({
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="dsrLimitPercent" className="text-sm font-medium text-ink-muted">
-            DSR สูงสุดที่รับได้
-          </label>
+          <div className="flex items-center gap-1.5">
+            <label htmlFor="dsrLimitPercent" className="text-sm font-medium text-ink-muted">
+              DSR สูงสุดที่รับได้
+            </label>
+            <InfoTooltip label="DSR (สัดส่วนภาระหนี้ต่อรายได้) สูงสุดที่ธนาคารยอมรับ คือเพดานที่ค่างวดผ่อนบ้านรวมกับหนี้อื่น ๆ จะต้องไม่เกินเมื่อเทียบกับรายได้ ธนาคารทั่วไปใช้เกณฑ์ประมาณ 40%" />
+          </div>
           <div className="flex items-center gap-2">
             <input
               id="dsrLimitPercent"
@@ -115,12 +125,15 @@ export function AssumptionPanel({
           </div>
         </div>
 
-        <div className="rounded-[999px] bg-primary-soft px-4 py-2 text-sm font-medium text-primary">
-          {ltvPolicyName === "temporary"
-            ? `เกณฑ์ LTV ผ่อนปรน — กู้ได้สูงสุด 100% ถึง ${LTV_RELAXATION_END_LABEL}`
-            : ltvPolicyName === "normal"
-              ? "เกณฑ์ LTV ปกติ — ตามจำนวนบ้านและราคาบ้าน"
-              : "ยังไม่ทราบเกณฑ์ LTV — กรอกข้อมูลด้านบนเพื่อดูผลประเมิน"}
+        <div className="flex items-center gap-1.5">
+          <div className="rounded-[999px] bg-primary-soft px-4 py-2 text-sm font-medium text-primary">
+            {ltvPolicyName === "temporary"
+              ? `เกณฑ์ LTV ผ่อนปรน — กู้ได้สูงสุด 100% ถึง ${LTV_RELAXATION_END_LABEL}`
+              : ltvPolicyName === "normal"
+                ? "เกณฑ์ LTV ปกติ — ตามจำนวนบ้านและราคาบ้าน"
+                : "ยังไม่ทราบเกณฑ์ LTV — กรอกข้อมูลด้านบนเพื่อดูผลประเมิน"}
+          </div>
+          <InfoTooltip label="LTV (Loan-to-Value) คือสัดส่วนเงินกู้ต่อราคาบ้าน ยิ่งสูง ยิ่งต้องใช้เงินดาวน์น้อย เช่น LTV 90% หมายถึงกู้ได้ 90% ของราคาบ้าน ต้องมีเงินดาวน์อย่างน้อย 10%" />
         </div>
       </div>
     </section>

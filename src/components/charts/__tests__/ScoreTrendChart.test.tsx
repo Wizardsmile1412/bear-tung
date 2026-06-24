@@ -1,7 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { ScoreTrendChart, ScoreTrendDatum } from "../ScoreTrendChart";
+
+// Defaults to `true` (snap to final state, no animation) so the rest of
+// this file's tests keep working unchanged; only the "prefers-reduced-motion"
+// describe block below overrides this to specifically exercise both states.
+const { usePrefersReducedMotionMock } = vi.hoisted(() => ({
+  usePrefersReducedMotionMock: vi.fn(() => true),
+}));
+vi.mock("@/components/ui/usePrefersReducedMotion", () => ({
+  usePrefersReducedMotion: usePrefersReducedMotionMock,
+}));
 
 function buildSixtyMonthData(): ScoreTrendDatum[] {
   const data: ScoreTrendDatum[] = [];
@@ -32,6 +42,10 @@ function buildSixtyMonthData(): ScoreTrendDatum[] {
 }
 
 describe("ScoreTrendChart", () => {
+  afterEach(() => {
+    usePrefersReducedMotionMock.mockReturnValue(true);
+  });
+
   it("renders without crashing for a 60-point dataset", () => {
     const data = buildSixtyMonthData();
     const { container } = render(<ScoreTrendChart data={data} />);
@@ -144,6 +158,33 @@ describe("ScoreTrendChart", () => {
       render(<ScoreTrendChart data={hoverData} />);
 
       expect(screen.queryByText("คะแนน")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("prefers-reduced-motion", () => {
+    // Recharts animates `Line` via a `stroke-dasharray` reveal rather than
+    // delaying the path's mount, so — unlike the bar/pie/radial-bar charts —
+    // the curve path is present in both states; the distinguishing marker is
+    // whether `stroke-dasharray` is present on the rendered curve at all
+    // (only set while the dash-reveal animation is active).
+    it("renders the line curve with a stroke-dasharray (animation pending) when the user has no reduced-motion preference", () => {
+      usePrefersReducedMotionMock.mockReturnValue(false);
+      const data = buildSixtyMonthData();
+      const { container } = render(<ScoreTrendChart data={data} />);
+
+      const curve = container.querySelector(".recharts-line-curve");
+      expect(curve).toBeInTheDocument();
+      expect(curve).toHaveAttribute("stroke-dasharray");
+    });
+
+    it("renders the line curve without a stroke-dasharray (snapped to final value) when the user prefers reduced motion", () => {
+      usePrefersReducedMotionMock.mockReturnValue(true);
+      const data = buildSixtyMonthData();
+      const { container } = render(<ScoreTrendChart data={data} />);
+
+      const curve = container.querySelector(".recharts-line-curve");
+      expect(curve).toBeInTheDocument();
+      expect(curve).not.toHaveAttribute("stroke-dasharray");
     });
   });
 });

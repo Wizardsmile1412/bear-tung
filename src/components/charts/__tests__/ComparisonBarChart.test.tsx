@@ -1,9 +1,24 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/react";
 
 import { ComparisonBarChart } from "../ComparisonBarChart";
 
+// Defaults to `true` (snap to final state, no animation) so the rest of
+// this file's tests — which assert on synchronously-rendered bar rectangles
+// — keep working unchanged; only the "prefers-reduced-motion" describe
+// block below overrides this to specifically exercise both states.
+const { usePrefersReducedMotionMock } = vi.hoisted(() => ({
+  usePrefersReducedMotionMock: vi.fn(() => true),
+}));
+vi.mock("@/components/ui/usePrefersReducedMotion", () => ({
+  usePrefersReducedMotion: usePrefersReducedMotionMock,
+}));
+
 describe("ComparisonBarChart", () => {
+  afterEach(() => {
+    usePrefersReducedMotionMock.mockReturnValue(true);
+  });
+
   it("renders 4 distinct bars, one per category, using chart-accent colors", () => {
     const { container } = render(
       <ComparisonBarChart income={50000} expense={20000} debt={10000} remaining={20000} />,
@@ -52,5 +67,29 @@ describe("ComparisonBarChart", () => {
 
     expect(container.querySelector("svg.recharts-surface")).not.toBeNull();
     expect(container.querySelector(".recharts-bar")).not.toBeNull();
+  });
+
+  describe("prefers-reduced-motion", () => {
+    // Same rationale as ScoreGaugeChart/ExpenseDonutChart: jsdom has no
+    // rAF-driven paint loop, so an animating Bar's rectangles never mount in
+    // time, while a non-animating one renders its final rectangles
+    // synchronously.
+    it("does not render the final bar rectangles synchronously when the user has no reduced-motion preference (animation pending)", () => {
+      usePrefersReducedMotionMock.mockReturnValue(false);
+      const { container } = render(
+        <ComparisonBarChart income={50000} expense={20000} debt={10000} remaining={20000} />,
+      );
+
+      expect(container.querySelector(".recharts-bar-rectangle .recharts-rectangle")).not.toBeInTheDocument();
+    });
+
+    it("renders the final bar rectangles synchronously when the user prefers reduced motion (snaps to final value)", () => {
+      usePrefersReducedMotionMock.mockReturnValue(true);
+      const { container } = render(
+        <ComparisonBarChart income={50000} expense={20000} debt={10000} remaining={20000} />,
+      );
+
+      expect(container.querySelectorAll(".recharts-bar-rectangle .recharts-rectangle")).toHaveLength(4);
+    });
   });
 });

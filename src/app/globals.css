@@ -9,12 +9,18 @@
   --color-primary-pressed: #1645c2;
   --color-primary-soft: #e8eeff;
 
-  /* Money-health status (traffic light) — meaning only */
-  --color-good: #16a34a;
+  /* Money-health status (traffic light) — meaning only.
+     good/warning/danger are darkened from design.md's original #16A34A/
+     #D97706/#DC2626 — the WCAG contrast audit (scripts/check-contrast.mjs)
+     found those originals failed the 4.5:1 AA text threshold against white,
+     the page background, AND their own *-soft badge background (the actual
+     StatusBadge pairing); see docs/bear-tung-design.md section 2 for the
+     corrected values + audit numbers. */
+  --color-good: #15803d;
   --color-good-soft: #dcfce7;
-  --color-warning: #d97706;
+  --color-warning: #a45a0a;
   --color-warning-soft: #fef3c7;
-  --color-danger: #dc2626;
+  --color-danger: #c81e1e;
   --color-danger-soft: #fee2e2;
 
   /* Ink (text) */
@@ -51,4 +57,20 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
+}
+
+/* Design.md section 7 — respect prefers-reduced-motion: disable CSS
+   transitions/animations app-wide (button hovers, RatioCard's/InfoTooltip's
+   expand-collapse, etc). Recharts' own count-up/fill animations are handled
+   separately per-chart via `usePrefersReducedMotion` + `isAnimationActive`,
+   since Recharts animates via JS/requestAnimationFrame, not CSS. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

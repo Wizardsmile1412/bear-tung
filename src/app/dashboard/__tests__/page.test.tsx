@@ -332,4 +332,20 @@ describe("DashboardPage", () => {
 
     expect(screen.getByText("ก.ย. 2026")).toBeInTheDocument();
   });
+
+  it("applies the responsive lg: container width and 3-column ratio-card grid classes (design.md section 4)", () => {
+    seedProfile();
+
+    const { container } = render(
+      <ProfileProvider>
+        <DashboardPage />
+      </ProfileProvider>,
+    );
+
+    const main = container.querySelector("main");
+    expect(main).toHaveClass("max-w-[772px]", "lg:max-w-[1080px]");
+
+    const ratioGrid = screen.getByText("อัตราการออม (Savings Rate)").closest("section");
+    expect(ratioGrid).toHaveClass("grid-cols-1", "sm:grid-cols-2", "lg:grid-cols-3");
+  });
 });

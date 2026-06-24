@@ -68,10 +68,10 @@
 - [x] tests: data structure before export
 
 ## Phase 7 — Polish & Accessibility
-- [ ] responsive: iPad-first → mobile / desktop
-- [ ] all financial-jargon tooltips
-- [ ] support prefers-reduced-motion
-- [ ] contrast check (green/yellow/red pass WCAG)
-- [ ] empty states + mortgage disclaimer (not a real approval)
+- [x] responsive: iPad-first → mobile / desktop
+- [x] all financial-jargon tooltips
+- [x] support prefers-reduced-motion
+- [x] contrast check (green/yellow/red pass WCAG)
+- [x] empty states + mortgage disclaimer (not a real approval)
 - [ ] end-to-end QA with real numbers
 - [ ] final deploy

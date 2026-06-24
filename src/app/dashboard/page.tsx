@@ -50,7 +50,7 @@ export default function DashboardPage() {
   }));
 
   return (
-    <main className="mx-auto flex w-full max-w-[772px] flex-col gap-8 px-6 py-8">
+    <main className="mx-auto flex w-full max-w-[772px] lg:max-w-[1080px] flex-col gap-8 px-6 py-8">
       <header>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {selectedEntry.ratioResults.map((result) => (
               <RatioCard key={result.key} result={result} />
             ))}

@@ -19,7 +19,7 @@ export default function CashFlowPage() {
   const month = profile.startMonth;
 
   return (
-    <main className="mx-auto flex w-full max-w-[772px] flex-col gap-8 px-6 py-8">
+    <main className="mx-auto flex w-full max-w-[772px] lg:max-w-[1080px] flex-col gap-8 px-6 py-8">
       <header>
         <h1 className="text-3xl font-bold text-ink">Cash Flow ของคุณ</h1>
         <p className="mt-1 text-base text-ink-muted">

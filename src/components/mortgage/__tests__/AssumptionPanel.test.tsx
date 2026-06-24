@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { AssumptionPanel } from "../AssumptionPanel";
 
@@ -83,5 +84,26 @@ describe("AssumptionPanel", () => {
     const input = screen.getByLabelText("DSR สูงสุดที่รับได้");
     fireEvent.change(input, { target: { value: "-1" } });
     expect(props.onDsrLimitPercentChange).toHaveBeenLastCalledWith(0);
+  });
+
+  describe("InfoTooltip wiring", () => {
+    it("renders 4 info tooltips: interest rate, loan term, DSR limit, and the LTV badge", () => {
+      renderPanel();
+      expect(screen.getAllByRole("button", { name: "ดูคำอธิบาย" })).toHaveLength(4);
+    });
+
+    it("reveals the interest-rate explanation when its tooltip is toggled", async () => {
+      renderPanel();
+      const buttons = screen.getAllByRole("button", { name: "ดูคำอธิบาย" });
+      await userEvent.click(buttons[0]);
+      expect(screen.getByText(/อัตราดอกเบี้ยที่ธนาคารคิดต่อปี/)).toBeInTheDocument();
+    });
+
+    it("reveals the LTV explanation when the badge's tooltip is toggled", async () => {
+      renderPanel();
+      const buttons = screen.getAllByRole("button", { name: "ดูคำอธิบาย" });
+      await userEvent.click(buttons[3]);
+      expect(screen.getByText(/LTV \(Loan-to-Value\) คือสัดส่วนเงินกู้ต่อราคาบ้าน/)).toBeInTheDocument();
+    });
   });
 });

@@ -131,4 +131,13 @@ describe("CoBorrowerSection", () => {
     expect(screen.queryByText("รายได้รวมของคุณและผู้กู้ร่วมเพียงพอแล้ว")).not.toBeInTheDocument();
     expect(screen.queryByText("รายได้รวมยังไม่เพียงพอ")).not.toBeInTheDocument();
   });
+
+  it("reveals a co-borrower explanation when the checkbox's tooltip is toggled (shown regardless of enabled state)", async () => {
+    renderSection({ enabled: false });
+
+    const tooltipButton = screen.getByRole("button", { name: "ดูคำอธิบาย" });
+    await userEvent.click(tooltipButton);
+
+    expect(screen.getByText(/ผู้กู้ร่วมคือการนำรายได้และหนี้ของอีกคนมารวมกับของคุณ/)).toBeInTheDocument();
+  });
 });

@@ -28,3 +28,29 @@ Object.defineProperty(HTMLElement.prototype, 'getBoundingClientRect', {
     },
   }),
 });
+
+// jsdom does not implement `window.matchMedia` at all. `usePrefersReducedMotion`
+// (and any future code reading other media queries) needs a default mock so
+// it can run under tests. Defaults to `matches: true` (i.e. simulates a user
+// who prefers reduced motion) so chart components default to
+// `isAnimationActive={false}` under jsdom — jsdom has no rAF-driven paint
+// loop, so an *animating* Recharts element (Bar/Pie/RadialBar/Line) never
+// mounts its final shape/path synchronously, which would make every chart
+// test that asserts on rendered bars/sectors/sectors flaky-by-default.
+// Tests that specifically want to exercise the "no reduced-motion
+// preference" (animation on) branch mock `usePrefersReducedMotion` directly
+// instead of overriding this global.
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  configurable: true,
+  value: (query: string) => ({
+    matches: true,
+    media: query,
+    onchange: null,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: () => false,
+  }),
+});

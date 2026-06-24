@@ -4,6 +4,8 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recha
 
 import { Money } from "@/domain/model/Money";
 
+import { usePrefersReducedMotion } from "@/components/ui/usePrefersReducedMotion";
+
 export interface ExpenseDonutDatum {
   label: string;
   value: number;
@@ -34,6 +36,7 @@ function formatTooltipValue(value: unknown, _name: unknown, item: { payload?: { 
  * show, instead of rendering an empty/broken chart.
  */
 export function ExpenseDonutChart({ data }: ExpenseDonutChartProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   if (data.length === 0 || total <= 0) {
@@ -61,7 +64,7 @@ export function ExpenseDonutChart({ data }: ExpenseDonutChartProps) {
             innerRadius="55%"
             outerRadius="85%"
             paddingAngle={2}
-            isAnimationActive={false}
+            isAnimationActive={!prefersReducedMotion}
           >
             {chartData.map((entry, index) => (
               <Cell key={entry.name} fill={SLICE_COLORS[index % SLICE_COLORS.length]} />

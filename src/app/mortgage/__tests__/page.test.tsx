@@ -301,4 +301,17 @@ describe("MortgagePage", () => {
 
     await expect(userEvent.click(exportButton)).resolves.not.toThrow();
   });
+
+  it("applies the responsive lg: container width class on the page's main element (design.md section 4)", () => {
+    seedProfile();
+
+    const { container } = render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    const main = container.querySelector("main");
+    expect(main).toHaveClass("max-w-[772px]", "lg:max-w-[1080px]");
+  });
 });

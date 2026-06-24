@@ -1,10 +1,25 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { ExpenseDonutChart } from "../ExpenseDonutChart";
 
+// Defaults to `true` (snap to final state, no animation) so the rest of
+// this file's tests — which assert on synchronously-rendered sectors/
+// tooltips — keep working unchanged; only the "prefers-reduced-motion"
+// describe block below overrides this to specifically exercise both states.
+const { usePrefersReducedMotionMock } = vi.hoisted(() => ({
+  usePrefersReducedMotionMock: vi.fn(() => true),
+}));
+vi.mock("@/components/ui/usePrefersReducedMotion", () => ({
+  usePrefersReducedMotion: usePrefersReducedMotionMock,
+}));
+
 describe("ExpenseDonutChart", () => {
+  afterEach(() => {
+    usePrefersReducedMotionMock.mockReturnValue(true);
+  });
+
   it("renders without crashing given sample data", () => {
     render(
       <ExpenseDonutChart
@@ -58,5 +73,28 @@ describe("ExpenseDonutChart", () => {
 
     await userEvent.hover(sectors[2]);
     expect(await screen.findByText("200 บาท (50%)")).toBeInTheDocument();
+  });
+
+  describe("prefers-reduced-motion", () => {
+    // Same rationale as ScoreGaugeChart's tests: jsdom has no rAF-driven
+    // paint loop, so an animating Pie's sectors never mount in time, while a
+    // non-animating one renders its final sectors synchronously.
+    it("does not render the final sector path synchronously when the user has no reduced-motion preference (animation pending)", () => {
+      usePrefersReducedMotionMock.mockReturnValue(false);
+      const { container } = render(
+        <ExpenseDonutChart data={[{ label: "อาหาร", value: 5000 }]} />,
+      );
+
+      expect(container.querySelector(".recharts-pie-sector path")).not.toBeInTheDocument();
+    });
+
+    it("renders the final sector path synchronously when the user prefers reduced motion (snaps to final value)", () => {
+      usePrefersReducedMotionMock.mockReturnValue(true);
+      const { container } = render(
+        <ExpenseDonutChart data={[{ label: "อาหาร", value: 5000 }]} />,
+      );
+
+      expect(container.querySelector(".recharts-pie-sector path")).toBeInTheDocument();
+    });
   });
 });

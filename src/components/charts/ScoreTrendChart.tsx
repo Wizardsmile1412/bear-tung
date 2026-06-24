@@ -16,6 +16,7 @@ import {
 import { statusFromScore } from "@/domain/ratios/Ratio";
 
 import { toneLabel } from "@/components/health/trafficLight";
+import { usePrefersReducedMotion } from "@/components/ui/usePrefersReducedMotion";
 
 export interface ScoreTrendDatum {
   month: string; // 'YYYY-MM'
@@ -67,6 +68,8 @@ function CustomTooltip({ active, payload }: TooltipContentProps) {
  * currently-selected month.
  */
 export function ScoreTrendChart({ data, selectedMonth }: ScoreTrendChartProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   if (data.length === 0) {
     return (
       <div className="flex h-[280px] items-center justify-center text-sm text-ink-subtle">
@@ -115,7 +118,7 @@ export function ScoreTrendChart({ data, selectedMonth }: ScoreTrendChartProps) {
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 4 }}
-            isAnimationActive={false}
+            isAnimationActive={!prefersReducedMotion}
           />
         </LineChart>
       </ResponsiveContainer>

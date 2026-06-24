@@ -11,7 +11,14 @@ export default defineConfig({
         coverage: {
             provider: "v8",
             reportsDirectory: "./coverage",
-            include: ["src/domain/**", "src/components/**", "src/app/dashboard/**", "src/app/mortgage/**"],
+            include: [
+                "src/domain/**",
+                "src/components/**",
+                "src/app/page.tsx",
+                "src/app/cashflow/**",
+                "src/app/dashboard/**",
+                "src/app/mortgage/**",
+            ],
             thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 },
         },
     },

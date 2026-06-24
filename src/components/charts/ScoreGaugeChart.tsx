@@ -2,6 +2,8 @@
 
 import { RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
 
+import { usePrefersReducedMotion } from "@/components/ui/usePrefersReducedMotion";
+
 interface ScoreGaugeChartProps {
   /** 0-100 health score. */
   score: number;
@@ -17,6 +19,7 @@ interface ScoreGaugeChartProps {
  * absolute positioning (Recharts has no built-in centered-label support).
  */
 export function ScoreGaugeChart({ score, color, size = 220 }: ScoreGaugeChartProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const clamped = Math.max(0, Math.min(100, score));
   const data = [{ name: "score", value: clamped, fill: color }];
 
@@ -35,7 +38,7 @@ export function ScoreGaugeChart({ score, color, size = 220 }: ScoreGaugeChartPro
             dataKey="value"
             background={{ fill: "var(--color-surface-sunken)" }}
             cornerRadius={9}
-            isAnimationActive={false}
+            isAnimationActive={!prefersReducedMotion}
           />
         </RadialBarChart>
       </ResponsiveContainer>

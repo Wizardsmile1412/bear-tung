@@ -4,6 +4,8 @@ import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 
 
 import { Money } from "@/domain/model/Money";
 
+import { usePrefersReducedMotion } from "@/components/ui/usePrefersReducedMotion";
+
 interface ComparisonBarChartProps {
   income: number;
   expense: number;
@@ -25,6 +27,7 @@ const BAR_COLORS = [
  * colors, which are reserved for money-health status elsewhere.
  */
 export function ComparisonBarChart({ income, expense, debt, remaining }: ComparisonBarChartProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const data = [
     { label: "รายรับ", value: income },
     { label: "รายจ่าย", value: expense },
@@ -39,7 +42,7 @@ export function ComparisonBarChart({ income, expense, debt, remaining }: Compari
           <XAxis dataKey="label" tick={{ fill: "var(--color-ink-muted)", fontSize: 13 }} />
           <YAxis tick={{ fill: "var(--color-ink-subtle)", fontSize: 12 }} width={48} />
           <Tooltip formatter={(value) => Money.formatWithUnit(Number(value))} />
-          <Bar dataKey="value" radius={[8, 8, 0, 0]} isAnimationActive={false}>
+          <Bar dataKey="value" radius={[8, 8, 0, 0]} isAnimationActive={!prefersReducedMotion}>
             {data.map((entry, index) => (
               <Cell key={entry.label} fill={BAR_COLORS[index % BAR_COLORS.length]} />
             ))}

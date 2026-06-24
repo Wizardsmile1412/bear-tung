@@ -4,6 +4,7 @@ import { Money } from "@/domain/model/Money";
 import { CoBorrowerResult } from "@/domain/mortgage/CoBorrowerService";
 
 import { StatusBadge } from "@/components/health/StatusBadge";
+import { InfoTooltip } from "@/components/ui/InfoTooltip";
 
 interface CoBorrowerSectionProps {
   enabled: boolean;
@@ -42,6 +43,7 @@ export function CoBorrowerSection({
         <label htmlFor="coBorrowerEnabled" className="text-xl font-semibold text-ink">
           ต้องการเพิ่มผู้กู้ร่วม
         </label>
+        <InfoTooltip label="ผู้กู้ร่วมคือการนำรายได้และหนี้ของอีกคนมารวมกับของคุณ ธนาคารจะคำนวณ DSR จากรายได้และหนี้รวมกันทั้งสองคน ช่วยให้กู้ได้วงเงินสูงขึ้นได้ในกรณีที่ติดเงื่อนไข DSR (แต่ไม่ช่วยหากติดเงื่อนไข LTV จากเงินดาวน์ไม่พอ)" />
       </div>
 
       {enabled && (
