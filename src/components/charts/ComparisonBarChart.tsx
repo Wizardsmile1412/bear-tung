@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { Money } from "@/domain/model/Money";
 
@@ -38,7 +38,7 @@ export function ComparisonBarChart({ income, expense, debt, remaining }: Compari
   return (
     <div style={{ width: "100%", height: 280 }}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 16, right: 16, bottom: 0, left: 0 }}>
+        <BarChart data={data} margin={{ top: 28, right: 16, bottom: 0, left: 0 }}>
           <XAxis dataKey="label" tick={{ fill: "var(--color-ink-muted)", fontSize: 13 }} />
           <YAxis tick={{ fill: "var(--color-ink-subtle)", fontSize: 12 }} width={48} />
           <Tooltip formatter={(value) => Money.formatWithUnit(Number(value))} />
@@ -46,6 +46,16 @@ export function ComparisonBarChart({ income, expense, debt, remaining }: Compari
             {data.map((entry, index) => (
               <Cell key={entry.label} fill={BAR_COLORS[index % BAR_COLORS.length]} />
             ))}
+            <LabelList
+              dataKey="value"
+              position="top"
+              formatter={(value: string | number | boolean | null | undefined) =>
+                Money.format(Number(value ?? 0))
+              }
+              fill="var(--color-ink)"
+              fontSize={12}
+              fontWeight={600}
+            />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
