@@ -59,6 +59,7 @@ export function CoBorrowerSection({
                 inputMode="decimal"
                 value={coDebt}
                 onChange={onCoDebtChange}
+                thousandsSeparator
                 className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
               />
               <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
@@ -76,6 +77,7 @@ export function CoBorrowerSection({
                 value={coIncomeProvided}
                 onChange={onCoIncomeProvidedChange}
                 optional
+                thousandsSeparator
                 className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
               />
               <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
@@ -93,7 +95,7 @@ export function CoBorrowerSection({
                 <StatusBadge tone="good" label="คุณมีคุณสมบัติเพียงพอแล้ว ไม่จำเป็นต้องมีผู้กู้ร่วม" />
               ) : (
                 <p className="text-base text-ink">
-                  ผู้กู้ร่วมควรมีรายได้อย่างน้อย {Money.formatWithUnit(result.requiredCoIncome)}/เดือน เพื่อให้กู้ผ่าน
+                  ผู้กู้ร่วมควรมีรายได้อย่างน้อย {Money.formatWithUnit(result.requiredCoIncome)}/เดือน เพื่อให้กู้ผ่าน (DSR 40%)
                 </p>
               )}
 

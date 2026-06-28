@@ -100,7 +100,7 @@ describe("CoBorrowerSection", () => {
   it("shows the required co-income message otherwise", () => {
     const result: CoBorrowerResult = { isLtvBound: false, alreadyQualifies: false, requiredCoIncome: 15000 };
     renderSection({ enabled: true, result });
-    expect(screen.getByText("ผู้กู้ร่วมควรมีรายได้อย่างน้อย 15,000 บาท/เดือน เพื่อให้กู้ผ่าน")).toBeInTheDocument();
+    expect(screen.getByText("ผู้กู้ร่วมควรมีรายได้อย่างน้อย 15,000 บาท/เดือน เพื่อให้กู้ผ่าน (DSR 40%)")).toBeInTheDocument();
   });
 
   it("shows the combined-income-sufficient message when combinedIncomeSufficient is true", () => {

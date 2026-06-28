@@ -60,7 +60,7 @@ export function MortgageResultCard({ result, downPaymentAvailable }: MortgageRes
               <p className="text-sm text-ink-muted">ติดเงื่อนไข</p>
               <InfoTooltip label="ธนาคารตรวจสอบ 2 เงื่อนไขหลัก: LTV (สัดส่วนเงินกู้ต่อราคาบ้าน — มีผลต่อเงินดาวน์ที่ต้องใช้) และ DSR (สัดส่วนภาระหนี้ต่อรายได้ — มีผลต่อค่างวดที่ผ่อนได้ไหว) ตัวที่ทำให้กู้ได้น้อยกว่าจะเป็นตัว 'ติดเงื่อนไข' ที่จำกัดวงเงินกู้สูงสุดของคุณ" />
             </div>
-            <p className="text-lg font-semibold text-ink">
+            <p className="text-lg font-semibold text-red-500">
               {result.bindingConstraint === "ltv"
                 ? "ติดเงื่อนไข: เงินดาวน์ (LTV)"
                 : `ติดเงื่อนไข: ภาระหนี้ต่อรายได้ (DSR), ต้องไม่เกิน ${DSR_LIMIT_PERCENT}% ของรายได้ (รวมหนี้เดิมที่มีอยู่แล้วด้วย)`}

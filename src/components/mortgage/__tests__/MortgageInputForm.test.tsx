@@ -25,9 +25,9 @@ function renderForm(overrides: Partial<React.ComponentProps<typeof MortgageInput
 describe("MortgageInputForm", () => {
   it("renders the current values", () => {
     renderForm();
-    expect(screen.getByLabelText("ราคาบ้านที่ต้องการ")).toHaveValue("3000000");
+    expect(screen.getByLabelText("ราคาบ้านที่ต้องการ")).toHaveValue("3,000,000");
     expect(screen.getByLabelText("อายุผู้กู้")).toHaveValue("30");
-    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("500000");
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("500,000");
   });
 
   it("fires onHomePriceChange when the home price input changes", () => {

@@ -229,7 +229,7 @@ describe("MortgagePage", () => {
       </ProfileProvider>,
     );
 
-    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("500000");
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("500,000");
   });
 
   it("end-to-end: a 3,000,000 home with 0 down renders the spec's ~18,962 monthly payment in the actual DOM", () => {
@@ -261,7 +261,7 @@ describe("MortgagePage", () => {
     fireEvent.change(screen.getByLabelText("หนี้ปัจจุบันของผู้กู้ร่วม"), { target: { value: "3000" } });
 
     expect(
-      screen.getByText("ผู้กู้ร่วมควรมีรายได้อย่างน้อย 32,405 บาท/เดือน เพื่อให้กู้ผ่าน", { exact: false }),
+      screen.getByText("ผู้กู้ร่วมควรมีรายได้อย่างน้อย 32,405 บาท/เดือน เพื่อให้กู้ผ่าน (DSR 40%)", { exact: false }),
     ).toBeInTheDocument();
   });
 

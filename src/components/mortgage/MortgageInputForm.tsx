@@ -48,6 +48,7 @@ export function MortgageInputForm({
               inputMode="decimal"
               value={homePrice}
               onChange={onHomePriceChange}
+              thousandsSeparator
               className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
@@ -108,6 +109,7 @@ export function MortgageInputForm({
               inputMode="decimal"
               value={downPaymentAvailable}
               onChange={onDownPaymentAvailableChange}
+              thousandsSeparator
               className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
