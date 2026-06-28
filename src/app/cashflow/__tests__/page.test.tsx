@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { PROFILE_STORAGE_KEY } from "@/domain/config/defaults";
@@ -88,6 +88,40 @@ describe("CashFlowPage", () => {
     await userEvent.click(screen.getByRole("button", { name: "ลบ เงินเดือนประจำ" }));
 
     expect(screen.queryByText("เงินเดือนประจำ")).not.toBeInTheDocument();
+  });
+
+  it("edits an existing item end-to-end through the real ProfileProvider (onUpdate wiring)", async () => {
+    let profile = CashFlowProfile.empty(START_MONTH);
+    profile = profile.addItem(
+      LineItem.create({
+        id: "income-1",
+        category: "income",
+        subCategory: "salary",
+        label: "เงินเดือนประจำ",
+        changes: [{ effectiveFrom: START_MONTH, amount: 35000 }],
+      }),
+    );
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile.toJSON()));
+
+    render(
+      <ProfileProvider>
+        <CashFlowPage />
+      </ProfileProvider>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "แก้ไข เงินเดือนประจำ" }));
+    await userEvent.clear(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"));
+    await userEvent.type(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"), "45000");
+    await userEvent.click(screen.getByRole("button", { name: "บันทึก" }));
+
+    expect(screen.queryByText("35,000 บาท")).not.toBeInTheDocument();
+    expect(screen.getAllByText("45,000 บาท").length).toBeGreaterThan(0);
+    await waitFor(() => {
+      const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+      const saved = JSON.parse(raw!).items[0];
+      expect(saved.id).toBe("income-1");
+      expect(saved.changes[0].amount).toBe(45000);
+    });
   });
 
   it("updates savings end-to-end through the real ProfileProvider (SavingsCard's onChange wiring)", async () => {

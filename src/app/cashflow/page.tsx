@@ -11,7 +11,7 @@ import { SavingsCard } from "@/components/cashflow/SavingsCard";
 const CATEGORIES = ["income", "expense", "debt"] as const;
 
 export default function CashFlowPage() {
-  const { profile, isLoaded, addItem, removeItem, updateAssets, reset } = useProfile();
+  const { profile, isLoaded, addItem, removeItem, updateItem, updateAssets, reset } = useProfile();
 
   if (!isLoaded) {
     return null;
@@ -54,6 +54,7 @@ export default function CashFlowPage() {
             startMonth={profile.startMonth}
             onAdd={addItem}
             onDelete={removeItem}
+            onUpdate={updateItem}
           />
         ))}
 

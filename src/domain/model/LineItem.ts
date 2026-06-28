@@ -80,6 +80,11 @@ export class LineItem {
     return this.data.endMonth;
   }
 
+  /** Defensive copy of the change history, sorted ascending by effectiveFrom. */
+  get changes(): LineItemChange[] {
+    return this.data.changes.map((change) => ({ ...change }));
+  }
+
   /**
    * Carry-forward step function: the amount in effect for `month`.
    * - 0 if `month` is before the first change.

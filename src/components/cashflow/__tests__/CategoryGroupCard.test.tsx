@@ -26,6 +26,7 @@ describe("CategoryGroupCard", () => {
         startMonth="2026-06"
         onAdd={vi.fn()}
         onDelete={vi.fn()}
+        onUpdate={vi.fn()}
       />,
     );
 
@@ -43,6 +44,7 @@ describe("CategoryGroupCard", () => {
         startMonth="2026-06"
         onAdd={vi.fn()}
         onDelete={vi.fn()}
+        onUpdate={vi.fn()}
       />,
     );
 
@@ -60,6 +62,7 @@ describe("CategoryGroupCard", () => {
         startMonth="2026-06"
         onAdd={vi.fn()}
         onDelete={vi.fn()}
+        onUpdate={vi.fn()}
       />,
     );
 
@@ -82,6 +85,7 @@ describe("CategoryGroupCard", () => {
         startMonth="2026-06"
         onAdd={onAdd}
         onDelete={vi.fn()}
+        onUpdate={vi.fn()}
       />,
     );
 
@@ -107,10 +111,37 @@ describe("CategoryGroupCard", () => {
         startMonth="2026-06"
         onAdd={vi.fn()}
         onDelete={onDelete}
+        onUpdate={vi.fn()}
       />,
     );
 
     await userEvent.click(screen.getByRole("button", { name: "ลบ Item 1" }));
     expect(onDelete).toHaveBeenCalledWith("1");
+  });
+
+  it("edits a row in place and calls onUpdate with the item id and the edited item", async () => {
+    const onUpdate = vi.fn();
+    const items = [makeItem("1", 35000)];
+    render(
+      <CategoryGroupCard
+        category="income"
+        items={items}
+        month="2026-06"
+        startMonth="2026-06"
+        onAdd={vi.fn()}
+        onDelete={vi.fn()}
+        onUpdate={onUpdate}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "แก้ไข Item 1" }));
+    await userEvent.clear(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"));
+    await userEvent.type(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"), "50000");
+    await userEvent.click(screen.getByRole("button", { name: "บันทึก" }));
+
+    expect(onUpdate).toHaveBeenCalledTimes(1);
+    const [id, updated] = onUpdate.mock.calls[0];
+    expect(id).toBe("1");
+    expect(updated.amountAt("2026-06")).toBe(50000);
   });
 });

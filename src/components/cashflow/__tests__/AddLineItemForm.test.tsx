@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import { LineItem } from "@/domain/model/LineItem";
+
 import { AddLineItemForm } from "../AddLineItemForm";
 
 /**
@@ -155,5 +157,68 @@ describe("AddLineItemForm", () => {
     await userEvent.click(screen.getByRole("button", { name: "เพิ่มรายการ" }));
 
     expect(labelInput.value).toBe("");
+  });
+
+  it("pre-fills every field from initialItem and shows the 'บันทึก' + 'ยกเลิก' buttons", () => {
+    const item = LineItem.create({
+      id: "debt-1",
+      category: "debt",
+      subCategory: "car",
+      label: "ผ่อนรถยนต์",
+      changes: [{ effectiveFrom: "2026-06", amount: 8000 }],
+      endMonth: "2030-06",
+    });
+
+    render(
+      <AddLineItemForm category="debt" startMonth="2026-01" onAdd={vi.fn()} initialItem={item} onCancel={vi.fn()} />,
+    );
+
+    expect((screen.getByLabelText("รายการ") as HTMLInputElement).value).toBe("ผ่อนรถยนต์");
+    expect((screen.getByLabelText("จำนวนเงิน (บาท/เดือน)") as HTMLInputElement).value).toBe("8000");
+    expect(screen.getByLabelText(/เริ่มตั้งแต่เดือน/)).toHaveTextContent("มิ.ย. 2026");
+    expect(screen.getByLabelText(/ผ่อนหมดเดือน/)).toHaveTextContent("มิ.ย. 2030");
+    expect(screen.getByRole("button", { name: "บันทึก" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "ยกเลิก" })).toBeInTheDocument();
+  });
+
+  it("submits the edited item with the same id (does not create a new one)", async () => {
+    const onAdd = vi.fn();
+    const item = LineItem.create({
+      id: "income-1",
+      category: "income",
+      subCategory: "salary",
+      label: "เงินเดือนประจำ",
+      changes: [{ effectiveFrom: "2026-06", amount: 35000 }],
+    });
+
+    render(<AddLineItemForm category="income" startMonth="2026-06" onAdd={onAdd} initialItem={item} />);
+
+    await userEvent.clear(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"));
+    await userEvent.type(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"), "40000");
+    await userEvent.click(screen.getByRole("button", { name: "บันทึก" }));
+
+    expect(onAdd).toHaveBeenCalledTimes(1);
+    const updated = onAdd.mock.calls[0][0];
+    expect(updated.id).toBe("income-1");
+    expect(updated.amountAt("2026-06")).toBe(40000);
+  });
+
+  it("calls onCancel and does not call onAdd when cancelled", async () => {
+    const onAdd = vi.fn();
+    const onCancel = vi.fn();
+    const item = LineItem.create({
+      id: "income-1",
+      category: "income",
+      subCategory: "salary",
+      label: "เงินเดือนประจำ",
+      changes: [{ effectiveFrom: "2026-06", amount: 35000 }],
+    });
+
+    render(<AddLineItemForm category="income" startMonth="2026-06" onAdd={onAdd} initialItem={item} onCancel={onCancel} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "ยกเลิก" }));
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onAdd).not.toHaveBeenCalled();
   });
 });

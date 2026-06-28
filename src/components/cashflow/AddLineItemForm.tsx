@@ -12,6 +12,10 @@ interface AddLineItemFormProps {
   category: LineItemCategory;
   startMonth: string;
   onAdd(item: LineItem): void;
+  /** When set, pre-fills every field from this item and submitting edits it in place (same id) instead of creating a new one. */
+  initialItem?: LineItem;
+  /** Shows a "ยกเลิก" button next to submit; used by the edit flow to back out without saving. */
+  onCancel?(): void;
 }
 
 /** Example placeholder for the "รายการ" field, tailored to each category. */
@@ -21,16 +25,19 @@ const LABEL_PLACEHOLDERS: Record<LineItemCategory, string> = {
   debt: "เช่น ผ่อนรถยนต์",
 };
 
-/** Inline form for adding one new line item to a category group. */
-export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemFormProps) {
+/** Inline form for adding a new line item, or (when `initialItem` is given) editing an existing one. */
+export function AddLineItemForm({ category, startMonth, onAdd, initialItem, onCancel }: AddLineItemFormProps) {
   const presets = SUB_CATEGORY_PRESETS[category];
-  const [label, setLabel] = useState("");
-  const [subCategory, setSubCategory] = useState(presets[0].value);
-  const [amount, setAmount] = useState(0);
-  const [effectiveFrom, setEffectiveFrom] = useState(startMonth);
-  const [endMonth, setEndMonth] = useState("");
+  const initialChange = initialItem?.changes[0];
+
+  const [label, setLabel] = useState(initialItem?.label ?? "");
+  const [subCategory, setSubCategory] = useState(initialItem?.subCategory ?? presets[0].value);
+  const [amount, setAmount] = useState(initialChange?.amount ?? 0);
+  const [effectiveFrom, setEffectiveFrom] = useState(initialChange?.effectiveFrom ?? startMonth);
+  const [endMonth, setEndMonth] = useState(initialItem?.endMonth ?? "");
 
   const isDebt = category === "debt";
+  const isEditing = Boolean(initialItem);
 
   function resetForm() {
     setLabel("");
@@ -52,7 +59,7 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
     const resolvedLabel = label.trim() || subCategoryLabel(category, subCategory);
 
     const item = LineItem.create({
-      id: crypto.randomUUID(),
+      id: initialItem?.id ?? crypto.randomUUID(),
       category,
       subCategory,
       label: resolvedLabel,
@@ -61,7 +68,10 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
     });
 
     onAdd(item);
-    resetForm();
+
+    if (!isEditing) {
+      resetForm();
+    }
   }
 
   return (
@@ -144,12 +154,23 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
         </div>
       )}
 
-      <button
-        type="submit"
-        className="h-12 rounded-button bg-primary text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
-      >
-        เพิ่มรายการ
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          className="h-12 flex-1 rounded-button bg-primary text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
+        >
+          {isEditing ? "บันทึก" : "เพิ่มรายการ"}
+        </button>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="h-12 flex-1 rounded-button border border-outline bg-surface text-base font-semibold text-ink transition-colors hover:bg-surface-sunken active:scale-[0.98]"
+          >
+            ยกเลิก
+          </button>
+        )}
+      </div>
     </form>
   );
 }

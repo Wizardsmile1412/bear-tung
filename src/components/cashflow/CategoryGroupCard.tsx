@@ -17,6 +17,7 @@ interface CategoryGroupCardProps {
   startMonth: string;
   onAdd(item: LineItem): void;
   onDelete(id: string): void;
+  onUpdate(id: string, item: LineItem): void;
 }
 
 /** One category group card (income / expense / debt): list + subtotal + add form. */
@@ -27,6 +28,7 @@ export function CategoryGroupCard({
   startMonth,
   onAdd,
   onDelete,
+  onUpdate,
 }: CategoryGroupCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const theme = CATEGORY_THEME[category];
@@ -58,7 +60,15 @@ export function CategoryGroupCard({
       {items.length > 0 ? (
         <ul className="mt-4">
           {items.map((item) => (
-            <LineItemRow key={item.id} item={item} amount={item.amountAt(month)} onDelete={onDelete} />
+            <LineItemRow
+              key={item.id}
+              item={item}
+              amount={item.amountAt(month)}
+              category={category}
+              startMonth={startMonth}
+              onDelete={onDelete}
+              onUpdate={onUpdate}
+            />
           ))}
         </ul>
       ) : (

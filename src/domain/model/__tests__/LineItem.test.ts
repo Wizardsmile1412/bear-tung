@@ -101,6 +101,28 @@ describe("LineItem", () => {
     expect(item.endMonth).toBeUndefined();
   });
 
+  it("exposes a defensive copy of changes, sorted ascending regardless of input order", () => {
+    const item = LineItem.create({
+      id: "1",
+      category: "income",
+      subCategory: "salary",
+      label: "Salary",
+      changes: [
+        { effectiveFrom: "2027-01", amount: 45000 },
+        { effectiveFrom: "2026-06", amount: 35000 },
+      ],
+    });
+
+    const changes = item.changes;
+    expect(changes).toEqual([
+      { effectiveFrom: "2026-06", amount: 35000 },
+      { effectiveFrom: "2027-01", amount: 45000 },
+    ]);
+
+    changes[0].amount = 999999;
+    expect(item.changes[0].amount).toBe(35000);
+  });
+
   it("returns the amount exactly between two changes (carries forward the earlier one)", () => {
     const item = LineItem.create({
       id: "1",
