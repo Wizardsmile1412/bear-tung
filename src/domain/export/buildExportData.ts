@@ -36,6 +36,7 @@ export interface CashFlowRowInput {
   subCategory: string; // already Thai-labeled
   label: string;
   amountPerMonth: number;
+  payoffMonth?: string; // already-formatted Thai month label, debt rows only
 }
 
 export interface BuildExportDataInput {
@@ -83,6 +84,7 @@ function toCashFlowExportRow(row: CashFlowRowInput): CashFlowExportRow {
     subCategory: row.subCategory,
     label: row.label,
     amountPerMonth: row.amountPerMonth,
+    payoffMonth: row.payoffMonth,
   };
 }
 

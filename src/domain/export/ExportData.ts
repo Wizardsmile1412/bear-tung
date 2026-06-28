@@ -12,6 +12,7 @@ export interface CashFlowExportRow {
   subCategory: string; // Thai label, e.g. 'เงินเดือน'
   label: string; // user's own label for the line item
   amountPerMonth: number;
+  payoffMonth?: string; // pre-formatted Thai month label (e.g. 'มิ.ย. 2026'); debt rows with a set LineItem.endMonth only
 }
 
 export interface HealthExportRow {

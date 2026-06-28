@@ -7,6 +7,7 @@ import { ExcelExporter } from "@/domain/export/ExcelExporter";
 import { MortgageExportData } from "@/domain/export/ExportData";
 
 import { CATEGORY_LABELS, subCategoryLabel } from "@/components/cashflow/subCategoryPresets";
+import { formatMonthLabel } from "@/components/health/formatMonthLabel";
 import { useHealth } from "@/components/health/useHealth";
 import { useProjectionSeries } from "@/components/health/useProjectionSeries";
 import { useProfile } from "@/components/profile/useProfile";
@@ -46,6 +47,7 @@ export function useExport(mortgage?: MortgageExportData): UseExportResult {
       subCategory: subCategoryLabel(item.category, item.subCategory),
       label: item.label,
       amountPerMonth: item.amountAt(health.month),
+      payoffMonth: item.endMonth ? formatMonthLabel(item.endMonth) : undefined,
     }));
 
     const data = buildExportData({

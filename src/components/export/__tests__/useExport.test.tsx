@@ -75,6 +75,52 @@ describe("useExport", () => {
     exportSpy.mockRestore();
   });
 
+  it("formats a debt item's endMonth into payoffMonth, and leaves it undefined for items with no endMonth", async () => {
+    const exportSpy = vi.spyOn(ExcelExporter.prototype, "export").mockImplementation(() => undefined);
+
+    function DebtConsumer() {
+      const { profile, addItem } = useProfile();
+      const { exportToExcel } = useExport();
+
+      return (
+        <div>
+          <button
+            onClick={() =>
+              addItem(
+                LineItem.create({
+                  id: "debt-1",
+                  category: "debt",
+                  subCategory: "home",
+                  label: "ผ่อนบ้าน",
+                  changes: [{ effectiveFrom: profile.startMonth, amount: 15000 }],
+                  endMonth: "2026-12",
+                }),
+              )
+            }
+          >
+            add debt
+          </button>
+          <button onClick={exportToExcel}>export</button>
+        </div>
+      );
+    }
+
+    render(
+      <ProfileProvider>
+        <DebtConsumer />
+      </ProfileProvider>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "add debt" }));
+    await userEvent.click(screen.getByRole("button", { name: "export" }));
+
+    const [data] = exportSpy.mock.calls[0];
+    const debtRow = data.cashFlow.rows.find((row) => row.label === "ผ่อนบ้าน");
+    expect(debtRow?.payoffMonth).toBe("ธ.ค. 2026");
+
+    exportSpy.mockRestore();
+  });
+
   it("passes the mortgage data through when provided to useExport", async () => {
     const exportSpy = vi.spyOn(ExcelExporter.prototype, "export").mockImplementation(() => undefined);
 

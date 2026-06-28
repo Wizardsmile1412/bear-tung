@@ -92,6 +92,34 @@ describe("ExcelExporter.buildWorkbook", () => {
     expect(savingsRow?.amountPerMonth).toBe(120000);
   });
 
+  it("Cash Flow sheet shows ผ่อนหมดเดือน for a debt row with a payoff month, and blank otherwise", () => {
+    const exporter = new ExcelExporter();
+    const data = buildExportData({
+      cashFlow: {
+        rows: [
+          { category: "รายรับ", subCategory: "เงินเดือน", label: "เงินเดือนหลัก", amountPerMonth: 50000 },
+          {
+            category: "หนี้สิน",
+            subCategory: "บ้าน",
+            label: "ผ่อนบ้าน",
+            amountPerMonth: 15000,
+            payoffMonth: "มิ.ย. 2026",
+          },
+        ],
+        savings: 120000,
+        totalIncome: 50000,
+        totalExpense: 0,
+        totalDebt: 15000,
+        remainingCashFlow: 35000,
+      },
+    });
+    const workbook = exporter.buildWorkbook(data);
+
+    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(workbook.Sheets["Cash Flow"]);
+    expect(rows.find((row) => row.label === "เงินเดือนหลัก")?.["ผ่อนหมดเดือน"]).toBe("");
+    expect(rows.find((row) => row.label === "ผ่อนบ้าน")?.["ผ่อนหมดเดือน"]).toBe("มิ.ย. 2026");
+  });
+
   it("Health Check sheet contains every ratio row plus the overall score/light", () => {
     const exporter = new ExcelExporter();
     const data = buildExportData();
@@ -105,6 +133,17 @@ describe("ExcelExporter.buildWorkbook", () => {
     const overallRow = rows.find((row) => row["รายการ"] === "คะแนนสุขภาพการเงินโดยรวม");
     expect(overallRow?.["คะแนน"]).toBe(90);
     expect(overallRow?.["สถานะ"]).toBe("green");
+  });
+
+  it("Health Check sheet formats the คะแนน column with 2 decimal places", () => {
+    const exporter = new ExcelExporter();
+    const data = buildExportData();
+    const workbook = exporter.buildWorkbook(data);
+    const sheet = workbook.Sheets["Health Check"];
+
+    // คะแนน is column index 3 (รายการ, มูลค่า, เกณฑ์ที่ควรเป็น, คะแนน, สถานะ); row 0 is the header.
+    const firstScoreAddress = XLSX.utils.encode_cell({ r: 1, c: 3 });
+    expect(sheet[firstScoreAddress]?.z).toBe("#,##0.00");
   });
 
   it("Mortgage sheet shows the placeholder row when data.mortgage is undefined", () => {
@@ -182,6 +221,75 @@ describe("ExcelExporter.buildWorkbook", () => {
     // coIncomeProvided was not supplied in this fixture -> combinedIncomeSufficient
     // is undefined -> the "รายได้รวมเพียงพอหรือไม่" row must not appear at all.
     expect(byLabel("รายได้รวมเพียงพอหรือไม่")).toBeUndefined();
+  });
+
+  it("Mortgage sheet formats money values with a thousands-separator and percentage values with 2 decimal places", () => {
+    const exporter = new ExcelExporter();
+    const data = buildExportData({
+      mortgage: {
+        input: {
+          homePrice: 3_000_000,
+          homeOrder: 1,
+          borrowerAge: 30,
+          interestRatePercent: 6.5,
+          loanTermYears: 30,
+          downPaymentAvailable: 300000,
+          monthlyIncome: 50000,
+          existingDebt: 5000,
+          dsrLimit: 0.4,
+        },
+        result: {
+          maxLoan: 2_700_000,
+          maxLoanByLtv: 3_000_000,
+          maxLoanByDsr: 2_700_000,
+          bindingConstraint: "dsr",
+          ltvPercent: 1,
+          requiredDownPayment: 0,
+          affordableHomePrice: 3_000_000,
+          canAffordTarget: true,
+          monthlyPayment: 15000,
+          dsrAfterLoan: 0.4,
+          effectiveTermYears: 30,
+          monthlyRate: 0.0054,
+          numPayments: 360,
+          ltvPolicyName: "temporary",
+        },
+        coBorrower: {
+          input: {
+            homePrice: 3_000_000,
+            downPaymentAvailable: 300000,
+            monthlyRate: 0.0054,
+            numPayments: 360,
+            userIncome: 50000,
+            userDebt: 5000,
+            coDebt: 0,
+            dsrLimit: 0.4,
+            maxLoanByLtv: 3_000_000,
+          },
+          result: {
+            isLtvBound: false,
+            alreadyQualifies: true,
+            requiredCoIncome: 0,
+          },
+        },
+      },
+    });
+    const workbook = exporter.buildWorkbook(data);
+    const sheet = workbook.Sheets["Mortgage"];
+
+    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet);
+    const rowIndex = (label: string) => rows.findIndex((row) => row["รายการ"] === label) + 1; // +1: header is row 0
+
+    const moneyAddress = XLSX.utils.encode_cell({ r: rowIndex("ราคาบ้าน"), c: 1 });
+    expect(sheet[moneyAddress]?.z).toBe("#,##0");
+
+    const decimalAddress = XLSX.utils.encode_cell({ r: rowIndex("อัตราดอกเบี้ย (% ต่อปี)"), c: 1 });
+    expect(sheet[decimalAddress]?.z).toBe("#,##0.00");
+
+    // Plain counts (homeOrder) get no special number format applied.
+    const plainAddress = XLSX.utils.encode_cell({ r: rowIndex("บ้านลำดับที่"), c: 1 });
+    expect(sheet[plainAddress]?.z).not.toBe("#,##0");
+    expect(sheet[plainAddress]?.z).not.toBe("#,##0.00");
   });
 
   it("Mortgage sheet shows 'ใช่' for the LTV-bound co-borrower case (isLtvBound: true)", () => {
