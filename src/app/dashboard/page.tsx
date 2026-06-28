@@ -91,14 +91,14 @@ export default function DashboardPage() {
           />
 
           <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
-            <ScoreGauge score={selectedEntry.score} light={selectedEntry.light} />
-          </section>
-
-          <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
             <h2 className="text-xl font-semibold text-ink">แนวโน้มคะแนนสุขภาพการเงิน 5 ปี</h2>
             <div className="mt-4">
               <ScoreTrendChart data={trendData} selectedMonth={selectedEntry.month} />
             </div>
+          </section>
+
+          <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
+            <ScoreGauge score={selectedEntry.score} light={selectedEntry.light} />
           </section>
 
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

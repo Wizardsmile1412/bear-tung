@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 
 interface InfoTooltipProps {
-  /** The Thai explanation text revealed when the (?) icon is toggled open. */
+  /**
+   * The Thai explanation text revealed when the (?) icon is toggled open.
+   * `\n` line breaks are preserved (rendered via `whitespace-pre-line`), so
+   * multi-line/bulleted explanations are supported.
+   */
   label: string;
 }
 
@@ -45,7 +49,7 @@ export function InfoTooltip({ label }: InfoTooltipProps) {
       </button>
 
       {isExpanded && (
-        <span className="absolute left-0 top-full z-10 mt-2 w-64 rounded-card border border-outline bg-surface p-3 text-sm text-ink-muted shadow-card-hover">
+        <span className="absolute left-0 top-full z-10 mt-2 w-64 whitespace-pre-line rounded-card border border-outline bg-surface p-3 text-sm text-ink-muted shadow-card-hover">
           {label}
         </span>
       )}
