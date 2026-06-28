@@ -13,6 +13,7 @@ export interface ProfileContextValue {
   removeItem(id: string): void;
   updateItem(id: string, item: LineItem): void;
   updateAssets(assets: Partial<Assets>): void;
+  reset(): void;
 }
 
 export const ProfileContext = createContext<ProfileContextValue | null>(null);
@@ -73,6 +74,11 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     setProfile((current) => current.updateAssets(assets));
   }, []);
 
+  // Clears all items + assets back to empty, keeping the same startMonth.
+  const reset = useCallback(() => {
+    setProfile((current) => CashFlowProfile.empty(current.startMonth));
+  }, []);
+
   const value: ProfileContextValue = {
     profile,
     isLoaded,
@@ -80,6 +86,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     removeItem,
     updateItem,
     updateAssets,
+    reset,
   };
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

@@ -5,12 +5,13 @@ import { useProfile } from "@/components/profile/useProfile";
 import { CashFlowSummaryCard } from "@/components/cashflow/CashFlowSummaryCard";
 import { CategoryGroupCard } from "@/components/cashflow/CategoryGroupCard";
 import { EmptyState } from "@/components/cashflow/EmptyState";
+import { ResetButton } from "@/components/cashflow/ResetButton";
 import { SavingsCard } from "@/components/cashflow/SavingsCard";
 
 const CATEGORIES = ["income", "expense", "debt"] as const;
 
 export default function CashFlowPage() {
-  const { profile, isLoaded, addItem, removeItem, updateAssets } = useProfile();
+  const { profile, isLoaded, addItem, removeItem, updateAssets, reset } = useProfile();
 
   if (!isLoaded) {
     return null;
@@ -18,14 +19,20 @@ export default function CashFlowPage() {
 
   const month = profile.startMonth;
   const hasItems = profile.items.length > 0;
+  const hasData = hasItems || profile.assets.savings > 0;
 
   return (
     <main className="mx-auto flex w-full max-w-[772px] lg:max-w-[1080px] flex-col gap-8 px-6 py-8">
       <header>
-        <h1 className="text-3xl font-bold text-ink">Cash Flow ของคุณ</h1>
-        <p className="mt-1 text-base text-ink-muted">
-          กรอกรายรับ รายจ่าย และหนี้สิน เพื่อดูสุขภาพการเงินของคุณ
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-ink">Cash Flow ของคุณ</h1>
+            <p className="mt-1 text-base text-ink-muted">
+              กรอกรายรับ รายจ่าย และหนี้สิน เพื่อดูสุขภาพการเงินของคุณ
+            </p>
+          </div>
+          {hasData && <ResetButton onReset={reset} />}
+        </div>
         <div className="mt-4">
           <NavButtonLink href="/dashboard" variant="primary" arrow="right">
             ดูสุขภาพการเงิน

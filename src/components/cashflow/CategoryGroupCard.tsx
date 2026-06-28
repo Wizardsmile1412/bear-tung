@@ -49,7 +49,7 @@ export function CategoryGroupCard({
         <button
           type="button"
           onClick={() => setIsAdding((current) => !current)}
-          className="flex h-11 items-center rounded-button border border-outline bg-surface px-4 text-sm font-medium text-ink hover:bg-surface-sunken transition-colors"
+          className="flex h-11 items-center rounded-button border border-outline bg-surface px-4 text-sm font-medium text-ink hover:bg-surface-sunken transition-colors hover:cursor-pointer"
         >
           {isAdding ? "ปิด" : "+ เพิ่มรายการ"}
         </button>

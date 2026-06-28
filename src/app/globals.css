@@ -88,6 +88,13 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Browsers default <button> to cursor: default, not pointer (unlike <a>).
+   App-wide fix instead of repeating `cursor-pointer` on every button's
+   className. Disabled buttons keep their default/not-allowed cursor. */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
 /* Design.md section 7 — respect prefers-reduced-motion: disable CSS
    transitions/animations app-wide (button hovers, RatioCard's/InfoTooltip's
    expand-collapse, etc). Recharts' own count-up/fill animations are handled

@@ -9,7 +9,7 @@ import { ProfileProvider } from "../ProfileProvider";
 import { useProfile } from "../useProfile";
 
 function TestConsumer() {
-  const { profile, isLoaded, addItem, removeItem, updateItem, updateAssets } = useProfile();
+  const { profile, isLoaded, addItem, removeItem, updateItem, updateAssets, reset } = useProfile();
 
   return (
     <div>
@@ -49,6 +49,7 @@ function TestConsumer() {
         update
       </button>
       <button onClick={() => updateAssets({ savings: 99999 })}>save-assets</button>
+      <button onClick={() => reset()}>reset</button>
     </div>
   );
 }
@@ -152,5 +153,28 @@ describe("ProfileProvider / useProfile", () => {
     await userEvent.click(screen.getByRole("button", { name: "save-assets" }));
 
     expect(screen.getByTestId("savings").textContent).toBe("99999");
+  });
+
+  it("reset clears items and assets back to empty and persists the cleared profile", async () => {
+    render(
+      <ProfileProvider>
+        <TestConsumer />
+      </ProfileProvider>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "add" }));
+    await userEvent.click(screen.getByRole("button", { name: "save-assets" }));
+    expect(screen.getByTestId("item-count").textContent).toBe("1");
+    expect(screen.getByTestId("savings").textContent).toBe("99999");
+
+    await userEvent.click(screen.getByRole("button", { name: "reset" }));
+
+    expect(screen.getByTestId("item-count").textContent).toBe("0");
+    expect(screen.getByTestId("savings").textContent).toBe("0");
+    await waitFor(() => {
+      const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+      expect(raw).not.toBeNull();
+      expect(JSON.parse(raw!).items).toHaveLength(0);
+    });
   });
 });

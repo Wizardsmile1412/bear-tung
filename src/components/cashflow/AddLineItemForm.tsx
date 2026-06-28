@@ -80,7 +80,7 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
             required
             className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
           />
-          <span className="text-xs text-ink-subtle whitespace-nowrap">บาท/เดือน</span>
+          <span className="text-xs text-black whitespace-nowrap">บาท/เดือน</span>
         </div>
       </div>
 

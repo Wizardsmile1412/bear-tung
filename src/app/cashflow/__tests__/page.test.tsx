@@ -107,4 +107,43 @@ describe("CashFlowPage", () => {
     // renders back in the card's read-only display.
     expect(screen.getByText("90,000 บาท")).toBeInTheDocument();
   });
+
+  it("does not show the reset button on a brand-new (empty) profile", () => {
+    render(
+      <ProfileProvider>
+        <CashFlowPage />
+      </ProfileProvider>,
+    );
+
+    expect(screen.queryByRole("button", { name: "ล้างข้อมูลทั้งหมด" })).not.toBeInTheDocument();
+  });
+
+  it("resets all items and savings end-to-end through the real ProfileProvider after confirming", async () => {
+    let profile = CashFlowProfile.empty(START_MONTH);
+    profile = profile.addItem(
+      LineItem.create({
+        id: "income-1",
+        category: "income",
+        subCategory: "salary",
+        label: "เงินเดือนประจำ",
+        changes: [{ effectiveFrom: START_MONTH, amount: 35000 }],
+      }),
+    );
+    profile = profile.updateAssets({ savings: 90000 });
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile.toJSON()));
+
+    render(
+      <ProfileProvider>
+        <CashFlowPage />
+      </ProfileProvider>,
+    );
+
+    expect(screen.getByText("เงินเดือนประจำ")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "ล้างข้อมูลทั้งหมด" }));
+    await userEvent.click(screen.getByRole("button", { name: "ยืนยัน" }));
+
+    expect(screen.queryByText("เงินเดือนประจำ")).not.toBeInTheDocument();
+    expect(screen.getByText("ยังไม่มีข้อมูล — เริ่มกรอก Cash Flow ของคุณ")).toBeInTheDocument();
+  });
 });
