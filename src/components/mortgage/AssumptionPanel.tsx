@@ -30,6 +30,8 @@ interface AssumptionPanelProps {
    * rules are active during the temporary relaxation window.
    */
   ltvPolicyName: string;
+  /** True when borrowerAge + loanTermYears has hit the 70-year bank cap, capping loanTermYears down. */
+  isAgeTermCapped: boolean;
 }
 
 /**
@@ -44,6 +46,7 @@ export function AssumptionPanel({
   loanTermYears,
   onLoanTermYearsChange,
   ltvPolicyName,
+  isAgeTermCapped,
 }: AssumptionPanelProps) {
   return (
     <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
@@ -87,6 +90,9 @@ export function AssumptionPanel({
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">ปี</span>
           </div>
+          {isAgeTermCapped && (
+            <p className="text-xs font-medium text-danger">อายุผู้กู้ (หลัก) รวม ระยะเวลากู้ ต้องไม่เกิน 70 ปี</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-1">

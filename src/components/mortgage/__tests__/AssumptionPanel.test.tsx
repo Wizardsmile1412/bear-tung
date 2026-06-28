@@ -11,6 +11,7 @@ function renderPanel(overrides: Partial<React.ComponentProps<typeof AssumptionPa
     loanTermYears: 30,
     onLoanTermYearsChange: vi.fn(),
     ltvPolicyName: "temporary",
+    isAgeTermCapped: false,
     ...overrides,
   };
   render(<AssumptionPanel {...props} />);
@@ -78,6 +79,16 @@ describe("AssumptionPanel", () => {
     const input = screen.getByLabelText("ระยะเวลากู้");
     fireEvent.change(input, { target: { value: "-1" } });
     expect(props.onLoanTermYearsChange).not.toHaveBeenCalled();
+  });
+
+  it("does not show the age/term cap remark when isAgeTermCapped is false", () => {
+    renderPanel({ isAgeTermCapped: false });
+    expect(screen.queryByText("อายุผู้กู้ (หลัก) รวม ระยะเวลากู้ ต้องไม่เกิน 70 ปี")).not.toBeInTheDocument();
+  });
+
+  it("shows the age/term cap remark when isAgeTermCapped is true", () => {
+    renderPanel({ isAgeTermCapped: true });
+    expect(screen.getByText("อายุผู้กู้ (หลัก) รวม ระยะเวลากู้ ต้องไม่เกิน 70 ปี")).toBeInTheDocument();
   });
 
   describe("InfoTooltip wiring", () => {

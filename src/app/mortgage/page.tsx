@@ -5,7 +5,12 @@ import Link from "next/link";
 
 import { NavButtonLink } from "@/components/ui/NavButtonLink";
 
-import { DEFAULT_DSR_LIMIT, DEFAULT_INTEREST_RATE_PERCENT, DEFAULT_LOAN_TERM_YEARS } from "@/domain/config/defaults";
+import {
+  DEFAULT_DSR_LIMIT,
+  DEFAULT_INTEREST_RATE_PERCENT,
+  DEFAULT_LOAN_TERM_YEARS,
+  MAX_AGE_PLUS_TERM,
+} from "@/domain/config/defaults";
 import { MortgageExportData } from "@/domain/export/ExportData";
 import { MonthKey } from "@/domain/model/MonthKey";
 import { Money } from "@/domain/model/Money";
@@ -40,6 +45,20 @@ export default function MortgagePage() {
   const [coBorrowerEnabled, setCoBorrowerEnabled] = useState(false);
   const [coDebt, setCoDebt] = useState(0);
   const [coIncomeProvided, setCoIncomeProvided] = useState<number | undefined>(undefined);
+
+  /**
+   * Most Thai banks cap borrowerAge + loanTermYears at `MAX_AGE_PLUS_TERM`
+   * (see `MortgageService`'s `effectiveTermYears`) — mirror that cap onto
+   * the loanTermYears field itself when age changes, so the UI shows the
+   * term the bank would actually use instead of a value that's silently
+   * overridden at evaluation time. Only ever pulls the term down, never
+   * back up, so a deliberately-shortened term isn't overwritten when age
+   * drops again.
+   */
+  function handleBorrowerAgeChange(age: number) {
+    setBorrowerAge(age);
+    setLoanTermYears((currentTerm) => Math.max(1, Math.min(currentTerm, MAX_AGE_PLUS_TERM - age)));
+  }
 
   if (!profileLoaded || !seriesLoaded) {
     return null;
@@ -107,7 +126,7 @@ export default function MortgagePage() {
           firstHomePaidAtLeastTwoYears={firstHomePaidAtLeastTwoYears}
           setFirstHomePaidAtLeastTwoYears={setFirstHomePaidAtLeastTwoYears}
           borrowerAge={borrowerAge}
-          setBorrowerAge={setBorrowerAge}
+          setBorrowerAge={handleBorrowerAgeChange}
           downPaymentAvailable={downPaymentAvailable}
           setDownPaymentAvailable={setDownPaymentAvailable}
           interestRatePercent={interestRatePercent}
@@ -165,6 +184,7 @@ interface MortgagePageContentProps {
 function MortgagePageContent(props: MortgagePageContentProps) {
   const monthlyIncome = props.selectedEntry.totalIncome;
   const existingDebt = props.selectedEntry.totalDebt;
+  const isAgeTermCapped = props.borrowerAge > 0 && props.borrowerAge + props.loanTermYears >= MAX_AGE_PLUS_TERM;
 
   return (
     <div className="flex flex-col gap-8">
@@ -190,16 +210,23 @@ function MortgagePageContent(props: MortgagePageContentProps) {
 
       <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
         <h2 className="text-xl font-semibold text-ink">รายได้และหนี้ปัจจุบัน (จาก Cash Flow)</h2>
-        <p className="mt-2 text-sm text-ink-muted">
-          รายได้ต่อเดือน (จาก Cash Flow ของเดือนที่ประเมิน): {Money.formatWithUnit(monthlyIncome)}
+        <p className="mt-2 text-base text-ink-muted">
+          รายได้ต่อเดือน (จาก Cash Flow ของเดือนที่ประเมิน):{" "}
+          <span className="font-medium text-good">{Money.formatWithUnit(monthlyIncome)}</span>
         </p>
-        <p className="mt-1 text-sm text-ink-muted">
-          หนี้ปัจจุบันต่อเดือน (จาก Cash Flow ของเดือนที่ประเมิน): {Money.formatWithUnit(existingDebt)}
+        <p className="mt-1 text-base text-ink-muted">
+          หนี้ปัจจุบันต่อเดือน (จาก Cash Flow ของเดือนที่ประเมิน):{" "}
+          <span className="font-medium text-danger">{Money.formatWithUnit(existingDebt)}</span>
         </p>
       </section>
 
       {props.hasInput ? (
-        <MortgageEvaluation {...props} monthlyIncome={monthlyIncome} existingDebt={existingDebt} />
+        <MortgageEvaluation
+          {...props}
+          monthlyIncome={monthlyIncome}
+          existingDebt={existingDebt}
+          isAgeTermCapped={isAgeTermCapped}
+        />
       ) : (
         <>
           <AssumptionPanel
@@ -208,6 +235,7 @@ function MortgagePageContent(props: MortgagePageContentProps) {
             loanTermYears={props.loanTermYears}
             onLoanTermYearsChange={props.setLoanTermYears}
             ltvPolicyName=""
+            isAgeTermCapped={isAgeTermCapped}
           />
           <p className="text-base text-ink-muted">กรอกราคาบ้านและอายุผู้กู้เพื่อดูผลการประเมิน</p>
         </>
@@ -219,6 +247,7 @@ function MortgagePageContent(props: MortgagePageContentProps) {
 interface MortgageEvaluationProps extends MortgagePageContentProps {
   monthlyIncome: number;
   existingDebt: number;
+  isAgeTermCapped: boolean;
 }
 
 /**
@@ -263,6 +292,7 @@ function MortgageEvaluation(props: MortgageEvaluationProps) {
         loanTermYears={props.loanTermYears}
         onLoanTermYearsChange={props.setLoanTermYears}
         ltvPolicyName={mortgageResult.ltvPolicyName}
+        isAgeTermCapped={props.isAgeTermCapped}
       />
 
       <MortgageResultCard result={mortgageResult} downPaymentAvailable={props.downPaymentAvailable} />

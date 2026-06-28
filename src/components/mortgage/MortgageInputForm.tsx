@@ -35,7 +35,7 @@ export function MortgageInputForm({
 }: MortgageInputFormProps) {
   return (
     <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
-      <h2 className="text-xl font-semibold text-ink">ข้อมูลบ้านและผู้กู้</h2>
+      <h2 className="text-xl font-semibold text-ink">ข้อมูลบ้านและผู้กู้ (หลัก)</h2>
 
       <div className="mt-4 flex flex-col gap-4">
         <div className="flex flex-col gap-1">

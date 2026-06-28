@@ -208,6 +208,40 @@ describe("MortgagePage", () => {
     expect(screen.getByLabelText("หนี้ปัจจุบันของผู้กู้ร่วม")).toBeInTheDocument();
   });
 
+  it("caps loanTermYears down to (70 - borrowerAge) and shows the remark when age pushes the total over 70", () => {
+    seedProfile();
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fillRequiredFields(); // borrowerAge 30, loanTermYears defaults to 30 (30 + 30 = 60, under the cap)
+    expect(screen.getByLabelText("ระยะเวลากู้")).toHaveValue("30");
+    expect(screen.queryByText("อายุผู้กู้ (หลัก) รวม ระยะเวลากู้ ต้องไม่เกิน 70 ปี")).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("อายุผู้กู้"), { target: { value: "50" } });
+
+    expect(screen.getByLabelText("ระยะเวลากู้")).toHaveValue("20");
+    expect(screen.getByText("อายุผู้กู้ (หลัก) รวม ระยะเวลากู้ ต้องไม่เกิน 70 ปี")).toBeInTheDocument();
+  });
+
+  it("does not spring loanTermYears back up when borrowerAge drops again after being capped", () => {
+    seedProfile();
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fillRequiredFields();
+    fireEvent.change(screen.getByLabelText("อายุผู้กู้"), { target: { value: "50" } }); // caps loanTermYears to 20
+    fireEvent.change(screen.getByLabelText("อายุผู้กู้"), { target: { value: "40" } }); // 40 + 20 = 60, under the cap again
+
+    expect(screen.getByLabelText("ระยะเวลากู้")).toHaveValue("20");
+    expect(screen.queryByText("อายุผู้กู้ (หลัก) รวม ระยะเวลากู้ ต้องไม่เกิน 70 ปี")).not.toBeInTheDocument();
+  });
+
   it("derives monthlyIncome/existingDebt from the selected assessment month's cash flow (read-only display)", () => {
     seedProfile();
     render(
@@ -217,7 +251,12 @@ describe("MortgagePage", () => {
     );
 
     expect(
-      screen.getByText((content) => content.includes("รายได้ต่อเดือน") && content.includes("50,000")),
+      screen.getByText(
+        (_content, element) =>
+          Boolean(element?.textContent?.includes("รายได้ต่อเดือน")) &&
+          Boolean(element?.textContent?.includes("50,000")),
+        { selector: "p" },
+      ),
     ).toBeInTheDocument();
   });
 

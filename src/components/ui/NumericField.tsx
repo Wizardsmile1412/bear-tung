@@ -63,6 +63,12 @@ function caretAfterNonCommaCount(formatted: string, count: number): number {
  * displayed text with commas, restoring caret position afterward since
  * comma insertion/removal shifts character offsets out from under the
  * browser's own caret placement.
+ *
+ * If `value` changes to something other than what this field itself last
+ * reported via `onChange` (e.g. another field's handler clamps this one's
+ * value, like loanTermYears being capped by a borrowerAge change), the
+ * displayed text resyncs to match — otherwise the buffer would keep
+ * showing stale text the external change just overrode.
  */
 export function NumericField<T extends number | undefined = number>({
   id,
@@ -76,12 +82,25 @@ export function NumericField<T extends number | undefined = number>({
   placeholder,
   required,
 }: NumericFieldProps<T>) {
-  const initialRaw = value === undefined || value === 0 ? "" : String(value);
-  const [text, setText] = useState(thousandsSeparator ? formatGrouped(initialRaw) : initialRaw);
+  function formatDisplay(v: T): string {
+    const raw = v === undefined || v === 0 ? "" : String(v);
+    return thousandsSeparator ? formatGrouped(raw) : raw;
+  }
+
+  const [text, setText] = useState(() => formatDisplay(value));
+  const [lastReportedValue, setLastReportedValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
   const pendingCaretRef = useRef<number | null>(null);
   const pattern = allowDecimal ? /^\d*\.?\d*$/ : /^\d*$/;
   const clearValue = (optional ? undefined : 0) as T;
+
+  // Adjusting state during render (react.dev/learn/you-might-not-need-an-effect)
+  // rather than a ref, since refs may not be read/written during render.
+  if (value !== lastReportedValue) {
+    setLastReportedValue(value);
+    const resynced = formatDisplay(value);
+    if (resynced !== text) setText(resynced);
+  }
 
   useLayoutEffect(() => {
     if (pendingCaretRef.current !== null && inputRef.current) {
@@ -113,11 +132,15 @@ export function NumericField<T extends number | undefined = number>({
         }
 
         if (stripped === "" || stripped === ".") {
+          setLastReportedValue(clearValue);
           onChange(clearValue);
           return;
         }
         const parsed = Number(stripped);
-        if (Number.isFinite(parsed)) onChange(parsed as T);
+        if (Number.isFinite(parsed)) {
+          setLastReportedValue(parsed as T);
+          onChange(parsed as T);
+        }
       }}
       placeholder={placeholder}
       required={required}
