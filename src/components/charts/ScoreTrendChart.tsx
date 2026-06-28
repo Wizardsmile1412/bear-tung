@@ -51,7 +51,7 @@ function CustomTooltip({ active, payload }: TooltipContentProps) {
   const point = payload[0].payload as ScoreTrendDatum;
 
   return (
-    <div className="rounded-card border border-outline bg-surface px-3 py-2 text-sm shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+    <div className="rounded-card border border-outline bg-surface px-3 py-2 text-sm shadow-card">
       <p className="font-medium text-ink">{point.monthLabel}</p>
       <p className="mt-1 text-ink-muted">
         คะแนน <span className="font-semibold tabular-nums text-ink">{point.score}</span> — {statusLabel(point.score)}

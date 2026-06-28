@@ -41,14 +41,14 @@ export function MonthSlider({
   };
 
   return (
-    <div className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+    <div className="rounded-card border border-outline bg-surface p-6 shadow-card">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-baseline gap-2">
           <span className="text-xl font-semibold text-ink tabular-nums">
             {formatMonthLabel(months[selectedIndex])}
           </span>
           {isAtCurrentMonth && (
-            <span className="rounded-[999px] bg-primary-soft px-3 py-1 text-sm font-medium text-primary">
+            <span className="rounded-pill bg-primary-soft px-3 py-1 text-sm font-medium text-primary">
               เดือนปัจจุบัน
             </span>
           )}

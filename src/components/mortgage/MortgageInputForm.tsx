@@ -32,7 +32,7 @@ export function MortgageInputForm({
   onDownPaymentAvailableChange,
 }: MortgageInputFormProps) {
   return (
-    <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+    <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
       <h2 className="text-xl font-semibold text-ink">ข้อมูลบ้านและผู้กู้</h2>
 
       <div className="mt-4 flex flex-col gap-4">
@@ -52,7 +52,7 @@ export function MortgageInputForm({
                 const value = Number(event.target.value);
                 onHomePriceChange(Number.isFinite(value) && value >= 0 ? value : 0);
               }}
-              className="w-full rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+              className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
           </div>
@@ -66,7 +66,7 @@ export function MortgageInputForm({
             id="homeOrder"
             value={homeOrder}
             onChange={(event) => onHomeOrderChange(Number(event.target.value) as 1 | 2 | 3)}
-            className="rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+            className="rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
           >
             <option value={1}>บ้านหลังที่ 1</option>
             <option value={2}>บ้านหลังที่ 2</option>
@@ -81,7 +81,7 @@ export function MortgageInputForm({
               type="checkbox"
               checked={firstHomePaidAtLeastTwoYears}
               onChange={(event) => onFirstHomePaidAtLeastTwoYearsChange(event.target.checked)}
-              className="h-5 w-5 rounded-[4px] border border-outline accent-primary"
+              className="h-5 w-5 rounded-sm border border-outline accent-primary"
             />
             <label htmlFor="firstHomePaidAtLeastTwoYears" className="text-sm font-medium text-ink-muted">
               ผ่อนบ้านหลังแรกมาแล้วอย่างน้อย 2 ปี
@@ -104,7 +104,7 @@ export function MortgageInputForm({
               const value = Number(event.target.value);
               onBorrowerAgeChange(Number.isFinite(value) && value >= 0 ? value : 0);
             }}
-            className="rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+            className="rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
           />
         </div>
 
@@ -124,7 +124,7 @@ export function MortgageInputForm({
                 const value = Number(event.target.value);
                 onDownPaymentAvailableChange(Number.isFinite(value) && value >= 0 ? value : 0);
               }}
-              className="w-full rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+              className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
           </div>

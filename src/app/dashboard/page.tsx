@@ -76,7 +76,7 @@ export default function DashboardPage() {
           <p className="text-base text-ink-muted">ยังไม่มีข้อมูล — เริ่มกรอก Cash Flow ของคุณ</p>
           <Link
             href="/cashflow"
-            className="mt-4 inline-flex h-12 items-center justify-center rounded-[12px] bg-primary px-6 text-base font-semibold text-white transition-colors hover:bg-primary-hover"
+            className="mt-4 inline-flex h-12 items-center justify-center rounded-button bg-primary px-6 text-base font-semibold text-white transition-colors hover:bg-primary-hover"
           >
             เริ่มกรอก Cash Flow
           </Link>
@@ -89,11 +89,11 @@ export default function DashboardPage() {
             onChange={setSelectedIndex}
           />
 
-          <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+          <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
             <ScoreGauge score={selectedEntry.score} light={selectedEntry.light} />
           </section>
 
-          <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+          <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
             <h2 className="text-xl font-semibold text-ink">แนวโน้มคะแนนสุขภาพการเงิน 5 ปี</h2>
             <div className="mt-4">
               <ScoreTrendChart data={trendData} selectedMonth={selectedEntry.month} />
@@ -106,14 +106,14 @@ export default function DashboardPage() {
             ))}
           </section>
 
-          <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+          <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
             <h2 className="text-xl font-semibold text-ink">รายจ่ายแบ่งตามหมวด</h2>
             <div className="mt-4">
               <ExpenseDonutChart data={expenseData} />
             </div>
           </section>
 
-          <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+          <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
             <h2 className="text-xl font-semibold text-ink">เปรียบเทียบรายรับ-รายจ่าย-หนี้สิน</h2>
             <div className="mt-4">
               <ComparisonBarChart

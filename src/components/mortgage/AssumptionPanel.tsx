@@ -45,7 +45,7 @@ export function AssumptionPanel({
   ltvPolicyName,
 }: AssumptionPanelProps) {
   return (
-    <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+    <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
       <h2 className="text-xl font-semibold text-ink">สมมติฐานการกู้</h2>
 
       <div className="mt-4 flex flex-col gap-4">
@@ -68,7 +68,7 @@ export function AssumptionPanel({
                 const value = Number(event.target.value);
                 onInterestRatePercentChange(Number.isFinite(value) && value >= 0 ? value : 0);
               }}
-              className="w-full rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+              className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">% ต่อปี</span>
           </div>
@@ -93,7 +93,7 @@ export function AssumptionPanel({
                 const value = Number(event.target.value);
                 onLoanTermYearsChange(Number.isFinite(value) && value >= 0 ? value : 0);
               }}
-              className="w-full rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+              className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">ปี</span>
           </div>
@@ -119,14 +119,14 @@ export function AssumptionPanel({
                 const value = Number(event.target.value);
                 onDsrLimitPercentChange(Number.isFinite(value) && value >= 0 ? value : 0);
               }}
-              className="w-full rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+              className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">%</span>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
-          <div className="rounded-[999px] bg-primary-soft px-4 py-2 text-sm font-medium text-primary">
+          <div className="rounded-pill bg-primary-soft px-4 py-2 text-sm font-medium text-primary">
             {ltvPolicyName === "temporary"
               ? `เกณฑ์ LTV ผ่อนปรน — กู้ได้สูงสุด 100% ถึง ${LTV_RELAXATION_END_LABEL}`
               : ltvPolicyName === "normal"

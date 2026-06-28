@@ -31,14 +31,14 @@ export function CoBorrowerSection({
   result,
 }: CoBorrowerSectionProps) {
   return (
-    <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+    <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
       <div className="flex items-center gap-2">
         <input
           id="coBorrowerEnabled"
           type="checkbox"
           checked={enabled}
           onChange={(event) => onEnabledChange(event.target.checked)}
-          className="h-5 w-5 rounded-[4px] border border-outline accent-primary"
+          className="h-5 w-5 rounded-sm border border-outline accent-primary"
         />
         <label htmlFor="coBorrowerEnabled" className="text-xl font-semibold text-ink">
           ต้องการเพิ่มผู้กู้ร่วม
@@ -64,7 +64,7 @@ export function CoBorrowerSection({
                   const value = Number(event.target.value);
                   onCoDebtChange(Number.isFinite(value) && value >= 0 ? value : 0);
                 }}
-                className="w-full rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+                className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
               />
               <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
             </div>
@@ -91,7 +91,7 @@ export function CoBorrowerSection({
                   const value = Number(raw);
                   onCoIncomeProvidedChange(Number.isFinite(value) && value >= 0 ? value : 0);
                 }}
-                className="w-full rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+                className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
               />
               <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
             </div>

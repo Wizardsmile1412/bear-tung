@@ -24,13 +24,13 @@ export function InfoTooltip({ label }: InfoTooltipProps) {
         aria-expanded={isExpanded}
         aria-label="ดูคำอธิบาย"
         onClick={() => setIsExpanded((current) => !current)}
-        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[999px] border border-outline text-xs font-semibold text-ink-muted hover:bg-surface-sunken transition-colors"
+        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-pill border border-outline text-xs font-semibold text-ink-muted hover:bg-surface-sunken transition-colors"
       >
         ?
       </button>
 
       {isExpanded && (
-        <span className="absolute left-0 top-full z-10 mt-2 w-64 rounded-card border border-outline bg-surface p-3 text-sm text-ink-muted shadow-[0_6px_20px_rgba(15,23,42,0.08)]">
+        <span className="absolute left-0 top-full z-10 mt-2 w-64 rounded-card border border-outline bg-surface p-3 text-sm text-ink-muted shadow-card-hover">
           {label}
         </span>
       )}

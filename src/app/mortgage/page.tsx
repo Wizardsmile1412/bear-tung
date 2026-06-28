@@ -87,7 +87,7 @@ export default function MortgagePage() {
           <p className="text-base text-ink-muted">ยังไม่มีข้อมูล — เริ่มกรอก Cash Flow ของคุณ</p>
           <Link
             href="/cashflow"
-            className="mt-4 inline-flex h-12 items-center justify-center rounded-[12px] bg-primary px-6 text-base font-semibold text-white transition-colors hover:bg-primary-hover"
+            className="mt-4 inline-flex h-12 items-center justify-center rounded-button bg-primary px-6 text-base font-semibold text-white transition-colors hover:bg-primary-hover"
           >
             เริ่มกรอก Cash Flow
           </Link>
@@ -190,7 +190,7 @@ function MortgagePageContent(props: MortgagePageContentProps) {
         onDownPaymentAvailableChange={props.setDownPaymentAvailable}
       />
 
-      <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+      <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
         <h2 className="text-xl font-semibold text-ink">รายได้และหนี้ปัจจุบัน (จาก Cash Flow)</h2>
         <p className="mt-2 text-sm text-ink-muted">
           รายได้ต่อเดือน (จาก Cash Flow ของเดือนที่ประเมิน): {Money.formatWithUnit(monthlyIncome)}

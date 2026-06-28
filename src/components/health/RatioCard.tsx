@@ -27,7 +27,7 @@ export function RatioCard({ result }: RatioCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+    <div className="rounded-card border border-outline bg-surface p-6 shadow-card">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-lg font-semibold text-ink">{result.label}</h3>
         <StatusBadge tone={result.status} label={toneLabel(result.status)} />

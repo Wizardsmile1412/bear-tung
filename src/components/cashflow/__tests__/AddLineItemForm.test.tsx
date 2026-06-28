@@ -1,8 +1,21 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { AddLineItemForm } from "../AddLineItemForm";
+
+/**
+ * Picks a month from a `MonthPicker` trigger: opens it, steps the year
+ * forward `yearSteps` times, then clicks the Thai abbreviated month label.
+ */
+async function pickMonth(triggerLabel: RegExp | string, monthLabel: string, yearSteps = 0) {
+  await userEvent.click(screen.getByLabelText(triggerLabel));
+  const panel = screen.getByRole("dialog");
+  for (let step = 0; step < yearSteps; step += 1) {
+    await userEvent.click(within(panel).getByRole("button", { name: "ปีถัดไป" }));
+  }
+  await userEvent.click(within(panel).getByRole("button", { name: monthLabel }));
+}
 
 describe("AddLineItemForm", () => {
   it("submits a new income item with the entered label, amount, and effectiveFrom", async () => {
@@ -35,8 +48,8 @@ describe("AddLineItemForm", () => {
     await userEvent.clear(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"));
     await userEvent.type(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"), "10000");
 
-    const endMonthInput = screen.getByLabelText(/ผ่อนหมดเดือน/) as HTMLInputElement;
-    await userEvent.type(endMonthInput, "2027-03");
+    // effectiveFrom defaults to 2026-06; step the endMonth picker to มี.ค. 2027.
+    await pickMonth(/ผ่อนหมดเดือน/, "มี.ค.", 1);
 
     await userEvent.click(screen.getByRole("button", { name: "เพิ่มรายการ" }));
 
@@ -92,14 +105,13 @@ describe("AddLineItemForm", () => {
 
   it("does not call onAdd when effectiveFrom is empty", async () => {
     const onAdd = vi.fn();
-    const { container } = render(<AddLineItemForm category="expense" startMonth="2026-06" onAdd={onAdd} />);
+    // With an empty startMonth the picker has no default value, so the user can
+    // reach the form with a blank effectiveFrom — this exercises the guard.
+    const { container } = render(<AddLineItemForm category="expense" startMonth="" onAdd={onAdd} />);
 
     await userEvent.type(screen.getByLabelText("รายการ"), "ของใช้");
     await userEvent.clear(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"));
     await userEvent.type(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"), "1000");
-
-    const effectiveFromInput = screen.getByLabelText("เริ่มตั้งแต่เดือน") as HTMLInputElement;
-    fireEvent.change(effectiveFromInput, { target: { value: "" } });
 
     const form = container.querySelector("form")!;
     fireEvent.submit(form);
@@ -128,9 +140,8 @@ describe("AddLineItemForm", () => {
     await userEvent.type(screen.getByLabelText("รายการ"), "ค่าเดินทาง");
     await userEvent.selectOptions(screen.getByLabelText("หมวดหมู่"), "transport");
 
-    const effectiveFromInput = screen.getByLabelText("เริ่มตั้งแต่เดือน") as HTMLInputElement;
-    await userEvent.clear(effectiveFromInput);
-    await userEvent.type(effectiveFromInput, "2026-08");
+    // startMonth is 2026-06; pick ส.ค. (August) of the same year.
+    await pickMonth("เริ่มตั้งแต่เดือน", "ส.ค.");
 
     await userEvent.clear(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"));
     await userEvent.type(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"), "2000");

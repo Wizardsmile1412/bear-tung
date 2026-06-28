@@ -32,13 +32,13 @@ export function CategoryGroupCard({
   const subtotal = items.reduce((sum, item) => sum + item.amountAt(month), 0);
 
   return (
-    <section className="rounded-card border border-outline bg-surface p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
+    <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-ink">{CATEGORY_LABELS[category]}</h2>
         <button
           type="button"
           onClick={() => setIsAdding((current) => !current)}
-          className="flex h-11 items-center rounded-[12px] border border-outline px-4 text-sm font-medium text-ink hover:bg-surface-sunken transition-colors"
+          className="flex h-11 items-center rounded-button border border-outline px-4 text-sm font-medium text-ink hover:bg-surface-sunken transition-colors"
         >
           {isAdding ? "ปิด" : "+ เพิ่มรายการ"}
         </button>

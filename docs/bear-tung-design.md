@@ -3,7 +3,11 @@
 > Design system for the Money Health Check web app.
 > Style: clean, professional, financially trustworthy (not childish, not cartoonish).
 > Primary device: iPad Air 4 (820×1180 portrait), then responsive.
-> Version 0.2 — replaces the "Skylearn" design system for this project.
+> Version 0.3 — formalized token tables (radius/shadow/motion), button-size matrix, and
+> badge-variant table, with structure adapted from the NovaSpark design system. Bear-tung's
+> own values, Thai typography, and WCAG-audited status colors are preserved (NovaSpark's
+> Inter font, brighter status palette, and dark mode were intentionally **not** adopted).
+> Supersedes v0.2 / the "Skylearn" design system for this project.
 > Note: this doc is in English; the app UI is in Thai (sample UI copy below is shown in Thai).
 
 ---
@@ -101,10 +105,29 @@ Minimum text size 13px; always use tabular-nums for money figures.
 
 ## 5. Elevation & Radius
 
-- **Card:** 1px border (#E2E8F0) + soft shadow `0 1px 3px rgba(15,23,42,0.06)`
-- **Card hover (if interactive):** `0 6px 20px rgba(15,23,42,0.08)`
-- **Modal:** `0 24px 48px rgba(15,23,42,0.12)` + light backdrop blur
-- **Radius:** 8px (input/chip), 12px (button), 16px (card), 24px (modal/large panel), 999px (pill/status badge)
+Formalized as tokens in `globals.css`'s `@theme` block (Tailwind v4 generates the
+matching utilities). Token-table structure adapted from the NovaSpark design system;
+the **values are Bear-tung's own** (kept from earlier ad-hoc usage, not NovaSpark's).
+
+**Radius** — role-based names; `--radius-*` → `rounded-*` utilities:
+| Token | Utility | Value | Use |
+|---|---|---|---|
+| `--radius-sm` | `rounded-sm` | 4px | checkbox, small controls |
+| `--radius-input` | `rounded-input` | 8px | inputs, chips, selects |
+| `--radius-button` | `rounded-button` | 12px | buttons |
+| `--radius-card` | `rounded-card` | 16px | cards, panels |
+| `--radius-modal` | `rounded-modal` | 24px | modals, large panels |
+| `--radius-pill` | `rounded-pill` | 999px | pills, status badges |
+
+**Shadow** — `--shadow-*` → `shadow-*` utilities:
+| Token | Utility | Value | Use |
+|---|---|---|---|
+| `--shadow-card` | `shadow-card` | `0 1px 3px rgba(15,23,42,0.06)` | default card lift |
+| `--shadow-card-hover` | `shadow-card-hover` | `0 6px 20px rgba(15,23,42,0.08)` | interactive card hover, popover |
+| `--shadow-modal` | `shadow-modal` | `0 24px 48px rgba(15,23,42,0.12)` | modal (+ light backdrop blur) |
+
+- **Card:** 1px border (#E2E8F0) + `shadow-card`.
+- **Card hover (if interactive):** `shadow-card-hover` + slight `translateY(-2px)`.
 
 ---
 
@@ -115,10 +138,26 @@ Minimum text size 13px; always use tabular-nums for money figures.
 - **Stat / Summary Card:** total income / expense / debt / remaining — tabular number + category icon.
 - **Input Field:** 1px border, radius 8px, padding 12×16, body 16px, suffix "บาท" or "/เดือน"; focus = primary border + 3px primary-soft ring; auto comma-formatting.
 - **Category Group (form):** card grouping multiple inputs in one category, with a subtotal at the bottom.
-- **Primary Button:** 48px tall, radius 12px, primary fill, white text 16px/600; hover deepens; active scale 0.98.
+- **Primary Button:** 48px tall, `rounded-button`, primary fill, white text 16px/600; hover deepens (`primary-hover`); active scale 0.98.
 - **Secondary Button:** surface background, outline border, ink text.
+- **Button sizes** (matrix adapted from NovaSpark; heights honor the 44px min tap target on touch):
+  | Size | Height | Padding (x) | Font | Use |
+  |---|---|---|---|---|
+  | SM | 36px | 16px | 14px/600 | dense rows, inline actions (mouse/secondary contexts) |
+  | MD | 44px | 20px | 16px/600 | default; meets min tap target |
+  | LG | 48px | 32px | 16px/600 | primary CTAs (Cash Flow start, submit) |
+
+  All sizes: `rounded-button`, `transition-colors`, `active:scale-[0.98]`; disabled = 40% opacity; focus = primary border + 3px `primary-soft` ring.
 - **Chart Card (Recharts):** donut (expense breakdown), bar (comparison), clear legend, tooltip with value + %.
-- **Traffic Light Badge:** 999px pill — green/yellow/red + icon (✓ / ! / ✕) + text; never color-only.
+- **Traffic Light Badge:** `rounded-pill` — green/yellow/red + icon (✓ / ! / ✕) + text; never color-only.
+- **Badge / Tag variants** (table adapted from NovaSpark; uses Bear-tung's *audited* status colors, never NovaSpark's brighter shades which failed AA — see §2):
+  | Variant | Background | Text | Use |
+  |---|---|---|---|
+  | Neutral | `surface-sunken` (#F1F5F9) | `ink-muted` (#475569) | tags, metadata |
+  | Primary | `primary-soft` (#E8EEFF) | `primary` (#1E5EFF) | active rule set, info |
+  | Good | `good-soft` (#DCFCE7) | `good` (#15803D) | healthy status (score 80–100) |
+  | Warning | `warning-soft` (#FEF3C7) | `warning` (#A45A0A) | caution (score 50–79) |
+  | Danger | `danger-soft` (#FEE2E2) | `danger` (#C81E1E) | at-risk status (score 0–49) |
 - **Mortgage Result Card:** affordable/not (color + icon), max home price, monthly payment, DSR after loan, required down payment.
 - **Assumption Panel:** fields to adjust interest/term/DSR/LTV with defaults and a badge showing which rule set is active (temporary/normal).
 - **Export Button:** secondary button + table icon, label "Export Excel".
@@ -131,7 +170,7 @@ Minimum text size 13px; always use tabular-nums for money figures.
 
 Smooth, professional, not flashy (no confetti):
 
-- Standard transition: 200ms `cubic-bezier(0.4, 0, 0.2, 1)`
+- Standard transition: 200ms `cubic-bezier(0.4, 0, 0.2, 1)` — exposed as `--ease-standard` (→ `ease-standard`); this also matches Tailwind's default transition easing, so bare `transition-colors` already conforms.
 - Gauge / progress fill: 600ms ease-out (count-up allowed)
 - Bar/donut entrance: 400ms ease-out
 - Respect `prefers-reduced-motion`: disable count-up/fill animations, snap to final value

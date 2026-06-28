@@ -15,7 +15,7 @@ export function ExportButton({ onClick }: ExportButtonProps) {
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex h-11 items-center gap-2 rounded-[12px] border border-outline bg-surface px-5 text-base font-semibold text-ink transition-colors hover:bg-surface-sunken"
+      className="inline-flex h-11 items-center gap-2 rounded-button border border-outline bg-surface px-5 text-base font-semibold text-ink transition-colors hover:bg-surface-sunken"
     >
       <svg
         aria-hidden="true"

@@ -47,9 +47,26 @@
   /* Fonts */
   --font-sans: var(--font-thai), sans-serif;
 
-  /* Radii */
-  --radius-card: 16px;
-  --radius-modal: 24px;
+  /* Radii — formal scale (token table in design.md §5).
+     Role-based names keep Bear-tung's existing values; structure/discipline
+     adapted from the NovaSpark design system's radius table. */
+  --radius-sm: 4px; /* checkbox, small controls */
+  --radius-input: 8px; /* inputs, chips */
+  --radius-button: 12px; /* buttons */
+  --radius-card: 16px; /* cards, panels */
+  --radius-modal: 24px; /* modals, large panels */
+  --radius-pill: 999px; /* pills, status badges */
+
+  /* Shadows — formal scale (design.md §5). Values unchanged from the
+     arbitrary-value usages they replace; promoted to tokens so every card
+     shares one source of truth. */
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 6px 20px rgba(15, 23, 42, 0.08);
+  --shadow-modal: 0 24px 48px rgba(15, 23, 42, 0.12);
+
+  /* Motion — design.md §7. Standard easing matches Tailwind's default
+     transition timing; durations exposed as tokens for explicit use. */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {

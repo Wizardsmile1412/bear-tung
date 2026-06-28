@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { LineItem, LineItemCategory } from "@/domain/model/LineItem";
+import { MonthPicker } from "@/components/ui/MonthPicker";
 
 import { SUB_CATEGORY_PRESETS } from "./subCategoryPresets";
 
@@ -11,6 +12,13 @@ interface AddLineItemFormProps {
   startMonth: string;
   onAdd(item: LineItem): void;
 }
+
+/** Example placeholder for the "รายการ" field, tailored to each category. */
+const LABEL_PLACEHOLDERS: Record<LineItemCategory, string> = {
+  income: "เช่น เงินเดือนประจำ",
+  expense: "เช่น ค่าเช่าบ้าน",
+  debt: "เช่น ผ่อนรถยนต์",
+};
 
 /** Inline form for adding one new line item to a category group. */
 export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemFormProps) {
@@ -63,9 +71,9 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
           type="text"
           value={label}
           onChange={(event) => setLabel(event.target.value)}
-          placeholder="เช่น เงินเดือนประจำ"
+          placeholder={LABEL_PLACEHOLDERS[category]}
           required
-          className="rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+          className="rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
         />
       </div>
 
@@ -77,7 +85,7 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
           id={`${category}-subCategory`}
           value={subCategory}
           onChange={(event) => setSubCategory(event.target.value)}
-          className="rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+          className="rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
         >
           {presets.map((option) => (
             <option key={option.value} value={option.value}>
@@ -102,7 +110,7 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
             onChange={(event) => setAmount(event.target.value)}
             placeholder="0"
             required
-            className="w-full rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+            className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
           />
           <span className="text-xs text-ink-subtle whitespace-nowrap">บาท/เดือน</span>
         </div>
@@ -112,13 +120,10 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
         <label htmlFor={`${category}-effectiveFrom`} className="text-sm font-medium text-ink-muted">
           เริ่มตั้งแต่เดือน
         </label>
-        <input
+        <MonthPicker
           id={`${category}-effectiveFrom`}
-          type="month"
           value={effectiveFrom}
-          onChange={(event) => setEffectiveFrom(event.target.value)}
-          required
-          className="rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+          onChange={setEffectiveFrom}
         />
       </div>
 
@@ -127,19 +132,20 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
           <label htmlFor={`${category}-endMonth`} className="text-sm font-medium text-ink-muted">
             ผ่อนหมดเดือน (ไม่มีกำหนด หากไม่กรอก)
           </label>
-          <input
+          <MonthPicker
             id={`${category}-endMonth`}
-            type="month"
             value={endMonth}
-            onChange={(event) => setEndMonth(event.target.value)}
-            className="rounded-[8px] border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+            onChange={setEndMonth}
+            min={effectiveFrom}
+            placeholder="ไม่มีกำหนด"
+            clearable
           />
         </div>
       )}
 
       <button
         type="submit"
-        className="h-12 rounded-[12px] bg-primary text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
+        className="h-12 rounded-button bg-primary text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
       >
         เพิ่มรายการ
       </button>

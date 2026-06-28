@@ -44,7 +44,7 @@ export default function Home() {
         <div className="flex flex-col items-center gap-3">
           <Link
             href="/dashboard"
-            className="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary px-8 text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
+            className="inline-flex h-12 items-center justify-center rounded-button bg-primary px-8 text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
           >
             ดูสุขภาพการเงินของคุณ
           </Link>
@@ -58,7 +58,7 @@ export default function Home() {
       ) : (
         <Link
           href="/cashflow"
-          className="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary px-8 text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
+          className="inline-flex h-12 items-center justify-center rounded-button bg-primary px-8 text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
         >
           เริ่มต้นใช้งาน
         </Link>
