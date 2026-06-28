@@ -61,7 +61,7 @@ Verify end-to-end against the sample numbers (section 6).
 ### mortgage/
 - Amortization: loan 3,000,000 @6.5% 30y → ~18,962/month (round-trips back)
 - **interest = 0** (special formula: payment = P/n)
-- LtvPolicyFactory: date ≤ 30 Jun 2026 → Temporary(100%), after → Normal
+- LtvPolicyFactory: date ≤ 30 Jun 2027 → Temporary(100%), after → Normal
 - NormalLtvPolicy: home order 1/2/3 + price <10M / ≥10M gives correct %
 - term cap: age 40→30y, 50→20y, 55→15y (age + term ≤ 70)
 - MortgageService: maxLoan = min(LTV, DSR), canAfford correct, distinguishes LTV- vs DSR-bound

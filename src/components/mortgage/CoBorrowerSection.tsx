@@ -5,6 +5,7 @@ import { CoBorrowerResult } from "@/domain/mortgage/CoBorrowerService";
 
 import { StatusBadge } from "@/components/health/StatusBadge";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
+import { NumericField } from "@/components/ui/NumericField";
 
 interface CoBorrowerSectionProps {
   enabled: boolean;
@@ -53,17 +54,11 @@ export function CoBorrowerSection({
               หนี้ปัจจุบันของผู้กู้ร่วม
             </label>
             <div className="flex items-center gap-2">
-              <input
+              <NumericField
                 id="coDebt"
-                type="number"
                 inputMode="decimal"
-                min={0}
-                step="1"
                 value={coDebt}
-                onChange={(event) => {
-                  const value = Number(event.target.value);
-                  onCoDebtChange(Number.isFinite(value) && value >= 0 ? value : 0);
-                }}
+                onChange={onCoDebtChange}
                 className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
               />
               <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
@@ -75,22 +70,12 @@ export function CoBorrowerSection({
               รายได้ของผู้กู้ร่วม (ถ้ามี)
             </label>
             <div className="flex items-center gap-2">
-              <input
+              <NumericField
                 id="coIncomeProvided"
-                type="number"
                 inputMode="decimal"
-                min={0}
-                step="1"
-                value={coIncomeProvided ?? ""}
-                onChange={(event) => {
-                  const raw = event.target.value;
-                  if (raw === "") {
-                    onCoIncomeProvidedChange(undefined);
-                    return;
-                  }
-                  const value = Number(raw);
-                  onCoIncomeProvidedChange(Number.isFinite(value) && value >= 0 ? value : 0);
-                }}
+                value={coIncomeProvided}
+                onChange={onCoIncomeProvidedChange}
+                optional
                 className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
               />
               <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>

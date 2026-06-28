@@ -116,15 +116,15 @@ describe("MortgageService", () => {
     expect(result.ltvPolicyName).toBe("fixed");
   });
 
-  it("ltvPolicyName is 'temporary' for an assessment date on/before the relaxation end date (2026-06-30), using the real LtvPolicyFactory", () => {
+  it("ltvPolicyName is 'temporary' for an assessment date on/before the relaxation end date (2027-06-30), using the real LtvPolicyFactory", () => {
     const service = new MortgageService(LtvPolicyFactory.forDate);
-    const result = service.evaluate(baseInput({ assessmentDate: new Date("2026-06-30") }));
+    const result = service.evaluate(baseInput({ assessmentDate: new Date("2027-06-30") }));
     expect(result.ltvPolicyName).toBe("temporary");
   });
 
   it("ltvPolicyName is 'normal' for an assessment date after the relaxation end date, using the real default LtvPolicyFactory (no override injected)", () => {
     const service = new MortgageService();
-    const result = service.evaluate(baseInput({ assessmentDate: new Date("2026-07-01") }));
+    const result = service.evaluate(baseInput({ assessmentDate: new Date("2027-07-01") }));
     expect(result.ltvPolicyName).toBe("normal");
   });
 });

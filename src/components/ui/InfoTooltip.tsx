@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface InfoTooltipProps {
   /** The Thai explanation text revealed when the (?) icon is toggled open. */
@@ -16,9 +16,24 @@ interface InfoTooltipProps {
  */
 export function InfoTooltip({ label }: InfoTooltipProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const rootRef = useRef<HTMLSpanElement>(null);
+
+  // Dismiss on any outside click, matching MonthPicker's popover behavior.
+  useEffect(() => {
+    if (!isExpanded) return;
+
+    function handlePointerDown(event: MouseEvent) {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        setIsExpanded(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [isExpanded]);
 
   return (
-    <span className="relative inline-flex">
+    <span ref={rootRef} className="relative inline-flex">
       <button
         type="button"
         aria-expanded={isExpanded}

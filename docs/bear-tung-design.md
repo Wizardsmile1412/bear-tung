@@ -60,6 +60,20 @@ Cool/neutral tones for a professional, non-garish look:
 
 > Note: the traffic-light colors (green/yellow/red) are **reserved for money-health status only**. Don't use them as chart category colors, to avoid confusing the meaning.
 
+### Cash Flow category tints (scoped exception)
+The Cash Flow **input form** tints each category card for at-a-glance scanning. Because
+that page shows no health score/traffic-light, there's nothing to confuse, so this is an
+allowed exception to the reservation above — but the tints are a **separate, lighter token
+set** (`--color-cat-*`, 50-step soft backgrounds) so they don't read as status colors:
+- **Income** — green: `#047857` on soft `#ECFDF5`
+- **Expense** — red: `#B91C1C` on soft `#FEF2F2`
+- **Debt** — amber: `#B45309` on soft `#FFFBEB`
+- **Savings** — primary blue: `#1E5EFF` on soft `#E8EEFF` (reuses brand tokens)
+
+Each card uses a soft background + 4px accent left-border + filled accent icon-chip; the
+subtotal figure is shown in the accent color. All accent/soft pairings pass AA — verified
+in `scripts/check-contrast.mjs`. These tints are **not** for use outside the Cash Flow form.
+
 ---
 
 ## 3. Typography
@@ -159,7 +173,7 @@ the **values are Bear-tung's own** (kept from earlier ad-hoc usage, not NovaSpar
   | Warning | `warning-soft` (#FEF3C7) | `warning` (#A45A0A) | caution (score 50–79) |
   | Danger | `danger-soft` (#FEE2E2) | `danger` (#C81E1E) | at-risk status (score 0–49) |
 - **Mortgage Result Card:** affordable/not (color + icon), max home price, monthly payment, DSR after loan, required down payment.
-- **Assumption Panel:** fields to adjust interest/term/DSR/LTV with defaults and a badge showing which rule set is active (temporary/normal).
+- **Assumption Panel:** fields to adjust interest/term, a fixed (disabled) DSR cap field, and an LTV badge showing which rule set is active (temporary/normal).
 - **Export Button:** secondary button + table icon, label "Export Excel".
 - **Tooltip / Explain Popover:** explains a financial term when the (?) icon is tapped — important for non-financial users.
 - **Empty State:** "ยังไม่มีข้อมูล — เริ่มกรอก Cash Flow ของคุณ" + start button.

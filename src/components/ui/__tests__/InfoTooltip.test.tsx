@@ -39,4 +39,24 @@ describe("InfoTooltip", () => {
     expect(button.tagName).toBe("BUTTON");
     expect(button).toHaveAttribute("type", "button");
   });
+
+  it("hides the explanation when clicking anywhere outside the tooltip", async () => {
+    render(
+      <div>
+        <InfoTooltip label={LABEL} />
+        <p>elsewhere on the page</p>
+      </div>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "ดูคำอธิบาย" }));
+    expect(screen.getByText(LABEL)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText("elsewhere on the page"));
+
+    expect(screen.queryByText(LABEL)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "ดูคำอธิบาย" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  });
 });

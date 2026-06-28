@@ -47,7 +47,7 @@ Build the full flow end-to-end in the MVP:
 | Data storage | Browser local storage (no login) |
 | UI language | Thai (financial jargon stays in English) |
 | Cash flow input | Categorized — confirmed |
-| Mortgage | Default values (LTV/DSR/interest/term), all adjustable |
+| Mortgage | Default values (LTV/DSR/interest/term) — interest & term adjustable, DSR fixed at 40% |
 | Default interest | ~6.5%/yr (ref: Thai commercial bank MRR), adjustable |
 | Default term | 30 years, but capped by "borrower age + term ≤ 70" |
 | Projection | Fixed 5 years (60 months), monthly — debts have end dates; income/expense change by date (carry-forward) |
@@ -193,16 +193,16 @@ healthScore = round(
 - `downPaymentAvailable` — available down payment (default = assets.savings)
 - `assessmentMonth` — month used for assessment (current or future within the projection)
 - `monthlyIncome` / `existingDebt` — pulled from cash flow **of `assessmentMonth`**
-- `dsrLimit` — DSR cap (default 40%, adjustable)
+- `dsrLimit` — DSR cap, fixed at 40% (not user-adjustable; shown read-only in the UI)
 - `coBorrower` (optional) — `{ enabled, monthlyIncome, existingDebt }` see 8.5
 
 > Term note: most banks require "borrower age + term ≤ 70" (some 65). E.g. age 40 → max 30y, age 50 → max 20y.
 
 ### 8.2 LTV rules — date-based rule set
 
-**Temporary relaxation (1 May 2025 – 30 Jun 2026):** LTV 100% in all cases, all price tiers, all home orders.
+**Temporary relaxation (1 May 2025 – 30 Jun 2027 — extended 1 year by BOT ฉบับที่ 19/2569, 14 พ.ค. 2569):** LTV 100% in all cases, all price tiers, all home orders.
 
-**Normal rules (after 30 Jun 2026):**
+**Normal rules (after 30 Jun 2027):**
 | Case | LTV cap | Min down payment |
 |---|---|---|
 | 1st home, price < 10M | 100% (+10% furnishing) | 0% |
@@ -211,7 +211,7 @@ healthScore = round(
 | 2nd home (1st paid < 2 yrs) | 80% | 20% |
 | 3rd+ home | 70% | 30% |
 
-> ⚠️ Implement LTV as config with `effectiveFrom` / `effectiveTo` because the temporary relaxation ends 30 Jun 2026 — the app should auto-pick the rule set by current date and tell the user which set is active.
+> ⚠️ Implement LTV as config with `effectiveFrom` / `effectiveTo` because the temporary relaxation ends 30 Jun 2027 — the app should auto-pick the rule set by current date and tell the user which set is active.
 
 ### 8.3 Calculation logic
 
@@ -336,6 +336,7 @@ Technical proposal: use **SheetJS (xlsx)** or **ExcelJS** on the client (data is
 ## Policy sources
 
 - [BOT — temporary LTV relaxation (1 May 2025 – 30 Jun 2026)](https://www.bot.or.th/th/news-and-media/news/news-20250320.html)
+- BOT — ฉบับที่ 19/2569 (14 พ.ค. 2569): extends the LTV relaxation 1 more year, to 30 Jun 2027 — see `docs/news-20260514.pdf`
 - [Krungsri — LTV measures 2026](https://www.krungsri.com/th/krungsri-the-coach/loan/mortgages/ltv-home-loan)
 - [DDproperty — LTV update 2026](https://www.ddproperty.com/คู่มือซื้อขาย/อัปเดตมาตรการ-ltv-ช่วยคนกู้ซื้อบ้านเพื่ออยู่อาศัยจริง-22232)
 - [DDproperty — home loan / MRR rates May 2026 (MRR ~6.5–7.3%)](https://www.ddproperty.com/คู่มือซื้อขาย/อัปเดตอัตราดอกเบี้ยเงินให้สินเชื่อ-mrr-mlr-mor-6217)

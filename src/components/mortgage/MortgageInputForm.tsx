@@ -1,5 +1,7 @@
 "use client";
 
+import { NumericField } from "@/components/ui/NumericField";
+
 interface MortgageInputFormProps {
   homePrice: number;
   onHomePriceChange(value: number): void;
@@ -41,17 +43,11 @@ export function MortgageInputForm({
             ราคาบ้านที่ต้องการ
           </label>
           <div className="flex items-center gap-2">
-            <input
+            <NumericField
               id="homePrice"
-              type="number"
               inputMode="decimal"
-              min={0}
-              step="1"
               value={homePrice}
-              onChange={(event) => {
-                const value = Number(event.target.value);
-                onHomePriceChange(Number.isFinite(value) && value >= 0 ? value : 0);
-              }}
+              onChange={onHomePriceChange}
               className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
@@ -93,17 +89,11 @@ export function MortgageInputForm({
           <label htmlFor="borrowerAge" className="text-sm font-medium text-ink-muted">
             อายุผู้กู้
           </label>
-          <input
+          <NumericField
             id="borrowerAge"
-            type="number"
             inputMode="numeric"
-            min={0}
-            step="1"
             value={borrowerAge}
-            onChange={(event) => {
-              const value = Number(event.target.value);
-              onBorrowerAgeChange(Number.isFinite(value) && value >= 0 ? value : 0);
-            }}
+            onChange={onBorrowerAgeChange}
             className="rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
           />
         </div>
@@ -113,17 +103,11 @@ export function MortgageInputForm({
             เงินดาวน์ที่มี
           </label>
           <div className="flex items-center gap-2">
-            <input
+            <NumericField
               id="downPaymentAvailable"
-              type="number"
               inputMode="decimal"
-              min={0}
-              step="1"
               value={downPaymentAvailable}
-              onChange={(event) => {
-                const value = Number(event.target.value);
-                onDownPaymentAvailableChange(Number.isFinite(value) && value >= 0 ? value : 0);
-              }}
+              onChange={onDownPaymentAvailableChange}
               className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>

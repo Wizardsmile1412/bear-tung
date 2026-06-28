@@ -48,7 +48,7 @@ npm run test:coverage  # tests + coverage
 - **OOP + SOLID only in `src/domain/`** — ratios as Strategy, LtvPolicy + Factory, Repository pattern, depend on interfaces (DIP) for testability.
 - **UI is functional React** (idiomatic) — apply SOLID via small components + hooks.
 - Don't over-engineer — add abstraction only when justified.
-- Defaults live in `domain/config/` (interest 6.5%, term 30y, DSR 40%, weights 35/35/30); **LTV is a date-based rule set** (the 100% relaxation ends 30 Jun 2026).
+- Defaults live in `domain/config/` (interest 6.5%, term 30y, DSR 40%, weights 35/35/30); **LTV is a date-based rule set** (the 100% relaxation ends 30 Jun 2027, extended 1 year by BOT ฉบับที่ 19/2569).
 
 ## Definition of Done (critical)
 

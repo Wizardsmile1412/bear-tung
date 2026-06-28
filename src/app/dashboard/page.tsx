@@ -15,6 +15,7 @@ import { ScoreTrendChart } from "@/components/charts/ScoreTrendChart";
 import { subCategoryLabel } from "@/components/cashflow/subCategoryPresets";
 import { ExportButton } from "@/components/export/ExportButton";
 import { useExport } from "@/components/export/useExport";
+import { NavButtonLink } from "@/components/ui/NavButtonLink";
 
 export default function DashboardPage() {
   const { profile, isLoaded: profileLoaded } = useProfile();
@@ -61,13 +62,13 @@ export default function DashboardPage() {
           </div>
           {profile.items.length > 0 && <ExportButton onClick={exportToExcel} />}
         </div>
-        <div className="mt-2 flex flex-wrap gap-4">
-          <Link href="/cashflow" className="text-sm font-medium text-primary hover:text-primary-hover">
-            ← กลับไปกรอก Cash Flow
-          </Link>
-          <Link href="/mortgage" className="text-sm font-medium text-primary hover:text-primary-hover">
-            ประเมินสินเชื่อบ้าน →
-          </Link>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <NavButtonLink href="/cashflow" variant="secondary" arrow="left">
+            กลับไปกรอก Cash Flow
+          </NavButtonLink>
+          <NavButtonLink href="/mortgage" variant="primary" arrow="right">
+            ประเมินสินเชื่อบ้าน
+          </NavButtonLink>
         </div>
       </header>
 

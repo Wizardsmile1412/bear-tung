@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
+import { NavButtonLink } from "@/components/ui/NavButtonLink";
 import { useProfile } from "@/components/profile/useProfile";
 import { CategoryGroupCard } from "@/components/cashflow/CategoryGroupCard";
 import { EmptyState } from "@/components/cashflow/EmptyState";
@@ -25,9 +24,11 @@ export default function CashFlowPage() {
         <p className="mt-1 text-base text-ink-muted">
           กรอกรายรับ รายจ่าย และหนี้สิน เพื่อดูสุขภาพการเงินของคุณ
         </p>
-        <Link href="/dashboard" className="mt-2 inline-block text-sm font-medium text-primary hover:text-primary-hover">
-          ดูสุขภาพการเงิน →
-        </Link>
+        <div className="mt-4">
+          <NavButtonLink href="/dashboard" variant="primary" arrow="right">
+            ดูสุขภาพการเงิน
+          </NavButtonLink>
+        </div>
       </header>
 
       {profile.items.length === 0 && <EmptyState />}

@@ -23,8 +23,8 @@ export const HEALTH_SCORE_WEIGHTS = {
   emergencyFund: 0.3,
 } as const;
 
-/** Last day the temporary 100% LTV relaxation applies (inclusive). */
-export const LTV_RELAXATION_END_DATE = "2026-06-30";
+/** Last day the temporary 100% LTV relaxation applies (inclusive). BOT extended it 1 more year per ฉบับที่ 19/2569 (14 พ.ค. 2569). */
+export const LTV_RELAXATION_END_DATE = "2027-06-30";
 
 /** Length of the projection series in months (5 years). */
 export const PROJECTION_MONTHS = 60;

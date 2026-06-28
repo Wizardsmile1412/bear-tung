@@ -7,7 +7,7 @@ import { SavingsCard } from "../SavingsCard";
 describe("SavingsCard", () => {
   it("renders the current savings value", () => {
     render(<SavingsCard savings={50000} onChange={vi.fn()} />);
-    expect(screen.getByLabelText("เงินออม/เงินสดที่มีอยู่ตอนนี้")).toHaveValue(50000);
+    expect(screen.getByLabelText("เงินออม/เงินสดที่มีอยู่ตอนนี้")).toHaveValue("50000");
   });
 
   it("calls onChange with the parsed numeric value on input", async () => {
@@ -31,13 +31,13 @@ describe("SavingsCard", () => {
     expect(onChange).toHaveBeenCalledWith(0);
   });
 
-  it("falls back to 0 when the input resolves to a finite negative number", () => {
+  it("ignores a negative keystroke (NumericField only accepts digits)", () => {
     const onChange = vi.fn();
     render(<SavingsCard savings={5} onChange={onChange} />);
 
     const input = screen.getByLabelText("เงินออม/เงินสดที่มีอยู่ตอนนี้");
     fireEvent.change(input, { target: { value: "-100" } });
 
-    expect(onChange).toHaveBeenCalledWith(0);
+    expect(onChange).not.toHaveBeenCalled();
   });
 });

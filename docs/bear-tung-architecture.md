@@ -47,7 +47,7 @@ src/domain/
 │  └─ HealthScoreService.ts    # takes Ratio[] + weights → score + traffic light
 ├─ mortgage/
 │  ├─ LtvPolicy.ts             # interface
-│  ├─ TemporaryLtvPolicy.ts    # 100% (until 30 Jun 2026)
+│  ├─ TemporaryLtvPolicy.ts    # 100% (until 30 Jun 2027)
 │  ├─ NormalLtvPolicy.ts       # normal rules
 │  ├─ LtvPolicyFactory.ts      # selects policy by date
 │  ├─ AmortizationCalculator.ts# payment/loan formula
@@ -162,7 +162,7 @@ export interface LtvPolicy { maxLtv(ctx: LtvContext): number; } // returns 0–1
 // domain/mortgage/LtvPolicyFactory.ts
 export class LtvPolicyFactory {
   static forDate(date: Date): LtvPolicy {
-    const relaxEnd = new Date('2026-06-30');
+    const relaxEnd = new Date('2027-06-30');
     return date <= relaxEnd ? new TemporaryLtvPolicy() : new NormalLtvPolicy();
   }
 }

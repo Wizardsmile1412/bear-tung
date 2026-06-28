@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { LineItem, LineItemCategory } from "@/domain/model/LineItem";
 import { MonthPicker } from "@/components/ui/MonthPicker";
+import { NumericField } from "@/components/ui/NumericField";
 
 import { SUB_CATEGORY_PRESETS } from "./subCategoryPresets";
 
@@ -25,7 +26,7 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
   const presets = SUB_CATEGORY_PRESETS[category];
   const [label, setLabel] = useState("");
   const [subCategory, setSubCategory] = useState(presets[0].value);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
   const [effectiveFrom, setEffectiveFrom] = useState(startMonth);
   const [endMonth, setEndMonth] = useState("");
 
@@ -34,7 +35,7 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
   function resetForm() {
     setLabel("");
     setSubCategory(presets[0].value);
-    setAmount("");
+    setAmount(0);
     setEffectiveFrom(startMonth);
     setEndMonth("");
   }
@@ -42,8 +43,7 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const parsedAmount = Number(amount);
-    if (!label.trim() || !Number.isFinite(parsedAmount) || parsedAmount < 0 || !effectiveFrom) {
+    if (!label.trim() || !effectiveFrom) {
       return;
     }
 
@@ -52,7 +52,7 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
       category,
       subCategory,
       label: label.trim(),
-      changes: [{ effectiveFrom, amount: parsedAmount }],
+      changes: [{ effectiveFrom, amount }],
       endMonth: isDebt && endMonth ? endMonth : undefined,
     });
 
@@ -100,14 +100,11 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
           จำนวนเงิน (บาท/เดือน)
         </label>
         <div className="flex items-center gap-2">
-          <input
+          <NumericField
             id={`${category}-amount`}
-            type="number"
             inputMode="decimal"
-            min={0}
-            step="1"
             value={amount}
-            onChange={(event) => setAmount(event.target.value)}
+            onChange={(value) => setAmount(value)}
             placeholder="0"
             required
             className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"

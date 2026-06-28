@@ -36,6 +36,18 @@
   --color-outline: #e2e8f0;
   --color-outline-strong: #94a3b8;
 
+  /* Cash Flow category tints — DECORATIVE only, scoped to the input form
+     (design.md §2 exception). Deliberately NOT the traffic-light good/danger/
+     warning tokens: lighter soft backgrounds (50-step vs the status 100-step)
+     so they read as category coding, not money-health status. Accent text is
+     darkened to pass AA on its own soft background (see check-contrast.mjs). */
+  --color-cat-income: #047857;
+  --color-cat-income-soft: #ecfdf5;
+  --color-cat-expense: #b91c1c;
+  --color-cat-expense-soft: #fef2f2;
+  --color-cat-debt: #b45309;
+  --color-cat-debt-soft: #fffbeb;
+
   /* Chart / category accents (NOT the traffic-light colors) */
   --color-chart-1: #1e5eff;
   --color-chart-2: #0ea5e9;

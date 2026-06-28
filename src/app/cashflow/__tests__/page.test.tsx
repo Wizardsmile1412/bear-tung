@@ -101,6 +101,6 @@ describe("CashFlowPage", () => {
     await userEvent.clear(savingsInput);
     await userEvent.type(savingsInput, "90000");
 
-    expect(savingsInput).toHaveValue(90000);
+    expect(savingsInput).toHaveValue("90000");
   });
 });

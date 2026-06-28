@@ -1,8 +1,8 @@
 import { LtvContext, LtvPolicy } from "./LtvPolicy";
 
 /**
- * BOT temporary relaxation (1 May 2025 - 30 Jun 2026): LTV 100% in all
- * cases, all price tiers, all home orders.
+ * BOT temporary relaxation (1 May 2025 - 30 Jun 2027, extended 1 year by
+ * ฉบับที่ 19/2569): LTV 100% in all cases, all price tiers, all home orders.
  */
 export class TemporaryLtvPolicy implements LtvPolicy {
   readonly name = "temporary";

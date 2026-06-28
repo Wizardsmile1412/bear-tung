@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { NavButtonLink } from "@/components/ui/NavButtonLink";
+
 import { DEFAULT_DSR_LIMIT, DEFAULT_INTEREST_RATE_PERCENT, DEFAULT_LOAN_TERM_YEARS } from "@/domain/config/defaults";
 import { MortgageExportData } from "@/domain/export/ExportData";
 import { MonthKey } from "@/domain/model/MonthKey";
@@ -34,7 +36,6 @@ export default function MortgagePage() {
 
   const [interestRatePercent, setInterestRatePercent] = useState(DEFAULT_INTEREST_RATE_PERCENT);
   const [loanTermYears, setLoanTermYears] = useState(DEFAULT_LOAN_TERM_YEARS);
-  const [dsrLimitPercent, setDsrLimitPercent] = useState(DEFAULT_DSR_LIMIT * 100);
 
   const [coBorrowerEnabled, setCoBorrowerEnabled] = useState(false);
   const [coDebt, setCoDebt] = useState(0);
@@ -65,7 +66,6 @@ export default function MortgagePage() {
                 downPaymentAvailable={downPaymentAvailable}
                 interestRatePercent={interestRatePercent}
                 loanTermYears={loanTermYears}
-                dsrLimitPercent={dsrLimitPercent}
                 coBorrowerEnabled={coBorrowerEnabled}
                 coDebt={coDebt}
                 coIncomeProvided={coIncomeProvided}
@@ -77,9 +77,11 @@ export default function MortgagePage() {
               <NoMortgageExportButton />
             ))}
         </div>
-        <Link href="/dashboard" className="mt-2 inline-block text-sm font-medium text-primary hover:text-primary-hover">
-          ← กลับไปดูสุขภาพการเงิน
-        </Link>
+        <div className="mt-4">
+          <NavButtonLink href="/dashboard" variant="secondary" arrow="left">
+            กลับไปดูสุขภาพการเงิน
+          </NavButtonLink>
+        </div>
       </header>
 
       {profile.items.length === 0 ? (
@@ -112,8 +114,6 @@ export default function MortgagePage() {
           setInterestRatePercent={setInterestRatePercent}
           loanTermYears={loanTermYears}
           setLoanTermYears={setLoanTermYears}
-          dsrLimitPercent={dsrLimitPercent}
-          setDsrLimitPercent={setDsrLimitPercent}
           coBorrowerEnabled={coBorrowerEnabled}
           setCoBorrowerEnabled={setCoBorrowerEnabled}
           coDebt={coDebt}
@@ -146,8 +146,6 @@ interface MortgagePageContentProps {
   setInterestRatePercent(value: number): void;
   loanTermYears: number;
   setLoanTermYears(value: number): void;
-  dsrLimitPercent: number;
-  setDsrLimitPercent(value: number): void;
   coBorrowerEnabled: boolean;
   setCoBorrowerEnabled(value: boolean): void;
   coDebt: number;
@@ -209,8 +207,6 @@ function MortgagePageContent(props: MortgagePageContentProps) {
             onInterestRatePercentChange={props.setInterestRatePercent}
             loanTermYears={props.loanTermYears}
             onLoanTermYearsChange={props.setLoanTermYears}
-            dsrLimitPercent={props.dsrLimitPercent}
-            onDsrLimitPercentChange={props.setDsrLimitPercent}
             ltvPolicyName=""
           />
           <p className="text-base text-ink-muted">กรอกราคาบ้านและอายุผู้กู้เพื่อดูผลการประเมิน</p>
@@ -243,7 +239,7 @@ function MortgageEvaluation(props: MortgageEvaluationProps) {
     downPaymentAvailable: props.downPaymentAvailable,
     monthlyIncome: props.monthlyIncome,
     existingDebt: props.existingDebt,
-    dsrLimit: props.dsrLimitPercent / 100,
+    dsrLimit: DEFAULT_DSR_LIMIT,
     assessmentDate,
   };
 
@@ -255,7 +251,7 @@ function MortgageEvaluation(props: MortgageEvaluationProps) {
     userIncome: props.monthlyIncome,
     userDebt: props.existingDebt,
     coDebt: props.coDebt,
-    dsrLimit: props.dsrLimitPercent / 100,
+    dsrLimit: DEFAULT_DSR_LIMIT,
     coIncomeProvided: props.coIncomeProvided,
   });
 
@@ -266,8 +262,6 @@ function MortgageEvaluation(props: MortgageEvaluationProps) {
         onInterestRatePercentChange={props.setInterestRatePercent}
         loanTermYears={props.loanTermYears}
         onLoanTermYearsChange={props.setLoanTermYears}
-        dsrLimitPercent={props.dsrLimitPercent}
-        onDsrLimitPercentChange={props.setDsrLimitPercent}
         ltvPolicyName={mortgageResult.ltvPolicyName}
       />
 
@@ -294,7 +288,6 @@ interface MortgageExportButtonProps {
   downPaymentAvailable: number;
   interestRatePercent: number;
   loanTermYears: number;
-  dsrLimitPercent: number;
   coBorrowerEnabled: boolean;
   coDebt: number;
   coIncomeProvided: number | undefined;
@@ -322,7 +315,7 @@ function MortgageExportButton(props: MortgageExportButtonProps) {
     downPaymentAvailable: props.downPaymentAvailable,
     monthlyIncome: props.monthlyIncome,
     existingDebt: props.existingDebt,
-    dsrLimit: props.dsrLimitPercent / 100,
+    dsrLimit: DEFAULT_DSR_LIMIT,
     assessmentDate,
   };
 
@@ -334,7 +327,7 @@ function MortgageExportButton(props: MortgageExportButtonProps) {
     userIncome: props.monthlyIncome,
     userDebt: props.existingDebt,
     coDebt: props.coDebt,
-    dsrLimit: props.dsrLimitPercent / 100,
+    dsrLimit: DEFAULT_DSR_LIMIT,
     coIncomeProvided: props.coIncomeProvided,
   };
   const coBorrowerResult = useCoBorrower(mortgageResult, coBorrowerInput);

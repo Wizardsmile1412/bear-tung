@@ -25,9 +25,9 @@ function renderForm(overrides: Partial<React.ComponentProps<typeof MortgageInput
 describe("MortgageInputForm", () => {
   it("renders the current values", () => {
     renderForm();
-    expect(screen.getByLabelText("ราคาบ้านที่ต้องการ")).toHaveValue(3_000_000);
-    expect(screen.getByLabelText("อายุผู้กู้")).toHaveValue(30);
-    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue(500_000);
+    expect(screen.getByLabelText("ราคาบ้านที่ต้องการ")).toHaveValue("3000000");
+    expect(screen.getByLabelText("อายุผู้กู้")).toHaveValue("30");
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("500000");
   });
 
   it("fires onHomePriceChange when the home price input changes", () => {
@@ -77,24 +77,24 @@ describe("MortgageInputForm", () => {
     expect(props.onHomeOrderChange).toHaveBeenCalledWith(2);
   });
 
-  it("falls back to 0 when the home price input resolves to a finite negative number", () => {
+  it("ignores a negative home price keystroke (NumericField only accepts digits)", () => {
     const props = renderForm();
     const input = screen.getByLabelText("ราคาบ้านที่ต้องการ");
     fireEvent.change(input, { target: { value: "-1" } });
-    expect(props.onHomePriceChange).toHaveBeenLastCalledWith(0);
+    expect(props.onHomePriceChange).not.toHaveBeenCalled();
   });
 
-  it("falls back to 0 when the borrower age input resolves to a finite negative number", () => {
+  it("ignores a negative borrower age keystroke (NumericField only accepts digits)", () => {
     const props = renderForm();
     const input = screen.getByLabelText("อายุผู้กู้");
     fireEvent.change(input, { target: { value: "-1" } });
-    expect(props.onBorrowerAgeChange).toHaveBeenLastCalledWith(0);
+    expect(props.onBorrowerAgeChange).not.toHaveBeenCalled();
   });
 
-  it("falls back to 0 when the down payment input resolves to a finite negative number", () => {
+  it("ignores a negative down payment keystroke (NumericField only accepts digits)", () => {
     const props = renderForm();
     const input = screen.getByLabelText("เงินดาวน์ที่มี");
     fireEvent.change(input, { target: { value: "-1" } });
-    expect(props.onDownPaymentAvailableChange).toHaveBeenLastCalledWith(0);
+    expect(props.onDownPaymentAvailableChange).not.toHaveBeenCalled();
   });
 });

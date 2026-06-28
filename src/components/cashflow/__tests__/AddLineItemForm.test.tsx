@@ -82,18 +82,12 @@ describe("AddLineItemForm", () => {
     expect(onAdd).not.toHaveBeenCalled();
   });
 
-  it("treats a cleared/empty amount field as 0 and still submits (native type=number coerces non-numeric input to empty)", async () => {
+  it("treats a cleared/empty amount field as 0 and still submits", async () => {
     const onAdd = vi.fn();
     const { container } = render(<AddLineItemForm category="expense" startMonth="2026-06" onAdd={onAdd} />);
 
     await userEvent.type(screen.getByLabelText("รายการ"), "ของใช้");
     const amountInput = screen.getByLabelText("จำนวนเงิน (บาท/เดือน)") as HTMLInputElement;
-    // A `type="number"` input cannot hold a literal non-numeric string —
-    // the DOM itself coerces invalid keystrokes to an empty value, which
-    // `Number("")` parses as 0 (finite, non-negative) rather than NaN. So
-    // `!Number.isFinite(parsedAmount)` is unreachable through real user
-    // interaction; this test documents the actual resulting behavior
-    // instead of asserting an unreachable path.
     fireEvent.change(amountInput, { target: { value: "" } });
 
     const form = container.querySelector("form")!;
@@ -119,18 +113,14 @@ describe("AddLineItemForm", () => {
     expect(onAdd).not.toHaveBeenCalled();
   });
 
-  it("does not call onAdd when the amount is negative", async () => {
+  it("ignores a negative amount keystroke (NumericField only accepts digits)", async () => {
     const onAdd = vi.fn();
-    const { container } = render(<AddLineItemForm category="expense" startMonth="2026-06" onAdd={onAdd} />);
+    render(<AddLineItemForm category="expense" startMonth="2026-06" onAdd={onAdd} />);
 
-    await userEvent.type(screen.getByLabelText("รายการ"), "ของใช้");
     const amountInput = screen.getByLabelText("จำนวนเงิน (บาท/เดือน)") as HTMLInputElement;
     fireEvent.change(amountInput, { target: { value: "-100" } });
 
-    const form = container.querySelector("form")!;
-    fireEvent.submit(form);
-
-    expect(onAdd).not.toHaveBeenCalled();
+    expect(amountInput.value).toBe("");
   });
 
   it("submits the selected sub-category and effectiveFrom month", async () => {

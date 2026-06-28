@@ -58,6 +58,15 @@ const COLORS = {
   surface: "#FFFFFF",
   background: "#F7F9FC",
   primary: "#1E5EFF",
+  primarySoft: "#E8EEFF",
+
+  // Cash Flow category tints (decorative, design.md §2 exception).
+  catIncome: "#047857",
+  catIncomeSoft: "#ECFDF5",
+  catExpense: "#B91C1C",
+  catExpenseSoft: "#FEF2F2",
+  catDebt: "#B45309",
+  catDebtSoft: "#FFFBEB",
 };
 
 /** @typedef {{ label: string, fg: string, bg: string, threshold: number, thresholdLabel: string }} Pair */
@@ -81,6 +90,16 @@ const PAIRS = [
   { label: "ink-muted on white (secondary text)", fg: COLORS.inkMuted, bg: COLORS.surface, threshold: 4.5, thresholdLabel: "4.5:1 (normal text)" },
 
   { label: "white on primary (button text)", fg: COLORS.surface, bg: COLORS.primary, threshold: 4.5, thresholdLabel: "4.5:1 (normal text)" },
+
+  // Cash Flow category cards: accent subtotal text on its own soft card
+  // background, and white icon glyph on the filled accent chip.
+  { label: "cat-income on income-soft (subtotal)", fg: COLORS.catIncome, bg: COLORS.catIncomeSoft, threshold: 4.5, thresholdLabel: "4.5:1 (normal text)" },
+  { label: "cat-expense on expense-soft (subtotal)", fg: COLORS.catExpense, bg: COLORS.catExpenseSoft, threshold: 4.5, thresholdLabel: "4.5:1 (normal text)" },
+  { label: "cat-debt on debt-soft (subtotal)", fg: COLORS.catDebt, bg: COLORS.catDebtSoft, threshold: 4.5, thresholdLabel: "4.5:1 (normal text)" },
+  { label: "white on cat-income (icon chip)", fg: COLORS.surface, bg: COLORS.catIncome, threshold: 3, thresholdLabel: "3:1 (icon/non-text)" },
+  { label: "white on cat-expense (icon chip)", fg: COLORS.surface, bg: COLORS.catExpense, threshold: 3, thresholdLabel: "3:1 (icon/non-text)" },
+  { label: "white on cat-debt (icon chip)", fg: COLORS.surface, bg: COLORS.catDebt, threshold: 3, thresholdLabel: "3:1 (icon/non-text)" },
+  { label: "white on primary (savings icon chip)", fg: COLORS.surface, bg: COLORS.primary, threshold: 3, thresholdLabel: "3:1 (icon/non-text)" },
 ];
 
 function padRight(text, width) {

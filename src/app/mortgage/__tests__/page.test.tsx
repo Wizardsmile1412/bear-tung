@@ -9,12 +9,12 @@ import { ProfileProvider } from "@/components/profile/ProfileProvider";
 
 import MortgagePage from "../page";
 
-// Deterministic fixture: startMonth '2026-05' means index 0 = 2026-05 (on/before
-// the 2026-06-30 LTV relaxation boundary -> 'temporary' policy) and index 2 =
-// 2026-07 (after the boundary -> 'normal' policy). This intentionally does
+// Deterministic fixture: startMonth '2027-05' means index 0 = 2027-05 (on/before
+// the 2027-06-30 LTV relaxation boundary -> 'temporary' policy) and index 2 =
+// 2027-07 (after the boundary -> 'normal' policy). This intentionally does
 // NOT rely on the real system clock/"today" — the 60-month window straddles
 // the boundary at these known indices regardless of when the test runs.
-const START_MONTH = "2026-05";
+const START_MONTH = "2027-05";
 
 function seedProfile(): void {
   let profile = CashFlowProfile.empty(START_MONTH);
@@ -146,7 +146,7 @@ describe("MortgagePage", () => {
     expect(screen.queryByText("ผลการประเมินสินเชื่อ")).not.toBeInTheDocument();
   });
 
-  it("shows the LTV badge as 'temporary' wording at the early assessment-month index (0 = 2026-05, on/before the relaxation boundary)", () => {
+  it("shows the LTV badge as 'temporary' wording at the early assessment-month index (0 = 2027-05, on/before the relaxation boundary)", () => {
     seedProfile();
     render(
       <ProfileProvider>
@@ -156,10 +156,10 @@ describe("MortgagePage", () => {
 
     fillRequiredFields();
 
-    expect(screen.getByText("เกณฑ์ LTV ผ่อนปรน — กู้ได้สูงสุด 100% ถึง 30 มิ.ย. 2026")).toBeInTheDocument();
+    expect(screen.getByText("เกณฑ์ LTV ผ่อนปรน — กู้ได้สูงสุด 100% ถึง 30 มิ.ย. 2027")).toBeInTheDocument();
   });
 
-  it("shows the LTV badge as 'normal' wording at a later assessment-month index (2 = 2026-07, after the relaxation boundary)", async () => {
+  it("shows the LTV badge as 'normal' wording at a later assessment-month index (2 = 2027-07, after the relaxation boundary)", async () => {
     seedProfile();
     render(
       <ProfileProvider>
@@ -172,7 +172,7 @@ describe("MortgagePage", () => {
     const slider = screen.getByLabelText("เลือกเดือนที่ใช้ประเมินสินเชื่อ");
     fireEvent.change(slider, { target: { value: "2" } });
 
-    expect(screen.getByText("ก.ค. 2026")).toBeInTheDocument();
+    expect(screen.getByText("ก.ค. 2027")).toBeInTheDocument();
     expect(screen.getByText("เกณฑ์ LTV ปกติ — ตามจำนวนบ้านและราคาบ้าน")).toBeInTheDocument();
   });
 
@@ -229,7 +229,7 @@ describe("MortgagePage", () => {
       </ProfileProvider>,
     );
 
-    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue(500000);
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("500000");
   });
 
   it("end-to-end: a 3,000,000 home with 0 down renders the spec's ~18,962 monthly payment in the actual DOM", () => {

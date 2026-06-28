@@ -170,7 +170,7 @@ bear-tung/                      (repo root = the Bear-tung folder)
 
 ## 8. Risks & cautions
 
-- **LTV policy change:** the 100% relaxation ends 30 Jun 2026 → implement LTV as date-based config (already in spec); review periodically.
+- **LTV policy change:** the 100% relaxation ends 30 Jun 2027 (extended 1 year by BOT ฉบับที่ 19/2569; was 30 Jun 2026) → implement LTV as date-based config (already in spec); review periodically.
 - **Calculation correctness:** must have full unit tests before wiring UI.
 - **local storage:** data is tied to the browser/device — tell users that switching devices loses data (DB support later).
 - **Money numbers:** watch rounding — store as plain numbers, format only at display.

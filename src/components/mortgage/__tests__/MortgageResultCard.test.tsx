@@ -55,10 +55,12 @@ describe("MortgageResultCard", () => {
     expect(screen.getByText("ติดเงื่อนไข: เงินดาวน์ (LTV)")).toBeInTheDocument();
   });
 
-  it("shows the DSR binding constraint message", () => {
+  it("shows the DSR binding constraint message with the fixed DSR cap", () => {
     const result = baseResult({ bindingConstraint: "dsr" });
     render(<MortgageResultCard result={result} downPaymentAvailable={0} />);
-    expect(screen.getByText("ติดเงื่อนไข: ภาระหนี้ต่อรายได้ (DSR)")).toBeInTheDocument();
+    expect(
+      screen.getByText("ติดเงื่อนไข: ภาระหนี้ต่อรายได้ (DSR), ต้องไม่เกิน 40% ของรายได้ (รวมหนี้เดิมที่มีอยู่แล้วด้วย)"),
+    ).toBeInTheDocument();
   });
 
   it("shows a sufficient-down-payment indicator when available >= required", () => {

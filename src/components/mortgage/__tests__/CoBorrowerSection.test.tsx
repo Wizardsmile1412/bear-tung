@@ -47,17 +47,17 @@ describe("CoBorrowerSection", () => {
     expect(props.onCoDebtChange).toHaveBeenLastCalledWith(3);
   });
 
-  it("falls back to 0 when the co-debt input resolves to a finite negative number", () => {
+  it("ignores a negative co-debt keystroke (NumericField only accepts digits)", () => {
     const props = renderSection({ enabled: true });
     const input = screen.getByLabelText("หนี้ปัจจุบันของผู้กู้ร่วม");
     fireEvent.change(input, { target: { value: "-1" } });
-    expect(props.onCoDebtChange).toHaveBeenLastCalledWith(0);
+    expect(props.onCoDebtChange).not.toHaveBeenCalled();
   });
 
   it("leaves coIncomeProvided as undefined (not 0) when the income input is blank", () => {
     renderSection({ enabled: true, coIncomeProvided: undefined });
     const input = screen.getByLabelText("รายได้ของผู้กู้ร่วม (ถ้ามี)");
-    expect(input).toHaveValue(null);
+    expect(input).toHaveValue("");
   });
 
   it("fires onCoIncomeProvidedChange(undefined) when the income input is cleared", async () => {
@@ -67,11 +67,11 @@ describe("CoBorrowerSection", () => {
     expect(props.onCoIncomeProvidedChange).toHaveBeenLastCalledWith(undefined);
   });
 
-  it("falls back to 0 when the co-income input resolves to a finite negative number (typed, not blank)", () => {
+  it("ignores a negative co-income keystroke (NumericField only accepts digits)", () => {
     const props = renderSection({ enabled: true, coIncomeProvided: 20000 });
     const input = screen.getByLabelText("รายได้ของผู้กู้ร่วม (ถ้ามี)");
     fireEvent.change(input, { target: { value: "-1" } });
-    expect(props.onCoIncomeProvidedChange).toHaveBeenLastCalledWith(0);
+    expect(props.onCoIncomeProvidedChange).not.toHaveBeenCalled();
   });
 
   it("fires onCoIncomeProvidedChange with the typed value for a valid non-negative number", () => {
