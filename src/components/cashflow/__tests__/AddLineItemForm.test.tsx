@@ -58,30 +58,30 @@ describe("AddLineItemForm", () => {
     expect(item.endMonth).toBe("2027-03");
   });
 
+  it("defaults the label to the selected หมวดหมู่ name when left blank (รายการ is optional)", async () => {
+    const onAdd = vi.fn();
+    render(<AddLineItemForm category="income" startMonth="2026-06" onAdd={onAdd} />);
+
+    // Leave รายการ blank; default income sub-category is "salary" (เงินเดือน).
+    await userEvent.clear(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"));
+    await userEvent.type(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"), "1000");
+    await userEvent.click(screen.getByRole("button", { name: "เพิ่มรายการ" }));
+
+    expect(onAdd).toHaveBeenCalledTimes(1);
+    expect(onAdd.mock.calls[0][0].label).toBe("เงินเดือน");
+  });
+
   // NOTE: these guard-clause tests use `fireEvent.submit(form)` rather than
   // `form.requestSubmit()` / clicking the submit button. `requestSubmit()`
   // enforces native HTML5 constraint validation (e.g. `required`, `min=0`)
   // and silently blocks the submit event entirely when the form is
   // `:invalid` — so it never reaches React's `onSubmit` handler, and the
-  // component's own JS guard clause (`handleSubmit`'s `if` on line 38)
+  // component's own JS guard clause (`handleSubmit`'s `if (!effectiveFrom)`)
   // never runs. `fireEvent.submit` dispatches the submit event directly,
   // bypassing constraint validation, which is what's needed to actually
   // exercise the guard clause as a defense-in-depth check (e.g. for state
   // a user could reach despite the HTML attributes, or future changes that
   // relax them).
-  it("does not call onAdd when the label is blank", async () => {
-    const onAdd = vi.fn();
-    const { container } = render(<AddLineItemForm category="income" startMonth="2026-06" onAdd={onAdd} />);
-
-    await userEvent.clear(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"));
-    await userEvent.type(screen.getByLabelText("จำนวนเงิน (บาท/เดือน)"), "1000");
-
-    const form = container.querySelector("form")!;
-    fireEvent.submit(form);
-
-    expect(onAdd).not.toHaveBeenCalled();
-  });
-
   it("treats a cleared/empty amount field as 0 and still submits", async () => {
     const onAdd = vi.fn();
     const { container } = render(<AddLineItemForm category="expense" startMonth="2026-06" onAdd={onAdd} />);

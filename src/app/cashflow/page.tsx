@@ -2,6 +2,7 @@
 
 import { NavButtonLink } from "@/components/ui/NavButtonLink";
 import { useProfile } from "@/components/profile/useProfile";
+import { CashFlowSummaryCard } from "@/components/cashflow/CashFlowSummaryCard";
 import { CategoryGroupCard } from "@/components/cashflow/CategoryGroupCard";
 import { EmptyState } from "@/components/cashflow/EmptyState";
 import { SavingsCard } from "@/components/cashflow/SavingsCard";
@@ -16,6 +17,7 @@ export default function CashFlowPage() {
   }
 
   const month = profile.startMonth;
+  const hasItems = profile.items.length > 0;
 
   return (
     <main className="mx-auto flex w-full max-w-[772px] lg:max-w-[1080px] flex-col gap-8 px-6 py-8">
@@ -31,7 +33,9 @@ export default function CashFlowPage() {
         </div>
       </header>
 
-      {profile.items.length === 0 && <EmptyState />}
+      {hasItems && <CashFlowSummaryCard totals={profile.monthlyTotals(month)} />}
+
+      {!hasItems && <EmptyState />}
 
       <div className="flex flex-col gap-6">
         {CATEGORIES.map((category) => (

@@ -97,10 +97,14 @@ describe("CashFlowPage", () => {
       </ProfileProvider>,
     );
 
+    await userEvent.click(screen.getByRole("button", { name: "แก้ไข" }));
     const savingsInput = screen.getByLabelText("เงินออม/เงินสดที่มีอยู่ตอนนี้");
     await userEvent.clear(savingsInput);
     await userEvent.type(savingsInput, "90000");
+    await userEvent.click(screen.getByRole("button", { name: "บันทึก" }));
 
-    expect(savingsInput).toHaveValue("90000");
+    // After saving, the value persists through the real ProfileProvider and
+    // renders back in the card's read-only display.
+    expect(screen.getByText("90,000 บาท")).toBeInTheDocument();
   });
 });

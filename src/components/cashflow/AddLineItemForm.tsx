@@ -6,7 +6,7 @@ import { LineItem, LineItemCategory } from "@/domain/model/LineItem";
 import { MonthPicker } from "@/components/ui/MonthPicker";
 import { NumericField } from "@/components/ui/NumericField";
 
-import { SUB_CATEGORY_PRESETS } from "./subCategoryPresets";
+import { SUB_CATEGORY_PRESETS, subCategoryLabel } from "./subCategoryPresets";
 
 interface AddLineItemFormProps {
   category: LineItemCategory;
@@ -43,15 +43,19 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!label.trim() || !effectiveFrom) {
+    if (!effectiveFrom) {
       return;
     }
+
+    // รายการ is optional — fall back to the selected หมวดหมู่ name when blank
+    // so the line item still reads meaningfully in the list and Excel export.
+    const resolvedLabel = label.trim() || subCategoryLabel(category, subCategory);
 
     const item = LineItem.create({
       id: crypto.randomUUID(),
       category,
       subCategory,
-      label: label.trim(),
+      label: resolvedLabel,
       changes: [{ effectiveFrom, amount }],
       endMonth: isDebt && endMonth ? endMonth : undefined,
     });
@@ -63,18 +67,21 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-card bg-surface-sunken p-4">
       <div className="flex flex-col gap-1">
-        <label htmlFor={`${category}-label`} className="text-sm font-medium text-ink-muted">
-          รายการ
+        <label htmlFor={`${category}-amount`} className="text-sm font-medium text-ink-muted">
+          จำนวนเงิน (บาท/เดือน)
         </label>
-        <input
-          id={`${category}-label`}
-          type="text"
-          value={label}
-          onChange={(event) => setLabel(event.target.value)}
-          placeholder={LABEL_PLACEHOLDERS[category]}
-          required
-          className="rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
-        />
+        <div className="flex items-center gap-2">
+          <NumericField
+            id={`${category}-amount`}
+            inputMode="decimal"
+            value={amount}
+            onChange={(value) => setAmount(value)}
+            placeholder="0"
+            required
+            className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+          />
+          <span className="text-xs text-ink-subtle whitespace-nowrap">บาท/เดือน</span>
+        </div>
       </div>
 
       <div className="flex flex-col gap-1">
@@ -96,21 +103,18 @@ export function AddLineItemForm({ category, startMonth, onAdd }: AddLineItemForm
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor={`${category}-amount`} className="text-sm font-medium text-ink-muted">
-          จำนวนเงิน (บาท/เดือน)
+        <label htmlFor={`${category}-label`} className="text-sm font-medium text-ink-muted">
+          รายการ
         </label>
-        <div className="flex items-center gap-2">
-          <NumericField
-            id={`${category}-amount`}
-            inputMode="decimal"
-            value={amount}
-            onChange={(value) => setAmount(value)}
-            placeholder="0"
-            required
-            className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
-          />
-          <span className="text-xs text-ink-subtle whitespace-nowrap">บาท/เดือน</span>
-        </div>
+        <input
+          id={`${category}-label`}
+          type="text"
+          value={label}
+          onChange={(event) => setLabel(event.target.value)}
+          placeholder={LABEL_PLACEHOLDERS[category]}
+          className="rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
+        />
+        <p className="text-xs text-ink-subtle">ไม่บังคับ — หากเว้นว่างจะใช้ชื่อหมวดหมู่แทน</p>
       </div>
 
       <div className="flex flex-col gap-1">
