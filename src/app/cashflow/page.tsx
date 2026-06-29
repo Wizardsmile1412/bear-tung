@@ -17,7 +17,13 @@ export default function CashFlowPage() {
     return null;
   }
 
-  const month = profile.startMonth;
+  const month = (() => {
+    if (profile.items.length === 0) return profile.startMonth;
+    const minFrom = profile.items
+      .map((item) => item.changes[0].effectiveFrom)
+      .sort()[0];
+    return minFrom > profile.startMonth ? minFrom : profile.startMonth;
+  })();
   const hasItems = profile.items.length > 0;
   const hasData = hasItems || profile.assets.savings > 0;
 
