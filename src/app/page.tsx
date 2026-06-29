@@ -51,7 +51,7 @@ export default function Home() {
           </Link>
           <Link
             href="/cashflow"
-            className="text-sm font-medium text-primary hover:text-primary-hover transition-colors"
+            className="inline-flex h-11 items-center gap-2 rounded-button border-2 border-purple-800 bg-transparent px-5 text-base font-semibold text-purple-800 transition-colors hover:bg-purple-100 active:scale-[0.98] focus:outline-none focus:ring-3 focus:ring-primary-soft focus:border-purple-800"
           >
             แก้ไข Cash Flow
           </Link>

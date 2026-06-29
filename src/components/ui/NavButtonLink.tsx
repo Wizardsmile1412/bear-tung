@@ -19,7 +19,7 @@ const BASE_CLASSES =
 
 const VARIANT_CLASSES: Record<NavButtonVariant, string> = {
   primary: "bg-primary text-white hover:bg-primary-hover",
-  secondary: "border border-outline bg-surface text-ink hover:bg-surface-sunken focus:border-primary",
+  secondary: "border-2 border-purple-800 bg-transparent text-purple-800 hover:bg-purple-100 focus:border-purple-800",
 };
 
 /**
