@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as XLSX from "xlsx";
 
-import { MORTGAGE_INPUTS_STORAGE_KEY } from "@/domain/config/defaults";
+import { MORTGAGE_FORM_STORAGE_KEY } from "@/domain/config/defaults";
 import { LineItem } from "@/domain/model/LineItem";
 
 import { ProfileProvider } from "@/components/profile/ProfileProvider";
@@ -115,7 +115,15 @@ describe("useImport", () => {
     await userEvent.upload(screen.getByTestId("file"), file);
 
     expect(lastSummary?.hasMortgage).toBe(true);
-    expect(localStorage.getItem(MORTGAGE_INPUTS_STORAGE_KEY)).not.toBeNull();
+    const stored = JSON.parse(localStorage.getItem(MORTGAGE_FORM_STORAGE_KEY)!);
+    expect(stored).toMatchObject({
+      homePrice: 4500000,
+      borrowerAge: 40,
+      interestRatePercent: 6.5,
+      loanTermYears: 30,
+      downPaymentAvailable: 500000,
+      dsrLimitPercent: 40, // normalized from the sheet's 0-1 dsrLimit
+    });
   });
 
   it("rejects an invalid file without wiping existing data", async () => {
@@ -131,12 +139,12 @@ describe("useImport", () => {
     expect(screen.getByTestId("count").textContent).toBe("1"); // existing data preserved
   });
 
-  it("clears stale mortgage inputs when re-importing a file without a Mortgage sheet", async () => {
-    localStorage.setItem(MORTGAGE_INPUTS_STORAGE_KEY, JSON.stringify({ homePrice: 1 }));
+  it("clears a stale mortgage form when re-importing a file without a Mortgage sheet", async () => {
+    localStorage.setItem(MORTGAGE_FORM_STORAGE_KEY, JSON.stringify({ homePrice: 1 }));
 
     renderConsumer();
     await userEvent.upload(screen.getByTestId("file"), cashFlowOnlyFile());
 
-    expect(localStorage.getItem(MORTGAGE_INPUTS_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(MORTGAGE_FORM_STORAGE_KEY)).toBeNull();
   });
 });

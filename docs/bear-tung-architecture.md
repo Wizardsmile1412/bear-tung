@@ -52,14 +52,16 @@ src/domain/
 │  ├─ LtvPolicyFactory.ts      # selects policy by date
 │  ├─ AmortizationCalculator.ts# payment/loan formula
 │  ├─ MortgageService.ts       # combines LTV + DSR + amortization + term cap
-│  └─ CoBorrowerService.ts     # required co-borrower income
+│  ├─ CoBorrowerService.ts     # required co-borrower income
+│  ├─ requiredDownPayment.ts   # min down payment the LTV rule needs
+│  └─ suggestedDownPayment.ts  # form default: required, or 5% of price when LTV needs none
 ├─ projection/
 │  └─ ProjectionService.ts     # builds 60-month series (uses HealthScoreService per month)
 ├─ storage/
 │  ├─ ProfileRepository.ts     # interface
 │  ├─ LocalStorageProfileRepository.ts  # implements
-│  ├─ MortgageInputsRepository.ts       # interface (one-shot import→mortgage pre-fill)
-│  └─ LocalStorageMortgageInputsRepository.ts  # implements
+│  ├─ MortgageFormRepository.ts         # interface + MortgageFormState (persisted mortgage form; seeded by import, cleared on reset)
+│  └─ LocalStorageMortgageFormRepository.ts  # implements
 ├─ export/
 │  ├─ Exporter.ts              # interface
 │  └─ ExcelExporter.ts         # implements (SheetJS)

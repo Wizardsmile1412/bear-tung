@@ -10,7 +10,10 @@
       "Bash(echo \"---LINT EXIT: $?---\")",
       "Bash(echo \"EXIT: $?\")",
       "Bash(echo \"=== TSC EXIT: $? ===\")",
-      "Bash(echo \"COVERAGE EXIT: $?\")"
+      "Bash(echo \"COVERAGE EXIT: $?\")",
+      "Bash(echo \"LINT: $?\")",
+      "Bash(echo \"COVERAGE: $?\")",
+      "Bash(echo \"BUILD: $?\")"
     ]
   }
 }

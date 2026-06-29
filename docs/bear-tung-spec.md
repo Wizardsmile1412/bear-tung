@@ -69,6 +69,8 @@ Build the full flow end-to-end in the MVP:
 
 Stored in local storage (key: `bear-tung:profile`). **Each item is a time-series** with a start date (and an end date for debts) so a 5-year projection can be built. Money values are **per month (THB/month)** unless noted.
 
+> The mortgage page's form inputs are persisted separately (key: `bear-tung:mortgage-form`) so they survive navigating away and back. They're treated as part of the user's data — seeded by an Excel import and cleared by the "reset all data" action.
+
 **Carry-forward concept:** each item has a "value starting on date X" that **applies forward until the next change** (a step function). E.g. salary 35,000 from now, changing to 45,000 from 2027-01 → the system uses 35,000 every month through 2026-12, then 45,000 from 2027-01 onward.
 
 ```
@@ -190,7 +192,7 @@ healthScore = round(
 - `borrowerAge` — borrower age (caps the term)
 - `interestRate` — annual rate (**default 6.5%**, ref Thai commercial bank MRR, adjustable)
 - `loanTermYears` — term (default 30y) → **effective = min(loanTermYears, 70 − borrowerAge)**
-- `downPaymentAvailable` — available down payment (default = assets.savings)
+- `downPaymentAvailable` — available down payment. **Default = `suggestedDownPayment`**: the minimum the active LTV rule requires (`homePrice × (1 − maxLtv)`), **except when the rule requires nothing (100% LTV, e.g. the temporary relaxation or a first home < 10M): then it suggests 5% of the home price** — putting some money down is almost always wiser (lower loan, less total interest, smaller monthly payment, and cash left for transfer-day fees). An info tooltip on the field explains this. Auto-recomputes as home price / order / assessment month change, until the user types their own value (then theirs is kept). It is *not* capped at savings — it shows the amount the rule needs, even if that's more than current savings.
 - `assessmentMonth` — month used for assessment (current or future within the projection)
 - `monthlyIncome` / `existingDebt` — pulled from cash flow **of `assessmentMonth`**
 - `dsrLimit` — DSR cap, fixed at 40% (not user-adjustable; shown read-only in the UI)

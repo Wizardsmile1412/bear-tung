@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,6 +16,7 @@ import { MortgageExportData } from "@/domain/export/ExportData";
 import { MonthKey } from "@/domain/model/MonthKey";
 import { Money } from "@/domain/model/Money";
 import { MortgageInput } from "@/domain/mortgage/MortgageService";
+import { suggestedDownPayment } from "@/domain/mortgage/suggestedDownPayment";
 
 import { useProfile } from "@/components/profile/useProfile";
 import { useProjectionSeries } from "@/components/health/useProjectionSeries";
@@ -28,36 +29,97 @@ import { CoBorrowerSection } from "@/components/mortgage/CoBorrowerSection";
 import { MortgageInputForm } from "@/components/mortgage/MortgageInputForm";
 import { MortgageResultCard } from "@/components/mortgage/MortgageResultCard";
 import { useCoBorrower, useMortgage } from "@/components/mortgage/useMortgage";
-import { useImportedMortgageInputs } from "@/components/mortgage/useImportedMortgageInputs";
+import { useMortgageForm } from "@/components/mortgage/useMortgageForm";
 
 export default function MortgagePage() {
   const { profile, isLoaded: profileLoaded } = useProfile();
   const { series, isLoaded: seriesLoaded } = useProjectionSeries();
 
-  // Pre-fill from an Excel import, if any (one-shot — cleared after mount).
-  const imported = useImportedMortgageInputs();
+  // Persisted form inputs (survive navigation; also seeded by an Excel import).
+  const { initial, save } = useMortgageForm();
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(initial?.selectedIndex ?? 0);
 
-  const [homePrice, setHomePrice] = useState(imported?.homePrice ?? 0);
-  const [homeOrder, setHomeOrder] = useState<1 | 2 | 3>(imported?.homeOrder ?? 1);
-  const [firstHomePaidAtLeastTwoYears, setFirstHomePaidAtLeastTwoYears] = useState(false);
-  const [borrowerAge, setBorrowerAge] = useState(imported?.borrowerAge ?? 0);
-  const [downPaymentAvailable, setDownPaymentAvailable] = useState(
-    () => imported?.downPaymentAvailable ?? profile.assets.savings,
+  const [homePrice, setHomePrice] = useState(initial?.homePrice ?? 0);
+  const [homeOrder, setHomeOrder] = useState<1 | 2 | 3>(initial?.homeOrder ?? 1);
+  const [firstHomePaidAtLeastTwoYears, setFirstHomePaidAtLeastTwoYears] = useState(
+    initial?.firstHomePaidAtLeastTwoYears ?? false,
   );
+  const [borrowerAge, setBorrowerAge] = useState(initial?.borrowerAge ?? 0);
+  // Down payment auto-fills to the minimum the LTV rule requires, capped at the
+  // user's savings — until the user types their own value (then we keep theirs).
+  const [downPaymentManual, setDownPaymentManual] = useState(initial?.downPaymentAvailable ?? 0);
+  const [downPaymentEdited, setDownPaymentEdited] = useState(initial?.downPaymentEdited ?? false);
 
   const [interestRatePercent, setInterestRatePercent] = useState(
-    imported?.interestRatePercent ?? DEFAULT_INTEREST_RATE_PERCENT,
+    initial?.interestRatePercent ?? DEFAULT_INTEREST_RATE_PERCENT,
   );
-  const [loanTermYears, setLoanTermYears] = useState(imported?.loanTermYears ?? DEFAULT_LOAN_TERM_YEARS);
+  const [loanTermYears, setLoanTermYears] = useState(initial?.loanTermYears ?? DEFAULT_LOAN_TERM_YEARS);
   const [dsrLimitPercent, setDsrLimitPercent] = useState(
-    imported ? Math.round(imported.dsrLimit * 100) : Math.round(DEFAULT_DSR_LIMIT * 100),
+    initial?.dsrLimitPercent ?? Math.round(DEFAULT_DSR_LIMIT * 100),
   );
 
-  const [coBorrowerEnabled, setCoBorrowerEnabled] = useState(imported?.coBorrowerEnabled ?? false);
-  const [coDebt, setCoDebt] = useState(imported?.coDebt ?? 0);
-  const [coIncomeProvided, setCoIncomeProvided] = useState<number | undefined>(undefined);
+  const [coBorrowerEnabled, setCoBorrowerEnabled] = useState(initial?.coBorrowerEnabled ?? false);
+  const [coDebt, setCoDebt] = useState(initial?.coDebt ?? 0);
+  const [coIncomeProvided, setCoIncomeProvided] = useState<number | undefined>(initial?.coIncomeProvided);
+
+  // The down payment to use: the user's own value once they've edited the
+  // field, otherwise the suggested amount — the LTV-required minimum, or 5% of
+  // the price when the rule requires none (100% LTV). `series[selectedIndex]`
+  // picks the date-based LTV policy.
+  const assessmentMonth = series[selectedIndex]?.month;
+  const autoDownPayment = suggestedDownPayment({
+    homePrice,
+    homeOrder,
+    firstHomePaidAtLeastTwoYears: homeOrder === 2 ? firstHomePaidAtLeastTwoYears : undefined,
+    assessmentDate: assessmentMonth ? MonthKey.parse(assessmentMonth).toDate() : undefined,
+  });
+  const downPaymentAvailable = downPaymentEdited ? downPaymentManual : autoDownPayment;
+
+  function handleDownPaymentChange(value: number) {
+    setDownPaymentManual(value);
+    setDownPaymentEdited(true);
+  }
+
+  // Persist the form on every change so it's restored after navigating away.
+  // Gated on the loaded state so we don't write during the pre-hydration pass.
+  useEffect(() => {
+    if (!profileLoaded || !seriesLoaded) {
+      return;
+    }
+    save({
+      selectedIndex,
+      homePrice,
+      homeOrder,
+      firstHomePaidAtLeastTwoYears,
+      borrowerAge,
+      downPaymentAvailable,
+      downPaymentEdited,
+      interestRatePercent,
+      loanTermYears,
+      dsrLimitPercent,
+      coBorrowerEnabled,
+      coDebt,
+      coIncomeProvided,
+    });
+  }, [
+    profileLoaded,
+    seriesLoaded,
+    save,
+    selectedIndex,
+    homePrice,
+    homeOrder,
+    firstHomePaidAtLeastTwoYears,
+    borrowerAge,
+    downPaymentAvailable,
+    downPaymentEdited,
+    interestRatePercent,
+    loanTermYears,
+    dsrLimitPercent,
+    coBorrowerEnabled,
+    coDebt,
+    coIncomeProvided,
+  ]);
 
   /**
    * Most Thai banks cap borrowerAge + loanTermYears at `MAX_AGE_PLUS_TERM`
@@ -153,7 +215,7 @@ export default function MortgagePage() {
           borrowerAge={borrowerAge}
           setBorrowerAge={handleBorrowerAgeChange}
           downPaymentAvailable={downPaymentAvailable}
-          setDownPaymentAvailable={setDownPaymentAvailable}
+          setDownPaymentAvailable={handleDownPaymentChange}
           interestRatePercent={interestRatePercent}
           setInterestRatePercent={setInterestRatePercent}
           loanTermYears={loanTermYears}

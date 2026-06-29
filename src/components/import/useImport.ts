@@ -4,10 +4,11 @@ import { useCallback } from "react";
 import * as XLSX from "xlsx";
 
 import { createExcelImporter } from "@/domain/import/createExcelImporter";
-import { CategoryMapping } from "@/domain/import/ImportResult";
+import { CategoryMapping, ParsedMortgageInputs } from "@/domain/import/ImportResult";
 import { CashFlowProfile } from "@/domain/model/CashFlowProfile";
 import { LineItemCategory } from "@/domain/model/LineItem";
-import { LocalStorageMortgageInputsRepository } from "@/domain/storage/LocalStorageMortgageInputsRepository";
+import { LocalStorageMortgageFormRepository } from "@/domain/storage/LocalStorageMortgageFormRepository";
+import { MortgageFormState } from "@/domain/storage/MortgageFormRepository";
 
 import { CATEGORY_LABELS, SUB_CATEGORY_PRESETS } from "@/components/cashflow/subCategoryPresets";
 import { parseMonthLabel } from "@/components/health/formatMonthLabel";
@@ -15,7 +16,32 @@ import { useProfile } from "@/components/profile/useProfile";
 
 // Stateless singletons — same justification as `useExport`'s `ExcelExporter`.
 const excelImporter = createExcelImporter();
-const mortgageInputsRepository = new LocalStorageMortgageInputsRepository();
+const mortgageFormRepository = new LocalStorageMortgageFormRepository();
+
+/**
+ * Maps the importer's parsed mortgage inputs onto the persisted form shape.
+ * Fields the export doesn't carry (assessment month, first-home-paid flag,
+ * provided co-borrower income) reset to their form defaults.
+ */
+function toMortgageFormState(inputs: ParsedMortgageInputs): MortgageFormState {
+  return {
+    selectedIndex: 0,
+    homePrice: inputs.homePrice,
+    homeOrder: inputs.homeOrder,
+    firstHomePaidAtLeastTwoYears: false,
+    borrowerAge: inputs.borrowerAge,
+    downPaymentAvailable: inputs.downPaymentAvailable,
+    // An imported down payment is the user's own prior value — treat it as
+    // edited so the LTV auto-fill doesn't override it.
+    downPaymentEdited: true,
+    interestRatePercent: inputs.interestRatePercent,
+    loanTermYears: inputs.loanTermYears,
+    dsrLimitPercent: Math.round(inputs.dsrLimit * 100), // form stores a percentage
+    coBorrowerEnabled: inputs.coBorrowerEnabled,
+    coDebt: inputs.coDebt,
+    coIncomeProvided: undefined,
+  };
+}
 
 /** Thrown when the chosen file isn't a readable Bear-tung export. */
 export const INVALID_FILE_MESSAGE = "ไฟล์ไม่ถูกต้อง — กรุณาเลือกไฟล์ Excel ที่ส่งออกจาก Bear-tung";
@@ -81,10 +107,11 @@ export function useImport(): UseImportResult {
       replaceProfile(CashFlowProfile.fromJSON(result.profile));
 
       if (result.mortgageInputs) {
-        mortgageInputsRepository.save(result.mortgageInputs);
+        mortgageFormRepository.save(toMortgageFormState(result.mortgageInputs));
       } else {
-        // A re-import without mortgage data must not leave stale pre-fill behind.
-        mortgageInputsRepository.clear();
+        // Import replaces the whole snapshot — a file with no mortgage data
+        // must not leave a stale mortgage form behind.
+        mortgageFormRepository.clear();
       }
 
       return {

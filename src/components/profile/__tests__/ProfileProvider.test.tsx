@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { PROFILE_STORAGE_KEY } from "@/domain/config/defaults";
+import { MORTGAGE_FORM_STORAGE_KEY, PROFILE_STORAGE_KEY } from "@/domain/config/defaults";
 import { LineItem } from "@/domain/model/LineItem";
 
 import { ProfileProvider } from "../ProfileProvider";
@@ -176,5 +176,19 @@ describe("ProfileProvider / useProfile", () => {
       expect(raw).not.toBeNull();
       expect(JSON.parse(raw!).items).toHaveLength(0);
     });
+  });
+
+  it("reset also clears the persisted mortgage form (part of the user's data)", async () => {
+    localStorage.setItem(MORTGAGE_FORM_STORAGE_KEY, JSON.stringify({ homePrice: 3000000 }));
+
+    render(
+      <ProfileProvider>
+        <TestConsumer />
+      </ProfileProvider>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "reset" }));
+
+    expect(localStorage.getItem(MORTGAGE_FORM_STORAGE_KEY)).toBeNull();
   });
 });

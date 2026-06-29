@@ -4,6 +4,7 @@ import { createContext, useCallback, useEffect, useState, useSyncExternalStore }
 
 import { Assets, CashFlowProfile } from "@/domain/model/CashFlowProfile";
 import { LineItem } from "@/domain/model/LineItem";
+import { LocalStorageMortgageFormRepository } from "@/domain/storage/LocalStorageMortgageFormRepository";
 import { LocalStorageProfileRepository } from "@/domain/storage/LocalStorageProfileRepository";
 
 export interface ProfileContextValue {
@@ -34,6 +35,8 @@ const getServerIsLoaded = () => false;
  */
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [repository] = useState(() => new LocalStorageProfileRepository());
+  // The mortgage form is part of the user's data, so a full reset clears it too.
+  const [mortgageFormRepository] = useState(() => new LocalStorageMortgageFormRepository());
   // Lazy initializers run once on mount. During SSR `window` is undefined,
   // so `repository.load()` safely returns null and `profile` starts empty;
   // on the client it reads the real stored profile synchronously on the
@@ -80,10 +83,12 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     setProfile(next);
   }, []);
 
-  // Clears all items + assets back to empty, keeping the same startMonth.
+  // Clears all items + assets back to empty, keeping the same startMonth, and
+  // clears the persisted mortgage form (also part of the user's data).
   const reset = useCallback(() => {
     setProfile((current) => CashFlowProfile.empty(current.startMonth));
-  }, []);
+    mortgageFormRepository.clear();
+  }, [mortgageFormRepository]);
 
   const value: ProfileContextValue = {
     profile,

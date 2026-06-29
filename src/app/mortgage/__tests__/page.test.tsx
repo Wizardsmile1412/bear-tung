@@ -260,15 +260,69 @@ describe("MortgagePage", () => {
     ).toBeInTheDocument();
   });
 
-  it("defaults downPaymentAvailable from profile.assets.savings", () => {
-    seedProfile();
+  it("defaults the down payment to 5% of the home price under the temporary 100% LTV policy (no down required)", () => {
+    seedProfile(); // savings 500,000; index 0 = 2027-05 -> temporary 100% LTV -> required 0
     render(
       <ProfileProvider>
         <MortgagePage />
       </ProfileProvider>,
     );
 
-    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("500,000");
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "3000000" } });
+
+    // No down required, but we suggest 5% (150,000), well under the 500,000 savings.
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("150,000");
+  });
+
+  it("defaults the down payment to the LTV-required amount when it is below savings", () => {
+    seedProfileWith(100000, 0, 2000000); // savings 2,000,000
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    // Move to a normal-policy month (index 2 = 2027-07) and pick a first home
+    // >= 10M -> 90% LTV -> required down = 1,200,000 (< 2,000,000 savings).
+    fireEvent.change(screen.getByLabelText("เลือกเดือนที่ใช้ประเมินสินเชื่อ"), { target: { value: "2" } });
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "12000000" } });
+
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("1,200,000");
+  });
+
+  it("shows the full LTV-required amount even when it exceeds savings", () => {
+    seedProfile(); // savings 500,000
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    // Normal policy + first home >= 10M -> required 1,200,000 (> 500,000 savings),
+    // shown in full (no longer capped at savings).
+    fireEvent.change(screen.getByLabelText("เลือกเดือนที่ใช้ประเมินสินเชื่อ"), { target: { value: "2" } });
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "12000000" } });
+
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("1,200,000");
+  });
+
+  it("stops auto-filling the down payment once the user edits it", () => {
+    seedProfile(); // savings 500,000
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText("เลือกเดือนที่ใช้ประเมินสินเชื่อ"), { target: { value: "2" } });
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "12000000" } });
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("1,200,000"); // auto (LTV-required)
+
+    fireEvent.change(screen.getByLabelText("เงินดาวน์ที่มี"), { target: { value: "100000" } });
+
+    // Changing the home price no longer moves the down payment — the user owns it now.
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "8000000" } });
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("100,000");
   });
 
   it("end-to-end: a 3,000,000 home with 0 down renders the spec's ~18,962 monthly payment in the actual DOM", () => {
@@ -280,6 +334,9 @@ describe("MortgagePage", () => {
     );
 
     fillRequiredFields();
+    // Force 0 down (the suggested default would otherwise auto-fill 5%) to match
+    // the spec's 3,000,000-loan worked example.
+    fireEvent.change(screen.getByLabelText("เงินดาวน์ที่มี"), { target: { value: "0" } });
 
     expect(screen.getByText("18,962 บาท", { exact: false })).toBeInTheDocument();
   });
@@ -339,6 +396,29 @@ describe("MortgagePage", () => {
     expect(screen.getByText("รายได้รวมของคุณและผู้กู้ร่วมเพียงพอแล้ว")).toBeInTheDocument();
 
     await expect(userEvent.click(exportButton)).resolves.not.toThrow();
+  });
+
+  it("persists the form across unmount/remount (survives navigating away and back)", () => {
+    seedProfile();
+    const { unmount } = render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "3500000" } });
+    fireEvent.change(screen.getByLabelText("อายุผู้กู้"), { target: { value: "45" } });
+
+    unmount(); // simulate navigating away
+
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    expect(screen.getByLabelText("ราคาบ้านที่ต้องการ")).toHaveValue("3,500,000");
+    expect(screen.getByLabelText("อายุผู้กู้")).toHaveValue("45");
   });
 
   it("applies the responsive lg: container width class on the page's main element (design.md section 4)", () => {

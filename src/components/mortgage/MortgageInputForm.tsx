@@ -1,6 +1,12 @@
 "use client";
 
+import { InfoTooltip } from "@/components/ui/InfoTooltip";
 import { NumericField } from "@/components/ui/NumericField";
+
+const DOWN_PAYMENT_TOOLTIP =
+  "แม้เกณฑ์ LTV จะให้กู้ได้เต็ม 100% (ดาวน์ 0%) แต่การมีเงินดาวน์สัก 5–10% มักคุ้มที่สุด " +
+  "เพราะช่วยลดวงเงินกู้ ทำให้ดอกเบี้ยรวมและค่างวดต่อเดือนน้อยลง และยังเหลือเงินไว้สำหรับค่าใช้จ่ายวันโอน " +
+  "เช่น ค่าธรรมเนียมการโอน ค่าจดจำนอง และค่าส่วนกลางล่วงหน้า ระบบจึงตั้งค่าเริ่มต้นเงินดาวน์ไว้ที่ 5% ของราคาบ้าน (ปรับได้)";
 
 interface MortgageInputFormProps {
   homePrice: number;
@@ -100,9 +106,12 @@ export function MortgageInputForm({
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="downPaymentAvailable" className="text-sm font-medium text-ink-muted">
-            เงินดาวน์ที่มี
-          </label>
+          <div className="flex items-center gap-2">
+            <label htmlFor="downPaymentAvailable" className="text-sm font-medium text-ink-muted">
+              เงินดาวน์ที่มี
+            </label>
+            <InfoTooltip label={DOWN_PAYMENT_TOOLTIP} />
+          </div>
           <div className="flex items-center gap-2">
             <NumericField
               id="downPaymentAvailable"
