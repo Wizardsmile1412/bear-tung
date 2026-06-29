@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { useProfile } from "@/components/profile/useProfile";
@@ -28,12 +29,23 @@ export default function Home() {
   const hasData = profile.items.length > 0;
 
   return (
+    <>
+      <div className="fixed inset-0 -z-10">
+        <Image
+          src="/Health-Wealth-Checkup-scaled.jpeg"
+          alt=""
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="absolute inset-0 bg-white/70" />
+      </div>
     <main className="mx-auto flex w-full max-w-193 lg:max-w-270 flex-1 flex-col items-center justify-center gap-8 px-6 py-16 text-center">
       <div className="flex flex-col gap-5">
         <h1 className="text-3xl font-bold leading-10 text-ink sm:text-4xl sm:leading-12">
           เช็กสุขภาพการเงินของคุณ ใน Bear-tung
         </h1>
-        <p className="mx-auto max-w-2xl text-lg leading-10 text-ink-muted">
+        <p className="mx-auto max-w-2xl text-lg leading-10 text-black">
           กรอกรายรับ รายจ่าย และหนี้สินของคุณ แล้ว Bear-tung จะช่วยวิเคราะห์ด้วยกราฟและอัตราส่วนสำคัญ
           พร้อมคะแนนสุขภาพการเงิน ดูแนวโน้ม 5 ปีข้างหน้า ประเมินความสามารถซื้อบ้านตามเกณฑ์ธนาคารไทย
           และส่งออกผลลัพธ์เป็นไฟล์ Excel ได้ทันที —{" "}
@@ -65,5 +77,6 @@ export default function Home() {
         </Link>
       )}
     </main>
+    </>
   );
 }

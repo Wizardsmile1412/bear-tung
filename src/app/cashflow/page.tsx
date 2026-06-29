@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { NavButtonLink } from "@/components/ui/NavButtonLink";
 import { useProfile } from "@/components/profile/useProfile";
 import { CashFlowSummaryCard } from "@/components/cashflow/CashFlowSummaryCard";
@@ -28,6 +29,17 @@ export default function CashFlowPage() {
   const hasData = hasItems || profile.assets.savings > 0;
 
   return (
+    <>
+      <div className="fixed inset-0 -z-10">
+        <Image
+          src="/cashflow-bg.jpg"
+          alt=""
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="absolute inset-0 bg-white/70" />
+      </div>
     <main className="mx-auto flex w-full max-w-193 lg:max-w-270 flex-col gap-8 px-6 py-8">
       <header>
         <div className="flex items-start justify-between gap-4">
@@ -70,5 +82,6 @@ export default function CashFlowPage() {
         />
       </div>
     </main>
+    </>
   );
 }

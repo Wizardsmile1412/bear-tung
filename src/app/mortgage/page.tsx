@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { NavButtonLink } from "@/components/ui/NavButtonLink";
@@ -70,6 +71,17 @@ export default function MortgagePage() {
   const selectedEntry = series[selectedIndex];
 
   return (
+    <>
+      <div className="fixed inset-0 -z-10">
+        <Image
+          src="/cat3.jpg"
+          alt=""
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="absolute inset-0 bg-white/70" />
+      </div>
     <main className="mx-auto flex w-full max-w-193 lg:max-w-270 flex-col gap-8 px-6 py-8">
       <header>
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -148,6 +160,7 @@ export default function MortgagePage() {
         />
       )}
     </main>
+    </>
   );
 }
 

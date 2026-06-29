@@ -49,18 +49,24 @@ describe("MortgageResultCard", () => {
     expect(screen.getByText("DSR หลังกู้ 38%", { exact: false })).toBeInTheDocument();
   });
 
-  it("shows the LTV binding constraint message", () => {
-    const result = baseResult({ bindingConstraint: "ltv" });
+  it("shows the LTV binding constraint message when canAffordTarget is false", () => {
+    const result = baseResult({ canAffordTarget: false, bindingConstraint: "ltv" });
     render(<MortgageResultCard result={result} downPaymentAvailable={0} />);
     expect(screen.getByText("ติดเงื่อนไข: เงินดาวน์ (LTV)")).toBeInTheDocument();
   });
 
-  it("shows the DSR binding constraint message with the fixed DSR cap", () => {
-    const result = baseResult({ bindingConstraint: "dsr" });
+  it("shows the DSR binding constraint message when canAffordTarget is false", () => {
+    const result = baseResult({ canAffordTarget: false, bindingConstraint: "dsr" });
     render(<MortgageResultCard result={result} downPaymentAvailable={0} />);
     expect(
       screen.getByText("ติดเงื่อนไข: ภาระหนี้ต่อรายได้ (DSR), ต้องไม่เกิน 40% ของรายได้ (รวมหนี้เดิมที่มีอยู่แล้วด้วย)"),
     ).toBeInTheDocument();
+  });
+
+  it("hides the binding constraint section when canAffordTarget is true", () => {
+    const result = baseResult({ canAffordTarget: true, bindingConstraint: "ltv" });
+    render(<MortgageResultCard result={result} downPaymentAvailable={0} />);
+    expect(screen.queryByText("ติดเงื่อนไข: เงินดาวน์ (LTV)")).not.toBeInTheDocument();
   });
 
   it("shows a sufficient-down-payment indicator when available >= required", () => {
@@ -81,7 +87,7 @@ describe("MortgageResultCard", () => {
   });
 
   it("reveals an LTV-vs-DSR explanation when the binding-constraint tooltip is toggled", async () => {
-    render(<MortgageResultCard result={baseResult()} downPaymentAvailable={0} />);
+    render(<MortgageResultCard result={baseResult({ canAffordTarget: false })} downPaymentAvailable={0} />);
 
     const tooltipButton = screen.getByRole("button", { name: "ดูคำอธิบาย" });
     await userEvent.click(tooltipButton);
