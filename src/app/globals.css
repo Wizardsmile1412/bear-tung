@@ -48,6 +48,13 @@
   --color-cat-debt: #b45309;
   --color-cat-debt-soft: #fffbeb;
 
+  /* Brighter variants of the tints above, for decorative fills with no text/
+     icon drawn on top (e.g. ComparisonBarChart bars) — NOT covered by the AA
+     audit above and must never be used for text or icon-on-chip pairings. */
+  --color-cat-income-chart: #23e899;
+  --color-cat-expense-chart: #e63030;
+  --color-cat-debt-chart: #ed722b;
+
   /* Chart / category accents (NOT the traffic-light colors) */
   --color-chart-1: #1e5eff;
   --color-chart-2: #0ea5e9;

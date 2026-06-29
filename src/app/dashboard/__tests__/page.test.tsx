@@ -207,8 +207,9 @@ describe("DashboardPage", () => {
     await userEvent.click(nextButton);
     await userEvent.click(nextButton);
 
-    // The displayed month label updates too (ก.ย. = September).
-    expect(screen.getByText("ก.ย. 2026")).toBeInTheDocument();
+    // The displayed month label updates too (ก.ย. = September) — it now
+    // appears in both the MonthSlider and the comparison-chart heading.
+    expect(screen.getAllByText("ก.ย. 2026").length).toBeGreaterThan(0);
 
     // Score, ratios, and comparison values now reflect the debt-free month —
     // genuinely different numbers, not just "the slider moved".
@@ -288,7 +289,7 @@ describe("DashboardPage", () => {
     await userEvent.click(nextButton);
     await userEvent.click(nextButton);
 
-    expect(screen.getByText("ก.ย. 2026")).toBeInTheDocument();
+    expect(screen.getAllByText("ก.ย. 2026").length).toBeGreaterThan(0);
 
     const sectorsAfter = document.querySelectorAll(".recharts-pie-sector");
     expect(sectorsAfter).toHaveLength(2);
@@ -325,12 +326,12 @@ describe("DashboardPage", () => {
       </ProfileProvider>,
     );
 
-    expect(screen.getByText("มิ.ย. 2026")).toBeInTheDocument();
+    expect(screen.getAllByText("มิ.ย. 2026").length).toBeGreaterThan(0);
 
     const slider = screen.getByLabelText("เลือกเดือนที่ต้องการดู");
     fireEvent.change(slider, { target: { value: "3" } });
 
-    expect(screen.getByText("ก.ย. 2026")).toBeInTheDocument();
+    expect(screen.getAllByText("ก.ย. 2026").length).toBeGreaterThan(0);
   });
 
   it("applies the responsive lg: container width and 3-column ratio-card grid classes (design.md section 4)", () => {
@@ -343,7 +344,7 @@ describe("DashboardPage", () => {
     );
 
     const main = container.querySelector("main");
-    expect(main).toHaveClass("max-w-[772px]", "lg:max-w-[1080px]");
+    expect(main).toHaveClass("max-w-193", "lg:max-w-270");
 
     const ratioGrid = screen.getByText("อัตราการออม (Savings Rate)").closest("section");
     expect(ratioGrid).toHaveClass("grid-cols-1", "sm:grid-cols-2", "lg:grid-cols-3");

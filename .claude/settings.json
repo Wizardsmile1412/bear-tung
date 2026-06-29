@@ -3,7 +3,9 @@
     "allow": [
       "mcp__claude_ai_Notion__notion-fetch",
       "mcp__claude_ai_Notion__notion-update-page",
-      "Bash(git status *)"
+      "Bash(git status *)",
+      "Bash(node /Users/pawarit/Documents/My-project/Coding_project/bear-tung/Bear-tung/scripts/check-contrast.mjs)",
+      "Bash(node scripts/check-contrast.mjs)"
     ]
   }
 }

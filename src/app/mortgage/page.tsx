@@ -18,6 +18,7 @@ import { MortgageInput } from "@/domain/mortgage/MortgageService";
 
 import { useProfile } from "@/components/profile/useProfile";
 import { useProjectionSeries } from "@/components/health/useProjectionSeries";
+import { formatMonthLabel } from "@/components/health/formatMonthLabel";
 import { MonthSlider } from "@/components/health/MonthSlider";
 import { ExportButton } from "@/components/export/ExportButton";
 import { useExport } from "@/components/export/useExport";
@@ -68,7 +69,7 @@ export default function MortgagePage() {
   const selectedEntry = series[selectedIndex];
 
   return (
-    <main className="mx-auto flex w-full max-w-[772px] lg:max-w-[1080px] flex-col gap-8 px-6 py-8">
+    <main className="mx-auto flex w-full max-w-193 lg:max-w-270 flex-col gap-8 px-6 py-8">
       <header>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -209,7 +210,11 @@ function MortgagePageContent(props: MortgagePageContentProps) {
       />
 
       <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
-        <h2 className="text-xl font-semibold text-ink">รายได้และหนี้ปัจจุบัน (จาก Cash Flow)</h2>
+        <h2 className="text-xl font-semibold text-ink">
+          รายได้และหนี้{" "}
+          <span className="font-normal text-ink">{formatMonthLabel(props.selectedEntry.month)}</span>{" "}
+          (จาก Cash Flow)
+        </h2>
         <p className="mt-2 text-base text-ink-muted">
           รายได้ต่อเดือน (จาก Cash Flow ของเดือนที่ประเมิน):{" "}
           <span className="font-medium text-good">{Money.formatWithUnit(monthlyIncome)}</span>

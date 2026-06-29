@@ -72,7 +72,18 @@ set** (`--color-cat-*`, 50-step soft backgrounds) so they don't read as status c
 
 Each card uses a soft background + 4px accent left-border + filled accent icon-chip; the
 subtotal figure is shown in the accent color. All accent/soft pairings pass AA — verified
-in `scripts/check-contrast.mjs`. These tints are **not** for use outside the Cash Flow form.
+in `scripts/check-contrast.mjs`. These tints (and their `-chart` variants below) are not for
+use outside the Cash Flow form and `ComparisonBarChart`.
+
+### Dashboard comparison bar chart (scoped exception)
+`ComparisonBarChart` (รายรับ / รายจ่าย / หนี้สิน / เหลือ on the Dashboard) uses a **brighter,
+chart-only variant** of each category hue — `--color-cat-income-chart` / `-expense-chart` /
+`-debt-chart` — so the same category reads consistently with the Cash Flow form without reusing
+the exact `--color-cat-*` tokens. These `-chart` tokens are decorative fills with no text or icon
+drawn on top, so they're **intentionally exempt** from the AA audit that covers the base tokens
+(unlike `--color-cat-*`, which must keep passing AA since it's used for real subtotal text and
+icon-chip glyphs in the Cash Flow form) — don't reuse `-chart` tokens anywhere text/icon contrast
+matters. Remaining bar = income/expense chart tint by the sign of its value.
 
 ---
 

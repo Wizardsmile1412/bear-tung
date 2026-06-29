@@ -42,7 +42,7 @@ describe("CashFlowPage", () => {
     );
 
     const main = container.querySelector("main");
-    expect(main).toHaveClass("max-w-[772px]", "lg:max-w-[1080px]");
+    expect(main).toHaveClass("max-w-193", "lg:max-w-270");
   });
 
   it("adds an income item end-to-end through the real ProfileProvider (onAdd wiring), and the empty state disappears", async () => {

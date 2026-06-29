@@ -19,7 +19,7 @@ describe("ComparisonBarChart", () => {
     usePrefersReducedMotionMock.mockReturnValue(true);
   });
 
-  it("renders 4 distinct bars, one per category, using chart-accent colors", () => {
+  it("renders 4 distinct bars, colored by the bright Cash Flow category chart tints, with remaining following the sign of its value", () => {
     const { container } = render(
       <ComparisonBarChart income={50000} expense={20000} debt={10000} remaining={20000} />,
     );
@@ -29,18 +29,21 @@ describe("ComparisonBarChart", () => {
 
     const fills = Array.from(bars).map((bar) => bar.getAttribute("fill"));
     expect(fills).toEqual([
-      "var(--color-chart-1)",
-      "var(--color-chart-2)",
-      "var(--color-chart-3)",
-      "var(--color-chart-4)",
+      "var(--color-cat-income-chart)", // รายรับ
+      "var(--color-cat-expense-chart)", // รายจ่าย
+      "var(--color-cat-debt-chart)", // หนี้สิน
+      "var(--color-cat-income-chart)", // เหลือ (positive)
     ]);
+  });
 
-    // design.md is explicit: traffic-light colors must never appear on a
-    // chart that isn't communicating money-health status, to avoid
-    // confusing the two meanings.
-    for (const fill of fills) {
-      expect(fill).not.toMatch(/--color-(good|warning|danger)/);
-    }
+  it("colors a negative remaining bar with the expense chart tint", () => {
+    const { container } = render(
+      <ComparisonBarChart income={20000} expense={20000} debt={10000} remaining={-10000} />,
+    );
+
+    const bars = container.querySelectorAll(".recharts-bar-rectangle .recharts-rectangle");
+    const fills = Array.from(bars).map((bar) => bar.getAttribute("fill"));
+    expect(fills[3]).toBe("var(--color-cat-expense-chart)");
   });
 
   it("passes all 4 category labels to the x-axis (at least one rendered as a tick, per Recharts' own collision avoidance)", () => {

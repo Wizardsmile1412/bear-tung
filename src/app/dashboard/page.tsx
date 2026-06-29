@@ -51,7 +51,7 @@ export default function DashboardPage() {
   }));
 
   return (
-    <main className="mx-auto flex w-full max-w-[772px] lg:max-w-[1080px] flex-col gap-8 px-6 py-8">
+    <main className="mx-auto flex w-full max-w-193 lg:max-w-270 flex-col gap-8 px-6 py-8">
       <header>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -115,7 +115,12 @@ export default function DashboardPage() {
           </section>
 
           <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
-            <h2 className="text-xl font-semibold text-ink">เปรียบเทียบรายรับ-รายจ่าย-หนี้สิน</h2>
+            <h2 className="text-xl font-semibold text-ink">
+              เปรียบเทียบรายรับ-รายจ่าย-หนี้สิน
+              <span className="ml-2 text-base font-normal text-ink-muted">
+                {formatMonthLabel(selectedEntry.month)}
+              </span>
+            </h2>
             <div className="mt-4">
               <ComparisonBarChart
                 income={selectedEntry.totalIncome}

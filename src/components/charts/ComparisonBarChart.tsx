@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 import { Money } from "@/domain/model/Money";
 
@@ -13,26 +13,26 @@ interface ComparisonBarChartProps {
   remaining: number;
 }
 
-const BAR_COLORS = [
-  "var(--color-chart-1)",
-  "var(--color-chart-2)",
-  "var(--color-chart-3)",
-  "var(--color-chart-4)",
-];
+const TONE_COLORS = {
+  income: "var(--color-cat-income-chart)",
+  expense: "var(--color-cat-expense-chart)",
+  debt: "var(--color-cat-debt-chart)",
+} as const;
 
 /**
- * Generic comparison bar chart primitive (no domain knowledge): 4 bars for
- * income / expense / debt / remaining, one category axis. Always uses the
- * neutral chart accent colors — never the traffic-light good/warning/danger
- * colors, which are reserved for money-health status elsewhere.
+ * Income/expense/debt/remaining comparison bar chart. Uses the brighter
+ * `--color-cat-*-chart` variants of the Cash Flow form's category hues —
+ * decorative fills only (no text/icon drawn on top), so they're exempt from
+ * the AA audit that covers the base `--color-cat-*` tokens. Remaining
+ * follows the sign of its value (income hue if >=0, expense hue if negative).
  */
 export function ComparisonBarChart({ income, expense, debt, remaining }: ComparisonBarChartProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const data = [
-    { label: "รายรับ", value: income },
-    { label: "รายจ่าย", value: expense },
-    { label: "หนี้สิน", value: debt },
-    { label: "เหลือ", value: remaining },
+    { label: "รายรับ", value: income, tone: "income" as const },
+    { label: "รายจ่าย", value: expense, tone: "expense" as const },
+    { label: "หนี้สิน", value: debt, tone: "debt" as const },
+    { label: "เหลือ", value: remaining, tone: remaining >= 0 ? ("income" as const) : ("expense" as const) },
   ];
 
   return (
@@ -41,10 +41,9 @@ export function ComparisonBarChart({ income, expense, debt, remaining }: Compari
         <BarChart data={data} margin={{ top: 28, right: 16, bottom: 0, left: 0 }}>
           <XAxis dataKey="label" tick={{ fill: "var(--color-ink-muted)", fontSize: 13 }} />
           <YAxis tick={{ fill: "var(--color-ink-subtle)", fontSize: 12 }} width={48} />
-          <Tooltip formatter={(value) => Money.formatWithUnit(Number(value))} />
           <Bar dataKey="value" radius={[8, 8, 0, 0]} isAnimationActive={!prefersReducedMotion}>
-            {data.map((entry, index) => (
-              <Cell key={entry.label} fill={BAR_COLORS[index % BAR_COLORS.length]} />
+            {data.map((entry) => (
+              <Cell key={entry.label} fill={TONE_COLORS[entry.tone]} />
             ))}
             <LabelList
               dataKey="value"

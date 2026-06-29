@@ -172,7 +172,7 @@ describe("MortgagePage", () => {
     const slider = screen.getByLabelText("เลือกเดือนที่ใช้ประเมินสินเชื่อ");
     fireEvent.change(slider, { target: { value: "2" } });
 
-    expect(screen.getByText("ก.ค. 2027")).toBeInTheDocument();
+    expect(screen.getAllByText("ก.ค. 2027").length).toBeGreaterThan(0);
     expect(screen.getByText("เกณฑ์ LTV ปกติ — ตามจำนวนบ้านและราคาบ้าน")).toBeInTheDocument();
   });
 
@@ -351,6 +351,6 @@ describe("MortgagePage", () => {
     );
 
     const main = container.querySelector("main");
-    expect(main).toHaveClass("max-w-[772px]", "lg:max-w-[1080px]");
+    expect(main).toHaveClass("max-w-193", "lg:max-w-270");
   });
 });
