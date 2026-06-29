@@ -10,6 +10,8 @@ function renderPanel(overrides: Partial<React.ComponentProps<typeof AssumptionPa
     onInterestRatePercentChange: vi.fn(),
     loanTermYears: 30,
     onLoanTermYearsChange: vi.fn(),
+    dsrLimitPercent: 40,
+    onDsrLimitPercentChange: vi.fn(),
     ltvPolicyName: "temporary",
     isAgeTermCapped: false,
     ...overrides,
@@ -40,14 +42,12 @@ describe("AssumptionPanel", () => {
     expect(props.onLoanTermYearsChange).toHaveBeenLastCalledWith(20);
   });
 
-  it("shows the DSR cap as a fixed, disabled field that cannot be edited", () => {
-    renderPanel();
+  it("fires onDsrLimitPercentChange when the DSR input changes", () => {
+    const props = renderPanel();
     const input = screen.getByLabelText("DSR สูงสุดที่รับได้");
-    expect(input).toBeDisabled();
-    expect(input).toHaveValue("40");
-
+    expect(input).not.toBeDisabled();
     fireEvent.change(input, { target: { value: "50" } });
-    expect(input).toHaveValue("40");
+    expect(props.onDsrLimitPercentChange).toHaveBeenLastCalledWith(50);
   });
 
   it("shows the temporary-relaxation LTV badge text when ltvPolicyName is 'temporary'", () => {

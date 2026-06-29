@@ -42,6 +42,7 @@ export default function MortgagePage() {
 
   const [interestRatePercent, setInterestRatePercent] = useState(DEFAULT_INTEREST_RATE_PERCENT);
   const [loanTermYears, setLoanTermYears] = useState(DEFAULT_LOAN_TERM_YEARS);
+  const [dsrLimitPercent, setDsrLimitPercent] = useState(Math.round(DEFAULT_DSR_LIMIT * 100));
 
   const [coBorrowerEnabled, setCoBorrowerEnabled] = useState(false);
   const [coDebt, setCoDebt] = useState(0);
@@ -86,6 +87,7 @@ export default function MortgagePage() {
                 downPaymentAvailable={downPaymentAvailable}
                 interestRatePercent={interestRatePercent}
                 loanTermYears={loanTermYears}
+                dsrLimitPercent={dsrLimitPercent}
                 coBorrowerEnabled={coBorrowerEnabled}
                 coDebt={coDebt}
                 coIncomeProvided={coIncomeProvided}
@@ -134,6 +136,8 @@ export default function MortgagePage() {
           setInterestRatePercent={setInterestRatePercent}
           loanTermYears={loanTermYears}
           setLoanTermYears={setLoanTermYears}
+          dsrLimitPercent={dsrLimitPercent}
+          setDsrLimitPercent={setDsrLimitPercent}
           coBorrowerEnabled={coBorrowerEnabled}
           setCoBorrowerEnabled={setCoBorrowerEnabled}
           coDebt={coDebt}
@@ -166,6 +170,8 @@ interface MortgagePageContentProps {
   setInterestRatePercent(value: number): void;
   loanTermYears: number;
   setLoanTermYears(value: number): void;
+  dsrLimitPercent: number;
+  setDsrLimitPercent(value: number): void;
   coBorrowerEnabled: boolean;
   setCoBorrowerEnabled(value: boolean): void;
   coDebt: number;
@@ -239,6 +245,8 @@ function MortgagePageContent(props: MortgagePageContentProps) {
             onInterestRatePercentChange={props.setInterestRatePercent}
             loanTermYears={props.loanTermYears}
             onLoanTermYearsChange={props.setLoanTermYears}
+            dsrLimitPercent={props.dsrLimitPercent}
+            onDsrLimitPercentChange={props.setDsrLimitPercent}
             ltvPolicyName=""
             isAgeTermCapped={isAgeTermCapped}
           />
@@ -273,7 +281,7 @@ function MortgageEvaluation(props: MortgageEvaluationProps) {
     downPaymentAvailable: props.downPaymentAvailable,
     monthlyIncome: props.monthlyIncome,
     existingDebt: props.existingDebt,
-    dsrLimit: DEFAULT_DSR_LIMIT,
+    dsrLimit: props.dsrLimitPercent / 100,
     assessmentDate,
   };
 
@@ -285,7 +293,7 @@ function MortgageEvaluation(props: MortgageEvaluationProps) {
     userIncome: props.monthlyIncome,
     userDebt: props.existingDebt,
     coDebt: props.coDebt,
-    dsrLimit: DEFAULT_DSR_LIMIT,
+    dsrLimit: props.dsrLimitPercent / 100,
     coIncomeProvided: props.coIncomeProvided,
   });
 
@@ -296,6 +304,8 @@ function MortgageEvaluation(props: MortgageEvaluationProps) {
         onInterestRatePercentChange={props.setInterestRatePercent}
         loanTermYears={props.loanTermYears}
         onLoanTermYearsChange={props.setLoanTermYears}
+        dsrLimitPercent={props.dsrLimitPercent}
+        onDsrLimitPercentChange={props.setDsrLimitPercent}
         ltvPolicyName={mortgageResult.ltvPolicyName}
         isAgeTermCapped={props.isAgeTermCapped}
       />
@@ -323,6 +333,7 @@ interface MortgageExportButtonProps {
   downPaymentAvailable: number;
   interestRatePercent: number;
   loanTermYears: number;
+  dsrLimitPercent: number;
   coBorrowerEnabled: boolean;
   coDebt: number;
   coIncomeProvided: number | undefined;
@@ -350,7 +361,7 @@ function MortgageExportButton(props: MortgageExportButtonProps) {
     downPaymentAvailable: props.downPaymentAvailable,
     monthlyIncome: props.monthlyIncome,
     existingDebt: props.existingDebt,
-    dsrLimit: DEFAULT_DSR_LIMIT,
+    dsrLimit: props.dsrLimitPercent / 100,
     assessmentDate,
   };
 
@@ -362,7 +373,7 @@ function MortgageExportButton(props: MortgageExportButtonProps) {
     userIncome: props.monthlyIncome,
     userDebt: props.existingDebt,
     coDebt: props.coDebt,
-    dsrLimit: DEFAULT_DSR_LIMIT,
+    dsrLimit: props.dsrLimitPercent / 100,
     coIncomeProvided: props.coIncomeProvided,
   };
   const coBorrowerResult = useCoBorrower(mortgageResult, coBorrowerInput);

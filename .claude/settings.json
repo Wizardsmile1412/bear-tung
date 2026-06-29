@@ -6,7 +6,8 @@
       "Bash(git status *)",
       "Bash(node /Users/pawarit/Documents/My-project/Coding_project/bear-tung/Bear-tung/scripts/check-contrast.mjs)",
       "Bash(node scripts/check-contrast.mjs)",
-      "Bash(echo \"Exit: $?\")"
+      "Bash(echo \"Exit: $?\")",
+      "Bash(echo \"---LINT EXIT: $?---\")"
     ]
   }
 }

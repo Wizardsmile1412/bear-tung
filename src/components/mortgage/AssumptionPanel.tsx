@@ -1,6 +1,6 @@
 "use client";
 
-import { DEFAULT_DSR_LIMIT, LTV_RELAXATION_END_DATE } from "@/domain/config/defaults";
+import { LTV_RELAXATION_END_DATE } from "@/domain/config/defaults";
 
 import { formatMonthLabel } from "@/components/health/formatMonthLabel";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
@@ -12,15 +12,13 @@ import { NumericField } from "@/components/ui/NumericField";
 const [endYear, endMonth, endDay] = LTV_RELAXATION_END_DATE.split("-");
 const LTV_RELAXATION_END_LABEL = `${Number(endDay)} ${formatMonthLabel(`${endYear}-${endMonth}`)}`;
 
-// Fixed app-wide policy, not user-adjustable — kept in sync with the same
-// `DEFAULT_DSR_LIMIT` the domain layer uses for the actual calculation.
-const DSR_LIMIT_PERCENT = Math.round(DEFAULT_DSR_LIMIT * 100);
-
 interface AssumptionPanelProps {
   interestRatePercent: number;
   onInterestRatePercentChange(value: number): void;
   loanTermYears: number;
   onLoanTermYearsChange(value: number): void;
+  dsrLimitPercent: number;
+  onDsrLimitPercentChange(value: number): void;
   /**
    * The active LtvPolicy's name from the latest MortgageResult — single
    * source of truth, not computed here. Pass `""` (or omit) when there is no
@@ -45,6 +43,8 @@ export function AssumptionPanel({
   onInterestRatePercentChange,
   loanTermYears,
   onLoanTermYearsChange,
+  dsrLimitPercent,
+  onDsrLimitPercentChange,
   ltvPolicyName,
   isAgeTermCapped,
 }: AssumptionPanelProps) {
@@ -100,17 +100,16 @@ export function AssumptionPanel({
             <label htmlFor="dsrLimitPercent" className="text-sm font-medium text-ink-muted">
               DSR สูงสุดที่รับได้
             </label>
-            <InfoTooltip label="DSR (สัดส่วนภาระหนี้ต่อรายได้) สูงสุดที่ธนาคารยอมรับ คือเพดานที่ค่างวดผ่อนบ้านรวมกับหนี้อื่น ๆ จะต้องไม่เกินเมื่อเทียบกับรายได้ แอปนี้ใช้เกณฑ์มาตรฐาน 40% คงที่ ไม่สามารถปรับเองได้" />
+            <InfoTooltip label={`DSR (Debt Service Ratio) คือสัดส่วนภาระหนี้ต่อรายได้ต่อเดือน\n\nธนาคารไทยส่วนใหญ่ใช้เกณฑ์ 40% เป็นมาตรฐาน หมายความว่าค่างวดบ้านรวมกับหนี้อื่น ๆ ต้องไม่เกิน 40% ของรายได้\n\nบางธนาคารอาจยืดหยุ่นได้ถึง 50% ในกรณีพิเศษ เช่น รายได้สูงหรือประวัติเครดิตดี`} />
           </div>
           <div className="flex items-center gap-2">
-            <input
+            <NumericField
               id="dsrLimitPercent"
-              type="text"
-              inputMode="numeric"
-              value={DSR_LIMIT_PERCENT}
-              disabled
-              readOnly
-              className="w-full rounded-input border border-outline bg-surface-sunken px-4 py-3 text-base text-ink-muted disabled:cursor-not-allowed"
+              inputMode="decimal"
+              allowDecimal
+              value={dsrLimitPercent}
+              onChange={onDsrLimitPercentChange}
+              className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">%</span>
           </div>
