@@ -13,6 +13,8 @@ export interface ProfileContextValue {
   removeItem(id: string): void;
   updateItem(id: string, item: LineItem): void;
   updateAssets(assets: Partial<Assets>): void;
+  /** Replaces the entire profile (used when importing an Excel file). */
+  replaceProfile(profile: CashFlowProfile): void;
   reset(): void;
 }
 
@@ -74,6 +76,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     setProfile((current) => current.updateAssets(assets));
   }, []);
 
+  const replaceProfile = useCallback((next: CashFlowProfile) => {
+    setProfile(next);
+  }, []);
+
   // Clears all items + assets back to empty, keeping the same startMonth.
   const reset = useCallback(() => {
     setProfile((current) => CashFlowProfile.empty(current.startMonth));
@@ -86,6 +92,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     removeItem,
     updateItem,
     updateAssets,
+    replaceProfile,
     reset,
   };
 

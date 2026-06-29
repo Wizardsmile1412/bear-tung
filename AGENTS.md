@@ -10,7 +10,7 @@ Guide for AI agents working in this codebase. (`CLAUDE.md` imports this file via
 
 ## Project
 
-Bear-tung is a **Money Health Check** web app (Thai UI). Flow: enter cash flow → show financial health (charts + ratios + score + traffic light) → 5-year projection → home mortgage affordability (Thai bank policy) + co-borrower → Excel export. Client-only, data in local storage. **UI language is Thai** (keep financial jargon in English); **docs and code comments are in English**.
+Bear-tung is a **Money Health Check** web app (Thai UI). Flow: enter cash flow → show financial health (charts + ratios + score + traffic light) → 5-year projection → home mortgage affordability (Thai bank policy) + co-borrower → Excel export. A previously-exported file can also be **re-imported** to review/edit (no cloud). Client-only, data in local storage. **UI language is Thai** (keep financial jargon in English); **docs and code comments are in English**.
 
 ## Docs (read before working)
 
@@ -68,4 +68,4 @@ Conventional Commits (`feat:`/`fix:`/`test:`/`refactor:`/`chore:`/`docs:`). Flex
 - Money values: store as numbers, format at display time; guard divide-by-zero (zero income).
 - Mortgage output is an educational estimate, not a real loan approval.
 - iPad Air 4 (820×1180) is the primary target, then responsive.
-- xlsx: export-only (never parse untrusted files); use the CDN-patched SheetJS build.
+- xlsx: import is **our-own-export only** (never parse untrusted/arbitrary files); use the CDN-patched SheetJS build.

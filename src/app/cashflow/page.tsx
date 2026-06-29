@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { NavButtonLink } from "@/components/ui/NavButtonLink";
 import { useProfile } from "@/components/profile/useProfile";
@@ -8,11 +9,25 @@ import { CategoryGroupCard } from "@/components/cashflow/CategoryGroupCard";
 import { EmptyState } from "@/components/cashflow/EmptyState";
 import { ResetButton } from "@/components/cashflow/ResetButton";
 import { SavingsCard } from "@/components/cashflow/SavingsCard";
+import { ImportButton } from "@/components/import/ImportButton";
+import { ImportWarningBanner } from "@/components/import/ImportWarningBanner";
+import { stashImportWarnings } from "@/components/import/importWarnings";
+import { ImportSummary } from "@/components/import/useImport";
 
 const CATEGORIES = ["income", "expense", "debt"] as const;
 
 export default function CashFlowPage() {
   const { profile, isLoaded, addItem, removeItem, updateItem, updateAssets, reset } = useProfile();
+
+  // The profile updates in place via context after an import, but the warning
+  // banner only reads its stashed warnings on mount — bump this key to remount
+  // it so an in-place import on this page still surfaces any warnings.
+  const [bannerKey, setBannerKey] = useState(0);
+
+  function handleImported(summary: ImportSummary) {
+    stashImportWarnings(summary.warnings);
+    setBannerKey((key) => key + 1);
+  }
 
   if (!isLoaded) {
     return null;
@@ -49,14 +64,22 @@ export default function CashFlowPage() {
               กรอกรายรับ รายจ่าย และหนี้สิน เพื่อดูสุขภาพการเงินของคุณ
             </p>
           </div>
-          {hasData && <ResetButton onReset={reset} />}
+          <div className="flex flex-wrap items-center gap-3">
+            <ImportButton confirmReplace={hasData} onImported={handleImported} />
+            {hasData && <ResetButton onReset={reset} />}
+          </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <NavButtonLink href="/" variant="secondary" arrow="left">
+            กลับหน้าแรก
+          </NavButtonLink>
           <NavButtonLink href="/dashboard" variant="primary" arrow="right">
             ดูสุขภาพการเงิน
           </NavButtonLink>
         </div>
       </header>
+
+      <ImportWarningBanner key={bannerKey} />
 
       {hasItems && <CashFlowSummaryCard totals={profile.monthlyTotals(month)} />}
 

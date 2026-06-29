@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
+import { ImportButton } from "@/components/import/ImportButton";
+import { stashImportWarnings } from "@/components/import/importWarnings";
+import { ImportSummary } from "@/components/import/useImport";
 import { useProfile } from "@/components/profile/useProfile";
 
 /**
@@ -18,6 +22,15 @@ import { useProfile } from "@/components/profile/useProfile";
  */
 export default function Home() {
   const { profile, isLoaded } = useProfile();
+  const router = useRouter();
+
+  // After a successful import, carry any warnings to the Cash Flow review
+  // screen (shown there in a banner) and navigate the user there to check
+  // and edit the imported data.
+  function handleImported(summary: ImportSummary) {
+    stashImportWarnings(summary.warnings);
+    router.push("/cashflow");
+  }
 
   // Gate on isLoaded the same way every other page does, to avoid a
   // hydration flash of the wrong CTA (e.g. "เริ่มต้นใช้งาน" flashing before
@@ -67,14 +80,21 @@ export default function Home() {
           >
             แก้ไข Cash Flow
           </Link>
+          <ImportButton confirmReplace onImported={handleImported} />
         </div>
       ) : (
-        <Link
-          href="/cashflow"
-          className="inline-flex h-12 items-center justify-center rounded-button bg-primary px-8 text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
-        >
-          เริ่มต้นใช้งาน
-        </Link>
+        <div className="flex flex-col items-center gap-5">
+          <Link
+            href="/cashflow"
+            className="inline-flex h-12 items-center justify-center rounded-button bg-primary px-8 text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
+          >
+            เริ่มต้นใช้งาน
+          </Link>
+          <ImportButton confirmReplace={false} onImported={handleImported} />
+          <p className="max-w-md text-sm text-ink-muted">
+            เคยใช้งานแล้วและมีไฟล์ Excel ที่ส่งออกไว้? นำเข้าเพื่อแก้ไขต่อได้เลย
+          </p>
+        </div>
       )}
     </main>
     </>

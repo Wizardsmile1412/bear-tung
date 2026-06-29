@@ -8,7 +8,9 @@
       "Bash(node scripts/check-contrast.mjs)",
       "Bash(echo \"Exit: $?\")",
       "Bash(echo \"---LINT EXIT: $?---\")",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"=== TSC EXIT: $? ===\")",
+      "Bash(echo \"COVERAGE EXIT: $?\")"
     ]
   }
 }

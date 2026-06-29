@@ -75,3 +75,15 @@
 - [x] empty states + mortgage disclaimer (not a real approval)
 - [x] end-to-end QA with real numbers
 - [ ] final deploy
+
+## Phase 8 — Excel Import (re-load an exported file)
+- [x] `domain/import/`: ImportResult (types) + ExcelImporter (parses the 4 sheets) + createExcelImporter (composition root)
+- [x] reconstruct profile: line items + savings + startMonth (Sheet 4) + debt payoff → endMonth; tolerate older 4-column files
+- [x] parse mortgage inputs from Sheet 3 (incl. co-borrower); skip the "no mortgage" placeholder
+- [x] ⭐ lost-carry-forward detection: re-run projection vs. file Sheet 4, warn only on real divergence
+- [x] `domain/storage/`: MortgageInputsRepository (interface) + LocalStorage impl (one-shot mortgage pre-fill)
+- [x] `ProfileProvider.replaceProfile` for whole-profile swap on import
+- [x] UI: `useImport` hook + `ImportButton` (confirm-before-replace, rejects unrecognized file without wiping data)
+- [x] UI: Import button on Home + warning banner on Cash Flow + mortgage form pre-fill (`useImportedMortgageInputs`)
+- [x] ⭐ tests: importer round-trip/edge cases + storage + hook + button + banner → coverage ≥ 80%
+- [ ] commit: `feat: import previously-exported Excel file (Phase 8)`

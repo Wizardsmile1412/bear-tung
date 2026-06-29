@@ -1,6 +1,10 @@
 // Storage key for the persisted CashFlowProfile (Phase 1).
 export const PROFILE_STORAGE_KEY = "bear-tung:profile";
 
+// Storage key for mortgage form inputs recovered from an imported Excel file,
+// used to pre-fill the mortgage page after import. Cleared once consumed.
+export const MORTGAGE_INPUTS_STORAGE_KEY = "bear-tung:mortgage-inputs";
+
 // Phase 2 — mortgage + scoring defaults. Adjustable by the user in the UI;
 // these are just the initial values pre-filled into forms.
 

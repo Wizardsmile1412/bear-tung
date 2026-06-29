@@ -288,13 +288,27 @@ Technical proposal: use **SheetJS (xlsx)** or **ExcelJS** on the client (data is
 
 ---
 
+## 9.1 Excel Import (.xlsx)
+
+Because data lives only in local storage (no cloud), a returning user who previously exported their file can **import it back** to review and edit — instead of re-entering everything. The user picks a previously-exported Bear-tung `.xlsx`; the app rebuilds the cash-flow profile from **Sheet 1** (line items + savings), takes the start month from **Sheet 4**, restores debt payoff dates from the payoff-month column, and pre-fills the mortgage form from **Sheet 3**.
+
+- **Entry point:** an "Import Excel" button on the Home screen (for both new and returning users). Importing **replaces** the current profile, so a returning user is asked to confirm first; an unrecognized file is rejected without touching existing data.
+- **After import:** the user lands on the Cash Flow screen to review/edit; the mortgage form is pre-filled when they next open it.
+
+**Lossy-by-design limitation + warning.** The export stores each line item as a single amount (its value at the export month), not its full carry-forward history. So a re-imported item gets one value effective at the start month. Debt payoff dates **do** round-trip (payoff-month column); mid-projection income/expense step-changes **cannot** be attributed back to individual items. The importer detects this precisely — it re-runs the projection on the reconstructed profile and compares it to the file's **Sheet 4** — and shows a warning **only when totals actually diverge** (no false alarms when nothing was lost). The warning appears as a non-blocking banner on the Cash Flow review screen.
+
+> Note: this is import-of-our-own-export only — never parse untrusted/arbitrary spreadsheets (security constraint). The export format is unchanged.
+
+---
+
 ## 10. Screens / Flow (UX)
 
-1. **Home / Onboarding** — short explanation of what the app does, a start button.
+1. **Home / Onboarding** — short explanation of what the app does, a start button, and an **Import Excel** button (re-load a previously-exported file).
 2. **Cash Flow entry** — categorized form (income / expense / debt / savings); each item can set a start/change date, and debts can set an end date (for projection).
 3. **Health Dashboard** — score + traffic light + charts + ratio cards + **month selector/slider** + **5-year trend chart**.
 4. **Mortgage** — enter target home + age + adjust assumptions + pick assessment month → affordability result; **co-borrower checkbox** shows required co-borrower income.
 5. **Export Excel button** — accessible from the dashboard and the mortgage page.
+6. **Import Excel** — from Home: pick a previously-exported file → profile is replaced (with confirm if data exists) → land on Cash Flow to review; mortgage form pre-filled.
 
 ---
 

@@ -28,25 +28,35 @@ import { CoBorrowerSection } from "@/components/mortgage/CoBorrowerSection";
 import { MortgageInputForm } from "@/components/mortgage/MortgageInputForm";
 import { MortgageResultCard } from "@/components/mortgage/MortgageResultCard";
 import { useCoBorrower, useMortgage } from "@/components/mortgage/useMortgage";
+import { useImportedMortgageInputs } from "@/components/mortgage/useImportedMortgageInputs";
 
 export default function MortgagePage() {
   const { profile, isLoaded: profileLoaded } = useProfile();
   const { series, isLoaded: seriesLoaded } = useProjectionSeries();
 
+  // Pre-fill from an Excel import, if any (one-shot — cleared after mount).
+  const imported = useImportedMortgageInputs();
+
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const [homePrice, setHomePrice] = useState(0);
-  const [homeOrder, setHomeOrder] = useState<1 | 2 | 3>(1);
+  const [homePrice, setHomePrice] = useState(imported?.homePrice ?? 0);
+  const [homeOrder, setHomeOrder] = useState<1 | 2 | 3>(imported?.homeOrder ?? 1);
   const [firstHomePaidAtLeastTwoYears, setFirstHomePaidAtLeastTwoYears] = useState(false);
-  const [borrowerAge, setBorrowerAge] = useState(0);
-  const [downPaymentAvailable, setDownPaymentAvailable] = useState(() => profile.assets.savings);
+  const [borrowerAge, setBorrowerAge] = useState(imported?.borrowerAge ?? 0);
+  const [downPaymentAvailable, setDownPaymentAvailable] = useState(
+    () => imported?.downPaymentAvailable ?? profile.assets.savings,
+  );
 
-  const [interestRatePercent, setInterestRatePercent] = useState(DEFAULT_INTEREST_RATE_PERCENT);
-  const [loanTermYears, setLoanTermYears] = useState(DEFAULT_LOAN_TERM_YEARS);
-  const [dsrLimitPercent, setDsrLimitPercent] = useState(Math.round(DEFAULT_DSR_LIMIT * 100));
+  const [interestRatePercent, setInterestRatePercent] = useState(
+    imported?.interestRatePercent ?? DEFAULT_INTEREST_RATE_PERCENT,
+  );
+  const [loanTermYears, setLoanTermYears] = useState(imported?.loanTermYears ?? DEFAULT_LOAN_TERM_YEARS);
+  const [dsrLimitPercent, setDsrLimitPercent] = useState(
+    imported ? Math.round(imported.dsrLimit * 100) : Math.round(DEFAULT_DSR_LIMIT * 100),
+  );
 
-  const [coBorrowerEnabled, setCoBorrowerEnabled] = useState(false);
-  const [coDebt, setCoDebt] = useState(0);
+  const [coBorrowerEnabled, setCoBorrowerEnabled] = useState(imported?.coBorrowerEnabled ?? false);
+  const [coDebt, setCoDebt] = useState(imported?.coDebt ?? 0);
   const [coIncomeProvided, setCoIncomeProvided] = useState<number | undefined>(undefined);
 
   /**

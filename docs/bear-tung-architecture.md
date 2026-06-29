@@ -57,10 +57,16 @@ src/domain/
 │  └─ ProjectionService.ts     # builds 60-month series (uses HealthScoreService per month)
 ├─ storage/
 │  ├─ ProfileRepository.ts     # interface
-│  └─ LocalStorageProfileRepository.ts  # implements
+│  ├─ LocalStorageProfileRepository.ts  # implements
+│  ├─ MortgageInputsRepository.ts       # interface (one-shot import→mortgage pre-fill)
+│  └─ LocalStorageMortgageInputsRepository.ts  # implements
 ├─ export/
 │  ├─ Exporter.ts              # interface
 │  └─ ExcelExporter.ts         # implements (SheetJS)
+├─ import/
+│  ├─ ImportResult.ts          # types (CategoryMapping, ParsedMortgageInputs, ImportResult)
+│  ├─ ExcelImporter.ts         # parses workbook → profile (+ mortgage inputs); detects lost carry-forward
+│  └─ createExcelImporter.ts   # composition root (injects ProjectionService)
 └─ config/
    └─ defaults.ts              # 6.5%, 30y, DSR 40%, weights
 ```
@@ -208,9 +214,16 @@ function useHealth(month: MonthKey) {
 |---|---|---|
 | Strategy | Ratio, LtvPolicy | swap/add rules without editing old code (OCP) |
 | Factory | LtvPolicyFactory | select policy by date |
-| Repository | ProfileRepository | separate storage from logic (DIP) |
+| Repository | ProfileRepository, MortgageInputsRepository | separate storage from logic (DIP) |
 | Facade/Service | MortgageService, HealthScoreService | UI calls one place, complexity hidden |
 | Value Object | Money, MonthKey | fewer bugs around units/formatting |
+
+### Excel import (mirror of export)
+
+`ExcelImporter` is the inverse of `ExcelExporter`: a pure `parse(workbook, options)` (the testable part) that rebuilds a `CashFlowProfileData` (+ optional mortgage inputs) from the 4 sheets. Two SOLID points:
+
+- **DIP for loss detection** — the export collapses each line item to a single amount, so re-imported items lose their carry-forward history. `ExcelImporter` takes an injected projection builder (the real `ProjectionService`, via `createExcelImporter`), re-runs it on the reconstructed profile, and compares against the file's Projection sheet — warning **only** when totals actually diverge. The injection keeps it unit-testable with a fake builder.
+- **Layering preserved** — like `buildExportData`, the importer never imports from `src/components/**`. The UI's `useImport` hook supplies the Thai→key reverse lookups (`CategoryMapping`, `parseMonthLabel`) so `src/domain/**` stays free of presentation concerns.
 
 ---
 

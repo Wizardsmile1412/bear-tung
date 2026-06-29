@@ -27,3 +27,17 @@ export function formatMonthLabel(month: string): string {
   const thaiMonth = THAI_MONTHS_SHORT[Number(monthNumber) - 1] ?? monthNumber;
   return `${thaiMonth} ${year}`;
 }
+
+/**
+ * Inverse of `formatMonthLabel`: parses a Thai month label (e.g. 'มิ.ย. 2026')
+ * back into a 'YYYY-MM' key, or `undefined` if it isn't a recognized label.
+ * Used when importing an exported workbook's payoff-month column.
+ */
+export function parseMonthLabel(label: string): string | undefined {
+  const [thaiMonth, year] = label.trim().split(/\s+/);
+  const index = THAI_MONTHS_SHORT.indexOf(thaiMonth as (typeof THAI_MONTHS_SHORT)[number]);
+  if (index < 0 || !/^\d{4}$/.test(year ?? "")) {
+    return undefined;
+  }
+  return `${year}-${String(index + 1).padStart(2, "0")}`;
+}

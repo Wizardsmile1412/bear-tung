@@ -1,5 +1,11 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+
+// Home calls `useRouter()` to navigate after an Excel import — stub it so the
+// component renders outside a real Next.js app-router context.
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
 
 import { PROFILE_STORAGE_KEY } from "@/domain/config/defaults";
 import { CashFlowProfile } from "@/domain/model/CashFlowProfile";
@@ -77,6 +83,6 @@ describe("Home (onboarding)", () => {
     );
 
     const main = container.querySelector("main");
-    expect(main).toHaveClass("max-w-[772px]", "lg:max-w-[1080px]");
+    expect(main).toHaveClass("max-w-193", "lg:max-w-270");
   });
 });
