@@ -28,21 +28,21 @@ export default function Home() {
   const hasData = profile.items.length > 0;
 
   return (
-    <main className="mx-auto flex w-full max-w-[772px] lg:max-w-[1080px] flex-1 flex-col items-center justify-center gap-8 px-6 py-16 text-center">
-      <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold leading-10 text-ink sm:text-4xl sm:leading-[48px]">
+    <main className="mx-auto flex w-full max-w-193 lg:max-w-270 flex-1 flex-col items-center justify-center gap-8 px-6 py-16 text-center">
+      <div className="flex flex-col gap-5">
+        <h1 className="text-3xl font-bold leading-10 text-ink sm:text-4xl sm:leading-12">
           เช็กสุขภาพการเงินของคุณ ใน Bear-tung
         </h1>
-        <p className="mx-auto max-w-2xl text-lg leading-7 text-ink-muted">
+        <p className="mx-auto max-w-2xl text-lg leading-10 text-ink-muted">
           กรอกรายรับ รายจ่าย และหนี้สินของคุณ แล้ว Bear-tung จะช่วยวิเคราะห์ด้วยกราฟและอัตราส่วนสำคัญ
           พร้อมคะแนนสุขภาพการเงิน ดูแนวโน้ม 5 ปีข้างหน้า ประเมินความสามารถซื้อบ้านตามเกณฑ์ธนาคารไทย
           และส่งออกผลลัพธ์เป็นไฟล์ Excel ได้ทันที —{" "}
-          <span className="block font-semibold text-ink">ข้อมูลทั้งหมดเก็บไว้ในเครื่องของคุณเท่านั้น</span>
+          <span className="mt-2 block font-semibold text-ink">ข้อมูลทั้งหมดเก็บไว้ในเครื่องของคุณเท่านั้น</span>
         </p>
       </div>
 
       {hasData ? (
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-5">
           <Link
             href="/dashboard"
             className="inline-flex h-12 items-center justify-center rounded-button bg-primary px-8 text-base font-semibold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
