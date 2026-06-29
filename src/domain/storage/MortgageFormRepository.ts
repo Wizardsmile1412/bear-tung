@@ -7,6 +7,14 @@
  * Mirrors the page's own state shape (e.g. `dsrLimitPercent` as 0-100, the
  * `selectedIndex` assessment month) so it round-trips with no lossy conversion.
  */
+/**
+ * How the down payment value is derived:
+ * - `auto`   — the LTV-based suggested default (recomputes with the inputs)
+ * - `pct5` / `pct10` — a fixed % of the home price (recomputes as price changes)
+ * - `manual` — a value the user typed
+ */
+export type DownPaymentMode = "auto" | "pct5" | "pct10" | "manual";
+
 export interface MortgageFormState {
   selectedIndex: number;
   homePrice: number;
@@ -14,8 +22,8 @@ export interface MortgageFormState {
   firstHomePaidAtLeastTwoYears: boolean;
   borrowerAge: number;
   downPaymentAvailable: number;
-  /** True once the user has typed their own down payment (stops LTV auto-fill). */
-  downPaymentEdited: boolean;
+  /** How the down payment was chosen (drives the 5%/10% quick-select + auto-fill). */
+  downPaymentMode: DownPaymentMode;
   interestRatePercent: number;
   loanTermYears: number;
   dsrLimitPercent: number;

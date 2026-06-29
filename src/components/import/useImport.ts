@@ -32,8 +32,8 @@ function toMortgageFormState(inputs: ParsedMortgageInputs): MortgageFormState {
     borrowerAge: inputs.borrowerAge,
     downPaymentAvailable: inputs.downPaymentAvailable,
     // An imported down payment is the user's own prior value — treat it as
-    // edited so the LTV auto-fill doesn't override it.
-    downPaymentEdited: true,
+    // manual so the LTV auto-fill doesn't override it.
+    downPaymentMode: "manual",
     interestRatePercent: inputs.interestRatePercent,
     loanTermYears: inputs.loanTermYears,
     dsrLimitPercent: Math.round(inputs.dsrLimit * 100), // form stores a percentage

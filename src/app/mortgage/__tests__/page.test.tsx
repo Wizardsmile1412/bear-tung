@@ -398,7 +398,93 @@ describe("MortgagePage", () => {
     await expect(userEvent.click(exportButton)).resolves.not.toThrow();
   });
 
-  it("persists the form across unmount/remount (survives navigating away and back)", () => {
+  it("hides the 'first home paid >= 2 years' question during the temporary relaxation, shows it under normal rules", () => {
+    seedProfile(); // index 0 = 2027-05 (temporary); index 2 = 2027-07 (normal)
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText("บ้านหลังนี้เป็นหลังที่"), { target: { value: "2" } });
+
+    // Temporary relaxation -> 100% LTV regardless, so the question is hidden.
+    expect(screen.queryByLabelText("ผ่อนบ้านหลังแรกมาแล้วอย่างน้อย 2 ปี")).not.toBeInTheDocument();
+
+    // Move the assessment month past 30 มิ.ย. 2570 -> normal rules -> question shows.
+    fireEvent.change(screen.getByLabelText("เลือกเดือนที่ใช้ประเมินสินเชื่อ"), { target: { value: "2" } });
+    expect(screen.getByLabelText("ผ่อนบ้านหลังแรกมาแล้วอย่างน้อย 2 ปี")).toBeInTheDocument();
+  });
+
+  it("the 5% quick-select fills 5% of the home price and keeps tracking price changes", async () => {
+    seedProfile();
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "4000000" } });
+    await userEvent.click(screen.getByRole("button", { name: /5%/ }));
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("200,000"); // 5% of 4,000,000
+
+    // Sticky: changing the home price recomputes 5% of the new price.
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "6000000" } });
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("300,000"); // 5% of 6,000,000
+    expect(screen.getByRole("button", { name: /5%/ })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("the 10% quick-select fills 10% of the home price", async () => {
+    seedProfile();
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "4000000" } });
+    await userEvent.click(screen.getByRole("button", { name: /10%/ }));
+
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("400,000"); // 10% of 4,000,000
+  });
+
+  it("typing a custom down payment clears the percent selection", async () => {
+    seedProfile();
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "4000000" } });
+    await userEvent.click(screen.getByRole("button", { name: /5%/ }));
+    expect(screen.getByRole("button", { name: /5%/ })).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.change(screen.getByLabelText("เงินดาวน์ที่มี"), { target: { value: "123456" } });
+
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("123,456");
+    expect(screen.getByRole("button", { name: /5%/ })).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("clicking the active percent again toggles it off (back to the auto default)", async () => {
+    seedProfile();
+    render(
+      <ProfileProvider>
+        <MortgagePage />
+      </ProfileProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "4000000" } });
+    const chip = screen.getByRole("button", { name: /10%/ });
+
+    await userEvent.click(chip);
+    expect(chip).toHaveAttribute("aria-pressed", "true");
+
+    await userEvent.click(chip);
+    expect(chip).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("persists the form across unmount/remount (survives navigating away and back)", async () => {
     seedProfile();
     const { unmount } = render(
       <ProfileProvider>
@@ -408,6 +494,7 @@ describe("MortgagePage", () => {
 
     fireEvent.change(screen.getByLabelText("ราคาบ้านที่ต้องการ"), { target: { value: "3500000" } });
     fireEvent.change(screen.getByLabelText("อายุผู้กู้"), { target: { value: "45" } });
+    await userEvent.click(screen.getByRole("button", { name: /10%/ })); // sticky 10% selection
 
     unmount(); // simulate navigating away
 
@@ -419,6 +506,9 @@ describe("MortgagePage", () => {
 
     expect(screen.getByLabelText("ราคาบ้านที่ต้องการ")).toHaveValue("3,500,000");
     expect(screen.getByLabelText("อายุผู้กู้")).toHaveValue("45");
+    // The 10% selection survives and stays sticky (10% of 3,500,000).
+    expect(screen.getByRole("button", { name: /10%/ })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByLabelText("เงินดาวน์ที่มี")).toHaveValue("350,000");
   });
 
   it("applies the responsive lg: container width class on the page's main element (design.md section 4)", () => {

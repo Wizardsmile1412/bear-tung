@@ -5,8 +5,8 @@ import { NumericField } from "@/components/ui/NumericField";
 
 const DOWN_PAYMENT_TOOLTIP =
   "แม้เกณฑ์ LTV จะให้กู้ได้เต็ม 100% (ดาวน์ 0%) แต่การมีเงินดาวน์สัก 5–10% มักคุ้มที่สุด " +
-  "เพราะช่วยลดวงเงินกู้ ทำให้ดอกเบี้ยรวมและค่างวดต่อเดือนน้อยลง และยังเหลือเงินไว้สำหรับค่าใช้จ่ายวันโอน " +
-  "เช่น ค่าธรรมเนียมการโอน ค่าจดจำนอง และค่าส่วนกลางล่วงหน้า ระบบจึงตั้งค่าเริ่มต้นเงินดาวน์ไว้ที่ 5% ของราคาบ้าน (ปรับได้)";
+  "\nเพราะช่วยลดวงเงินกู้ ทำให้ดอกเบี้ยรวมและค่างวดต่อเดือนน้อยลง และยังเหลือเงินไว้สำหรับค่าใช้จ่ายวันโอน " +
+  "เช่น ค่าธรรมเนียมการโอน ค่าจดจำนอง และค่าส่วนกลางล่วงหน้า \nระบบจึงตั้งค่าเริ่มต้นเงินดาวน์ไว้ที่ 5% ของราคาบ้าน (ปรับได้)";
 
 interface MortgageInputFormProps {
   homePrice: number;
@@ -15,11 +15,23 @@ interface MortgageInputFormProps {
   onHomeOrderChange(value: 1 | 2 | 3): void;
   firstHomePaidAtLeastTwoYears: boolean;
   onFirstHomePaidAtLeastTwoYearsChange(value: boolean): void;
+  /**
+   * Whether the "first home paid >= 2 years" question affects the result —
+   * only under the normal (post-relaxation) LTV rules. During the temporary
+   * 100% relaxation it has no effect, so the question is hidden.
+   */
+  firstHomePaidQuestionApplies: boolean;
   borrowerAge: number;
   onBorrowerAgeChange(value: number): void;
   downPaymentAvailable: number;
   onDownPaymentAvailableChange(value: number): void;
+  /** Which quick-select % is active (null = a manual or auto value). */
+  selectedDownPaymentPercent: 5 | 10 | null;
+  onSelectDownPaymentPercent(percent: 5 | 10): void;
 }
+
+/** Quick-select down-payment percentages (of the home price). */
+const DOWN_PAYMENT_PERCENT_OPTIONS = [5, 10] as const;
 
 /**
  * Controlled inputs for the home/borrower facts needed by `MortgageService`.
@@ -34,10 +46,13 @@ export function MortgageInputForm({
   onHomeOrderChange,
   firstHomePaidAtLeastTwoYears,
   onFirstHomePaidAtLeastTwoYearsChange,
+  firstHomePaidQuestionApplies,
   borrowerAge,
   onBorrowerAgeChange,
   downPaymentAvailable,
   onDownPaymentAvailableChange,
+  selectedDownPaymentPercent,
+  onSelectDownPaymentPercent,
 }: MortgageInputFormProps) {
   return (
     <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
@@ -77,7 +92,7 @@ export function MortgageInputForm({
           </select>
         </div>
 
-        {homeOrder === 2 && (
+        {homeOrder === 2 && firstHomePaidQuestionApplies && (
           <div className="flex items-center gap-2">
             <input
               id="firstHomePaidAtLeastTwoYears"
@@ -122,6 +137,29 @@ export function MortgageInputForm({
               className="w-full rounded-input border border-outline bg-surface px-4 py-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary-soft"
             />
             <span className="text-xs text-ink-subtle whitespace-nowrap">บาท</span>
+          </div>
+
+          <div className="mt-1 flex items-center gap-2">
+            <span className="text-xs text-ink-subtle">เลือกเร็ว:</span>
+            {DOWN_PAYMENT_PERCENT_OPTIONS.map((percent) => {
+              const isActive = selectedDownPaymentPercent === percent;
+              return (
+                <button
+                  key={percent}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => onSelectDownPaymentPercent(percent)}
+                  className={`inline-flex h-8 items-center gap-1 rounded-pill border px-3 text-sm font-medium transition-colors ${
+                    isActive
+                      ? "border-primary bg-primary-soft text-primary"
+                      : "border-outline bg-surface text-ink-muted hover:bg-surface-sunken"
+                  }`}
+                >
+                  {isActive && <span aria-hidden="true">✓</span>}
+                  {percent}%
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

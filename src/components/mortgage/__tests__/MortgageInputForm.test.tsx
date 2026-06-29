@@ -12,10 +12,13 @@ function renderForm(overrides: Partial<React.ComponentProps<typeof MortgageInput
     onHomeOrderChange: vi.fn(),
     firstHomePaidAtLeastTwoYears: false,
     onFirstHomePaidAtLeastTwoYearsChange: vi.fn(),
+    firstHomePaidQuestionApplies: true,
     borrowerAge: 30,
     onBorrowerAgeChange: vi.fn(),
     downPaymentAvailable: 500_000,
     onDownPaymentAvailableChange: vi.fn(),
+    selectedDownPaymentPercent: null,
+    onSelectDownPaymentPercent: vi.fn(),
     ...overrides,
   };
   render(<MortgageInputForm {...props} />);
@@ -63,6 +66,11 @@ describe("MortgageInputForm", () => {
 
     await userEvent.click(checkbox);
     expect(props.onFirstHomePaidAtLeastTwoYearsChange).toHaveBeenCalledWith(true);
+  });
+
+  it("hides the checkbox at homeOrder 2 when the 2-year question does not apply (temporary relaxation)", () => {
+    renderForm({ homeOrder: 2, firstHomePaidQuestionApplies: false });
+    expect(screen.queryByLabelText("ผ่อนบ้านหลังแรกมาแล้วอย่างน้อย 2 ปี")).not.toBeInTheDocument();
   });
 
   it("does not render the checkbox when homeOrder is 3", () => {

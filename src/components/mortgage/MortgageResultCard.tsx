@@ -64,7 +64,7 @@ export function MortgageResultCard({ result, downPaymentAvailable }: MortgageRes
               <p className="text-lg font-semibold text-danger">
                 {result.bindingConstraint === "ltv"
                   ? "ติดเงื่อนไข: เงินดาวน์ (LTV)"
-                  : `ติดเงื่อนไข: ภาระหนี้ต่อรายได้ (DSR), ต้องไม่เกิน ${DSR_LIMIT_PERCENT}% ของรายได้ (รวมหนี้เดิมที่มีอยู่แล้วด้วย)`}
+                  : `ติดเงื่อนไข: ภาระหนี้ต่อรายได้ (DSR), ต้องไม่เกิน 40% - 50% ของรายได้ (รวมหนี้เดิมที่มีอยู่แล้วด้วย)`}
               </p>
             </div>
           )}

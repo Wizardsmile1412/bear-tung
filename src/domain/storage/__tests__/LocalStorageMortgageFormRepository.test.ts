@@ -11,7 +11,7 @@ const sampleForm: MortgageFormState = {
   firstHomePaidAtLeastTwoYears: false,
   borrowerAge: 40,
   downPaymentAvailable: 500000,
-  downPaymentEdited: true,
+  downPaymentMode: "manual",
   interestRatePercent: 6.5,
   loanTermYears: 30,
   dsrLimitPercent: 40,

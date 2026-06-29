@@ -192,7 +192,7 @@ healthScore = round(
 - `borrowerAge` — borrower age (caps the term)
 - `interestRate` — annual rate (**default 6.5%**, ref Thai commercial bank MRR, adjustable)
 - `loanTermYears` — term (default 30y) → **effective = min(loanTermYears, 70 − borrowerAge)**
-- `downPaymentAvailable` — available down payment. **Default = `suggestedDownPayment`**: the minimum the active LTV rule requires (`homePrice × (1 − maxLtv)`), **except when the rule requires nothing (100% LTV, e.g. the temporary relaxation or a first home < 10M): then it suggests 5% of the home price** — putting some money down is almost always wiser (lower loan, less total interest, smaller monthly payment, and cash left for transfer-day fees). An info tooltip on the field explains this. Auto-recomputes as home price / order / assessment month change, until the user types their own value (then theirs is kept). It is *not* capped at savings — it shows the amount the rule needs, even if that's more than current savings.
+- `downPaymentAvailable` — available down payment. **Default = `suggestedDownPayment`**: the minimum the active LTV rule requires (`homePrice × (1 − maxLtv)`), **except when the rule requires nothing (100% LTV, e.g. the temporary relaxation or a first home < 10M): then it suggests 5% of the home price** — putting some money down is almost always wiser (lower loan, less total interest, smaller monthly payment, and cash left for transfer-day fees). An info tooltip on the field explains this. Auto-recomputes as home price / order / assessment month change, until the user types their own value (then theirs is kept). It is *not* capped at savings — it shows the amount the rule needs, even if that's more than current savings. **Quick-select chips (5% / 10%)** let the user set the down payment to that share of the home price with one tap; the selection is sticky (keeps tracking the price as it changes) and stays highlighted until they re-tap it (back to auto) or type a custom amount.
 - `assessmentMonth` — month used for assessment (current or future within the projection)
 - `monthlyIncome` / `existingDebt` — pulled from cash flow **of `assessmentMonth`**
 - `dsrLimit` — DSR cap, fixed at 40% (not user-adjustable; shown read-only in the UI)
@@ -214,6 +214,8 @@ healthScore = round(
 | 3rd+ home | 70% | 30% |
 
 > ⚠️ Implement LTV as config with `effectiveFrom` / `effectiveTo` because the temporary relaxation ends 30 Jun 2027 — the app should auto-pick the rule set by current date and tell the user which set is active.
+
+> The "first home paid ≥ 2 years" question only affects the 2nd-home LTV under the **normal** rules. During the temporary relaxation (LTV 100% regardless), it has no effect, so the UI **hides that checkbox** when the assessed month falls in the relaxation period — and shows it only once the assessment month is after 30 Jun 2027.
 
 ### 8.3 Calculation logic
 

@@ -17,6 +17,8 @@ import { MonthKey } from "@/domain/model/MonthKey";
 import { Money } from "@/domain/model/Money";
 import { MortgageInput } from "@/domain/mortgage/MortgageService";
 import { suggestedDownPayment } from "@/domain/mortgage/suggestedDownPayment";
+import { LtvPolicyFactory } from "@/domain/mortgage/LtvPolicyFactory";
+import { DownPaymentMode } from "@/domain/storage/MortgageFormRepository";
 
 import { useProfile } from "@/components/profile/useProfile";
 import { useProjectionSeries } from "@/components/health/useProjectionSeries";
@@ -46,10 +48,10 @@ export default function MortgagePage() {
     initial?.firstHomePaidAtLeastTwoYears ?? false,
   );
   const [borrowerAge, setBorrowerAge] = useState(initial?.borrowerAge ?? 0);
-  // Down payment auto-fills to the minimum the LTV rule requires, capped at the
-  // user's savings — until the user types their own value (then we keep theirs).
+  // Down payment: 'auto' uses the LTV-based suggestion; 'pct5'/'pct10' track a
+  // fixed % of the home price; 'manual' is a value the user typed.
   const [downPaymentManual, setDownPaymentManual] = useState(initial?.downPaymentAvailable ?? 0);
-  const [downPaymentEdited, setDownPaymentEdited] = useState(initial?.downPaymentEdited ?? false);
+  const [downPaymentMode, setDownPaymentMode] = useState<DownPaymentMode>(initial?.downPaymentMode ?? "auto");
 
   const [interestRatePercent, setInterestRatePercent] = useState(
     initial?.interestRatePercent ?? DEFAULT_INTEREST_RATE_PERCENT,
@@ -63,22 +65,42 @@ export default function MortgagePage() {
   const [coDebt, setCoDebt] = useState(initial?.coDebt ?? 0);
   const [coIncomeProvided, setCoIncomeProvided] = useState<number | undefined>(initial?.coIncomeProvided);
 
-  // The down payment to use: the user's own value once they've edited the
-  // field, otherwise the suggested amount — the LTV-required minimum, or 5% of
-  // the price when the rule requires none (100% LTV). `series[selectedIndex]`
-  // picks the date-based LTV policy.
+  // The down payment to use, by mode: a typed value ('manual'), a fixed % of
+  // the home price ('pct5'/'pct10', which keep tracking the price), or the
+  // LTV-based suggestion ('auto' — the required minimum, or 5% of the price
+  // when the rule requires none). `series[selectedIndex]` picks the LTV policy.
   const assessmentMonth = series[selectedIndex]?.month;
+  const assessmentDate = assessmentMonth ? MonthKey.parse(assessmentMonth).toDate() : undefined;
+  // Whether the normal (post-relaxation) LTV rules apply at the assessed month.
+  // Only then does the "first home paid >= 2 years" question affect anything —
+  // during the temporary 100% relaxation it has no effect, so we hide it.
+  const normalLtvApplies = assessmentDate ? LtvPolicyFactory.forDate(assessmentDate).name === "normal" : false;
   const autoDownPayment = suggestedDownPayment({
     homePrice,
     homeOrder,
     firstHomePaidAtLeastTwoYears: homeOrder === 2 ? firstHomePaidAtLeastTwoYears : undefined,
-    assessmentDate: assessmentMonth ? MonthKey.parse(assessmentMonth).toDate() : undefined,
+    assessmentDate,
   });
-  const downPaymentAvailable = downPaymentEdited ? downPaymentManual : autoDownPayment;
+  const downPaymentAvailable =
+    downPaymentMode === "manual"
+      ? downPaymentManual
+      : downPaymentMode === "pct5"
+        ? Math.round(homePrice * 0.05)
+        : downPaymentMode === "pct10"
+          ? Math.round(homePrice * 0.1)
+          : autoDownPayment;
+
+  const selectedDownPaymentPercent = downPaymentMode === "pct5" ? 5 : downPaymentMode === "pct10" ? 10 : null;
 
   function handleDownPaymentChange(value: number) {
     setDownPaymentManual(value);
-    setDownPaymentEdited(true);
+    setDownPaymentMode("manual");
+  }
+
+  // Toggle a 5%/10% quick-select: clicking the active one returns to the auto default.
+  function handleSelectDownPaymentPercent(percent: 5 | 10) {
+    const target: DownPaymentMode = percent === 5 ? "pct5" : "pct10";
+    setDownPaymentMode((current) => (current === target ? "auto" : target));
   }
 
   // Persist the form on every change so it's restored after navigating away.
@@ -94,7 +116,7 @@ export default function MortgagePage() {
       firstHomePaidAtLeastTwoYears,
       borrowerAge,
       downPaymentAvailable,
-      downPaymentEdited,
+      downPaymentMode,
       interestRatePercent,
       loanTermYears,
       dsrLimitPercent,
@@ -112,7 +134,7 @@ export default function MortgagePage() {
     firstHomePaidAtLeastTwoYears,
     borrowerAge,
     downPaymentAvailable,
-    downPaymentEdited,
+    downPaymentMode,
     interestRatePercent,
     loanTermYears,
     dsrLimitPercent,
@@ -212,10 +234,13 @@ export default function MortgagePage() {
           setHomeOrder={setHomeOrder}
           firstHomePaidAtLeastTwoYears={firstHomePaidAtLeastTwoYears}
           setFirstHomePaidAtLeastTwoYears={setFirstHomePaidAtLeastTwoYears}
+          firstHomePaidQuestionApplies={normalLtvApplies}
           borrowerAge={borrowerAge}
           setBorrowerAge={handleBorrowerAgeChange}
           downPaymentAvailable={downPaymentAvailable}
           setDownPaymentAvailable={handleDownPaymentChange}
+          selectedDownPaymentPercent={selectedDownPaymentPercent}
+          onSelectDownPaymentPercent={handleSelectDownPaymentPercent}
           interestRatePercent={interestRatePercent}
           setInterestRatePercent={setInterestRatePercent}
           loanTermYears={loanTermYears}
@@ -247,10 +272,13 @@ interface MortgagePageContentProps {
   setHomeOrder(value: 1 | 2 | 3): void;
   firstHomePaidAtLeastTwoYears: boolean;
   setFirstHomePaidAtLeastTwoYears(value: boolean): void;
+  firstHomePaidQuestionApplies: boolean;
   borrowerAge: number;
   setBorrowerAge(value: number): void;
   downPaymentAvailable: number;
   setDownPaymentAvailable(value: number): void;
+  selectedDownPaymentPercent: 5 | 10 | null;
+  onSelectDownPaymentPercent(percent: 5 | 10): void;
   interestRatePercent: number;
   setInterestRatePercent(value: number): void;
   loanTermYears: number;
@@ -294,10 +322,13 @@ function MortgagePageContent(props: MortgagePageContentProps) {
         onHomeOrderChange={props.setHomeOrder}
         firstHomePaidAtLeastTwoYears={props.firstHomePaidAtLeastTwoYears}
         onFirstHomePaidAtLeastTwoYearsChange={props.setFirstHomePaidAtLeastTwoYears}
+        firstHomePaidQuestionApplies={props.firstHomePaidQuestionApplies}
         borrowerAge={props.borrowerAge}
         onBorrowerAgeChange={props.setBorrowerAge}
         downPaymentAvailable={props.downPaymentAvailable}
         onDownPaymentAvailableChange={props.setDownPaymentAvailable}
+        selectedDownPaymentPercent={props.selectedDownPaymentPercent}
+        onSelectDownPaymentPercent={props.onSelectDownPaymentPercent}
       />
 
       <section className="rounded-card border border-outline bg-surface p-6 shadow-card">
